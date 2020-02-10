@@ -1,13 +1,17 @@
 package auth
 
 import (
-	"crypto/rand"
-	"encoding/base64"
+	models "server/models"
+	utils "server/utils"
+
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
 	"os"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -27,13 +31,7 @@ func init() {
 		Endpoint: google.Endpoint,
 	}
 
-	randomState = randToken()
-}
-
-func randToken() string {
-	b := make([]byte, 32)
-	rand.Read(b)
-	return base64.StdEncoding.EncodeToString(b)
+	randomState = utils.RandomToken()
 }
 
 // HandleHome serves up the Index
@@ -52,7 +50,6 @@ func HandleLogin(c *gin.Context) {
 // HandleCallback parses the access token and exchanges it for the user information
 func HandleCallback(c *gin.Context) {
 	state := c.Query("state")
-	fmt.Println(state, randomState)
 	if state != randomState {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, randomState))
 		return
@@ -74,5 +71,16 @@ func HandleCallback(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
-	c.JSON(200, string(data))
+
+	var u models.User
+	if err := json.Unmarshal(data, &u); err != nil {
+		panic(err)
+	}
+
+	session := sessions.Default(c)
+
+	session.Set("token", u.Email)
+	session.Save()
+
+	c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/login")
 }
