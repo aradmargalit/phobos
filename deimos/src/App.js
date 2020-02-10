@@ -1,5 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
+import { Button } from 'antd';
+
 import './App.css';
 
 function App() {
@@ -18,6 +20,12 @@ function App() {
         >
           Learn React
         </a>
+        <Button type="primary">Primary</Button>
+        <Button>Default</Button>
+        <Button type="dashed">Dashed</Button>
+        <Button type="danger">Danger</Button>
+        <Button type="link">Link</Button>
+        <a href="google.com">Example</a>
       </header>
     </div>
   );
