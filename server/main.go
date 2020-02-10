@@ -26,5 +26,7 @@ func main() {
 		v := sessions.Default(c).Get("token")
 		fmt.Println(v)
 	})
+
+	fmt.Println("Gin is ready!")
 	r.Run(":8080")
 }

@@ -7,11 +7,8 @@ services:
     environment:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GIN_MODE=release
   deimos:
-    build:
-      context: ./deimos
-      dockerfile: Dockerfile
-      args:
-        - API_URL=http://server:8080
+    build: ./deimos
     ports:
       - 3000:80
