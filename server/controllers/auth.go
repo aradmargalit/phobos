@@ -17,10 +17,20 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
+const (
+	googleUserInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
+)
+
 var conf *oauth2.Config
 var randomState string
 
 func init() {
+	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"} {
+		if os.Getenv(v) == "" {
+			panic(fmt.Sprintf("%v must be set in the environment!", v))
+		}
+	}
+
 	conf = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
@@ -34,12 +44,6 @@ func init() {
 	randomState = utils.RandomToken()
 }
 
-// HandleHome serves up the Index
-func HandleHome(c *gin.Context) {
-	c.Header("Content-Type", "text/html")
-	c.String(200, `<html><body><a href="/login">Login with Google</a></body></html>`)
-}
-
 // HandleLogin sends the user to Google for authentication
 func HandleLogin(c *gin.Context) {
 	url := conf.AuthCodeURL(randomState)
@@ -49,38 +53,48 @@ func HandleLogin(c *gin.Context) {
 
 // HandleCallback parses the access token and exchanges it for the user information
 func HandleCallback(c *gin.Context) {
-	state := c.Query("state")
-	if state != randomState {
+	if state := c.Query("state"); state != randomState {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, randomState))
 		return
 	}
 
 	// Handle the exchange code to initiate a transport.
-	tok, err := conf.Exchange(oauth2.NoContext, c.Query("code"))
+	token, err := conf.Exchange(oauth2.NoContext, c.Query("code"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	// Construct the client.
-	client := conf.Client(oauth2.NoContext, tok)
+	client := conf.Client(oauth2.NoContext, token)
 
-	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
+	resp, err := client.Get(googleUserInfoEndpoint)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	defer resp.Body.Close()
-	data, _ := ioutil.ReadAll(resp.Body)
 
-	var u models.User
-	if err := json.Unmarshal(data, &u); err != nil {
-		panic(err)
+	// Make sure to close the respond body once this function exits
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
+	// Unmarshal our shiny new user from Google
+	var u models.User
+	if err := json.Unmarshal(data, &u); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
 
 	session.Set("token", u.Email)
 	session.Save()
 
+	// Lastly, redirect the user to the front-end app.
+	// TODO::Make this dynamic based on the environment.
 	c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/login")
 }

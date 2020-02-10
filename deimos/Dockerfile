@@ -1,4 +1,8 @@
 FROM node:latest as builder
+
+ARG API_URL
+ENV API_URL=$API_URL
+
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
 RUN yarn

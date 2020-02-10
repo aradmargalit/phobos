@@ -22,5 +22,8 @@ The goal is to string everything together using [Docker Compose](https://docs.do
 
 ```sh
 # --build rebuilds images in the event that the source has changed
+# You'll need to pass environemnt variables for the server
+GOOGLE_CLIENT_ID= \
+GOOGLE_CLIENT_SECRET= \
 docker-compose up --build
 ```

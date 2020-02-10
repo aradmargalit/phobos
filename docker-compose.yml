@@ -1,10 +1,17 @@
-version: "3"
+version: '3'
 services:
   server:
     build: ./server
     ports:
       - 8080:8080
+    environment:
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
   deimos:
-    build: ./deimos
-    ports: 
+    build:
+      context: ./deimos
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://server:8080
+    ports:
       - 3000:80

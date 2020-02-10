@@ -15,9 +15,12 @@ func main() {
 
 	// Session Management
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
+	r.Use(sessions.Sessions("phobos-auth", store))
 
+	// Called by the UI when the user clicks the "Login with Google Button"
 	r.GET("/auth/google", auth.HandleLogin)
+
+	// Called by Google API once authenticaton is complete
 	r.GET("/callback", auth.HandleCallback)
 	r.GET("/currentUser", func(c *gin.Context) {
 		v := sessions.Default(c).Get("token")
