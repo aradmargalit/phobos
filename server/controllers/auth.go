@@ -101,3 +101,23 @@ func HandleCallback(c *gin.Context) {
 	// TODO::Make this dynamic based on the environment.
 	c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/login")
 }
+
+// Logout will clear the current users cookie
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(UserID)
+
+	if user == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+		return
+	}
+
+	session.Delete(UserID)
+
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to log out the user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out! 👋"})
+}
