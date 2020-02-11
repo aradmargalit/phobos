@@ -9,6 +9,10 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GIN_MODE=release
   deimos:
-    build: ./deimos
+    build:
+      context: ./deimos
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:8080
     ports:
       - 3000:80
