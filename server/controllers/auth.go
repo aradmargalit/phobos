@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
 	"os"
 
 	"github.com/gin-contrib/sessions"
@@ -67,16 +66,18 @@ func HandleCallback(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+
 	// Construct the client.
 	client := conf.Client(oauth2.NoContext, token)
 
+	// Fetch the user information from Google
 	resp, err := client.Get(googleUserInfoEndpoint)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	// Make sure to close the respond body once this function exits
+	// Make sure to close the response body once this function exits
 	defer resp.Body.Close()
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -95,6 +96,8 @@ func HandleCallback(c *gin.Context) {
 	db := models.DB{}
 	db.Connect()
 	_, err = db.GetUserByEmail(u.Email)
+
+	// If we got an err, there's no user in the database
 	if err != nil {
 		err = db.InsertUser(u)
 		if err != nil {
@@ -104,7 +107,6 @@ func HandleCallback(c *gin.Context) {
 
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
-
 	session.Set(UserID, u.Email)
 	session.Save()
 
