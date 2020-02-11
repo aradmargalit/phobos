@@ -19,6 +19,9 @@ import (
 
 const (
 	googleUserInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+	// UserID is the constant for the session's user ID
+	UserID = "userId"
 )
 
 var conf *oauth2.Config
@@ -91,7 +94,7 @@ func HandleCallback(c *gin.Context) {
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
 
-	session.Set("token", u.Email)
+	session.Set(UserID, u.Email)
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.
