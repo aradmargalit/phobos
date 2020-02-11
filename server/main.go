@@ -3,6 +3,7 @@ package main
 import (
 	controllers "server/controllers"
 	middleware "server/middleware"
+	"server/utils"
 
 	"fmt"
 
@@ -15,7 +16,8 @@ func main() {
 	r := gin.Default()
 
 	// Session Management
-	store := cookie.NewStore([]byte("secret"))
+	// Because this token is random sessions are invalidated when the server restarts
+	store := cookie.NewStore([]byte(utils.RandomToken()))
 	r.Use(sessions.Sessions("phobos-auth", store))
 
 	// Called by the UI when the user clicks the "Login with Google Button"
