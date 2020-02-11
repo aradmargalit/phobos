@@ -91,6 +91,17 @@ func HandleCallback(c *gin.Context) {
 		return
 	}
 
+	// Check if the user exists in the database
+	db := models.DB{}
+	db.Connect()
+	_, err = db.GetUserByEmail(u.Email)
+	if err != nil {
+		err = db.InsertUser(u)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
 
