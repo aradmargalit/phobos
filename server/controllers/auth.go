@@ -47,14 +47,14 @@ func init() {
 }
 
 // HandleLogin sends the user to Google for authentication
-func HandleLogin(c *gin.Context) {
+func (e *Env) HandleLogin(c *gin.Context) {
 	url := conf.AuthCodeURL(randomState)
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 // HandleCallback parses the access token and exchanges it for the user information
-func HandleCallback(c *gin.Context) {
+func (e *Env) HandleCallback(c *gin.Context) {
 	if state := c.Query("state"); state != randomState {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, randomState))
 		return
@@ -93,13 +93,11 @@ func HandleCallback(c *gin.Context) {
 	}
 
 	// Check if the user exists in the database
-	db := models.DB{}
-	db.Connect()
-	_, err = db.GetUserByEmail(u.Email)
+	_, err = e.DB.GetUserByEmail(u.Email)
 
 	// If we got an err, there's no user in the database
 	if err != nil {
-		err = db.InsertUser(u)
+		err = e.DB.InsertUser(u)
 		if err != nil {
 			panic(err)
 		}
@@ -116,7 +114,7 @@ func HandleCallback(c *gin.Context) {
 }
 
 // Logout will clear the current users cookie
-func Logout(c *gin.Context) {
+func (e *Env) Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(UserID)
 

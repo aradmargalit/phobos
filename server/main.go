@@ -3,7 +3,8 @@ package main
 import (
 	controllers "server/controllers"
 	middleware "server/middleware"
-	"server/utils"
+	models "server/models"
+	utils "server/utils"
 
 	"fmt"
 
@@ -15,23 +16,28 @@ import (
 func main() {
 	r := gin.Default()
 
+	db := models.DB{}
+	db.Connect()
+
+	env := &controllers.Env{DB: &db}
+
 	// Session Management
 	// Because this token is random sessions are invalidated when the server restarts
 	store := cookie.NewStore([]byte(utils.RandomToken()))
 	r.Use(sessions.Sessions("phobos-auth", store))
 
 	// Called by the UI when the user clicks the "Login with Google Button"
-	r.GET("/auth/google", controllers.HandleLogin)
+	r.GET("/auth/google", env.HandleLogin)
 
 	// Called by Google API once authenticaton is complete
-	r.GET("/callback", controllers.HandleCallback)
+	r.GET("/callback", env.HandleCallback)
 
-	r.GET("/users/logout", controllers.Logout)
+	r.GET("/users/logout", env.Logout)
 
 	private := r.Group("/private")
 	private.Use(middleware.AuthRequired)
 	{
-		private.GET("/users/current", controllers.CurrentUserHandler)
+		private.GET("/users/current", env.CurrentUserHandler)
 	}
 
 	fmt.Println("🚀🌑 Phobos is ready!")
