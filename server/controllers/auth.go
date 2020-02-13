@@ -130,5 +130,5 @@ func (e *Env) Logout(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out! 👋"})
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/logout")
 }

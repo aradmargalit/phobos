@@ -9,7 +9,7 @@ export default function Header() {
       className="header"
       title="Phobos"
       subTitle="A Fitness Tracker"
-      extra={[<IdentityButton />]}
+      extra={[<IdentityButton key="idb" />]}
     />
   );
 }
