@@ -7,7 +7,6 @@ export default function Login() {
 
   return (
     <div className="button-container">
-      <Button href={`${BACKEND_URL}/auth/google`}>Login with Google</Button>
       <Button href={`${BACKEND_URL}/private/users/current`}>
         Current User
       </Button>
