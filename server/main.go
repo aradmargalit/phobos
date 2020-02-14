@@ -8,6 +8,7 @@ import (
 
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,14 @@ func main() {
 	// Because this token is random sessions are invalidated when the server restarts
 	store := cookie.NewStore([]byte(utils.RandomToken()))
 	r.Use(sessions.Sessions("phobos-auth", store))
+
+	// CORS to allow localhost in development
+	// Make sure to allow credentials so we can read the cookie
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowCredentials = true
+
+	r.Use(cors.New(config))
 
 	// Called by the UI when the user clicks the "Login with Google Button"
 	r.GET("/auth/google", env.HandleLogin)

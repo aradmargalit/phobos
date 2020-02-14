@@ -106,11 +106,12 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
 	session.Set(UserID, u.Email)
+	fmt.Println("Saving", u.Email)
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.
 	// TODO::Make this dynamic based on the environment.
-	c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/login")
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/login")
 }
 
 // Logout will clear the current users cookie

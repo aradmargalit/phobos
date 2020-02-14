@@ -14,15 +14,16 @@ export default function IdentityButton() {
 
   async function fetchData() {
     setLoading(true);
-    const res = await fetch('/private/users/current');
+    // Make sure to include the cookie with the request!
+    const res = await fetch(`${BACKEND_URL}/private/users/current`, {
+      credentials: 'include',
+    });
 
     res
       .json()
-      .then(res => {
-        setUser(res.user);
-        setLoading(false);
-      })
-      .catch(err => setErrors(err));
+      .then(res => setUser(res.user))
+      .catch(err => setErrors(err))
+      .finally(() => setLoading(false));
   }
 
   useEffect(() => {
@@ -38,7 +39,9 @@ export default function IdentityButton() {
       <h1 className="ant-page-header-heading-title primary">
         {user.given_name}
       </h1>
-      <Button href={`${BACKEND_URL}/users/logout`} type="danger" ghost>Logout</Button>
+      <Button href={`${BACKEND_URL}/users/logout`} type="danger" ghost>
+        Logout
+      </Button>
     </div>
   ) : (
     <Button href={`${BACKEND_URL}/auth/google`}>

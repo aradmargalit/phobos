@@ -12,6 +12,7 @@ import (
 func (e *Env) CurrentUserHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	uid := session.Get(UserID)
+	
 
 	if email, ok := uid.(string); ok {
 		u, err := e.DB.GetUserByEmail(string(email))
