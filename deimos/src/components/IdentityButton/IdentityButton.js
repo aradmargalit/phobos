@@ -16,7 +16,7 @@ export default function IdentityButton() {
     setLoading(true);
     // Make sure to include the cookie with the request!
     const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-      credentials: 'include',
+      credentials: 'include'
     });
 
     res
@@ -30,7 +30,7 @@ export default function IdentityButton() {
     fetchData();
   }, []);
 
-  if (errors) return <h1>{`Uh Oh ${errors}`}</h1>;
+  if (errors) return <h1>{errors}</h1>;
   if (loading) return <Spin />;
 
   return user ? (

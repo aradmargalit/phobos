@@ -106,7 +106,6 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
 	session.Set(UserID, u.Email)
-	fmt.Println("Saving", u.Email)
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.

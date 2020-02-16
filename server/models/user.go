@@ -7,4 +7,5 @@ type User struct {
 	GivenName string `json:"given_name" db:"given_name"`
 	Email     string `json:"email" db:"email"`
 	CreatedAt string `json:"created_at" db:"created_at"`
+	UpdatedAt string `json:"updated_at" db:"updated_at"`
 }

@@ -49,6 +49,6 @@ func main() {
 		private.GET("/users/current", env.CurrentUserHandler)
 	}
 
-	fmt.Println("🚀🌑 Phobos is ready!")
+	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")
 }
