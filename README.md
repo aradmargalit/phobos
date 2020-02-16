@@ -23,6 +23,7 @@ The end-goal is allow for automated data import from [Strava](http://strava.com)
 Given that this project uses [Go](https://golang.org/), I recommend cloning this project into your `$GOPATH/src/`. [You can learn more about the `GOPATH` if you don't understand why](https://github.com/golang/go/wiki/GOPATH).
 
 ### Docker :whale:
+
 The goal is to string everything together using [Docker Compose](https://docs.docker.com/compose/). You should just need to:
 
 ```sh
@@ -36,8 +37,14 @@ docker-compose up --build
 Alternatively, you can set up a `server/.env` file to store these secrets. Docker compose will automatically pick up the `.env` file's variables.
 
 ```text
+# API Variables
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+API_DB_STRING=phobos-api:db-password@tcp(172.17.0.1:3308)/phobos
+
+# Database Variables
+MYSQL_ROOT_PASSWORD=
+MYSQL_PASSWORD=
 ```
 
 ### Run Locally :computer:
@@ -63,8 +70,24 @@ GOOGLE_CLIENT_SECRET= \
 ./server
 ```
 
+#### MySQL DB :inbox_tray:
+
+You should just use Docker for this. It's way easier.
+
+```sh
+docker-compose up -d mysql
+```
+
+## More Documentation
+
+While the above is all you need to get started, I'll keep more documents browseable [in the docs folder.](./docs)
+
+### Table of Contents
+
+- [Lessons Learned :mortar_board:](./docs/lessons.md)
+
 ## Etymology
 
-[Phobos](https://en.wikipedia.org/wiki/Phobos_(moon)) is the larger of the two moons orbiting Mars :rocket:. Deimos is the smaller of the two moons.
+[Phobos](<https://en.wikipedia.org/wiki/Phobos_(moon)>) is the larger of the two moons orbiting Mars :rocket:. Deimos is the smaller of the two moons.
 
 I had to Google all that, so I'll admit that in reality, the app is named after my cat, Phoebe, who I affectionately call "Phobo". :cat2:
