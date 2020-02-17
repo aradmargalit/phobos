@@ -4,11 +4,11 @@ import Header from './components/Header';
 import './App.css';
 import Home from './components/Home';
 import Landing from './components/Landing';
-import { UserContext } from './contexts/UserContext';
+import { UserContext } from './contexts';
 
 export default function App() {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const userValue = {
     user,

@@ -1,21 +1,17 @@
-import React from 'react';
-import { UserContext } from '../../contexts/UserContext';
+import React, { useContext } from 'react';
+import { UserContext } from '../../contexts';
 import { Redirect } from 'react-router-dom';
+import { Spin } from 'antd';
 
 export default function Landing() {
-  return (
-    <UserContext.Consumer>
-      {({ user, loading }) =>
-        loading ? (
-          <p>Loading</p>
-        ) : user ? (
-          <div>
-            <Redirect to="/home" />
-          </div>
-        ) : (
-          <h1>Oh, you're not logged in</h1>
-        )
-      }
-    </UserContext.Consumer>
+  const { user, loading } = useContext(UserContext);
+  if (loading) return <Spin />;
+
+  return user ? (
+    <div>
+      <Redirect to="/home" />
+    </div>
+  ) : (
+    <h1>Oh, you're not logged in</h1>
   );
 }

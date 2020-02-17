@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Button, Spin } from 'antd';
+import UserContext from '../../contexts/UserContext';
 import './IdentityButton.scss';
 
 const googleIcon =
@@ -7,7 +8,8 @@ const googleIcon =
 
 let BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
-export default function IdentityButton({ user, setUser, loading, setLoading }) {
+export default function IdentityButton() {
+  const { user, setUser, loading, setLoading } = useContext(UserContext);
   const [errors, setErrors] = useState(false);
 
   useEffect(() => {

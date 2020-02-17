@@ -1,26 +1,17 @@
-import React from 'react';
-import { UserContext } from '../../contexts/UserContext';
+import React, { useContext } from 'react';
+import { Spin } from 'antd';
+import { UserContext } from '../../contexts';
 import { Redirect } from 'react-router-dom';
 
 export default function Home() {
-  return (
-    <UserContext.Consumer>
-      {({ user, loading }) =>
-        loading ? (
-          <p>Loading...</p>
-        ) : !isEmpty(user) ? (
-          <div>
-            <h1>{`Welcome Home ${user.given_name}`}</h1>
-          </div>
-        ) : (
-          <Redirect to="/" />
-        )
-      }
-    </UserContext.Consumer>
+  const { user, loading } = useContext(UserContext);
+
+  if (loading) return <Spin />;
+  return user ? (
+    <div>
+      <h1>{`Welcome Home ${user.given_name}`}</h1>
+    </div>
+  ) : (
+    <Redirect to="/" />
   );
 }
-
-const isEmpty = obj => {
-  const ie = Object.entries(obj).length === 0 && obj.constructor === Object;
-  return ie;
-};
