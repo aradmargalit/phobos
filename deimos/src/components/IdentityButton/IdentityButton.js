@@ -7,28 +7,25 @@ const googleIcon =
 
 let BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
-export default function IdentityButton() {
-  const [loading, setLoading] = useState(true);
+export default function IdentityButton({ user, setUser, loading, setLoading }) {
   const [errors, setErrors] = useState(false);
-  const [user, setUser] = useState(null);
-
-  async function fetchData() {
-    setLoading(true);
-    // Make sure to include the cookie with the request!
-    const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-      credentials: 'include'
-    });
-
-    res
-      .json()
-      .then(res => setUser(res.user))
-      .catch(err => setErrors(err))
-      .finally(() => setLoading(false));
-  }
 
   useEffect(() => {
+    const fetchData = async () => {
+      // Make sure to include the cookie with the request!
+      const res = await fetch(`${BACKEND_URL}/private/users/current`, {
+        credentials: 'include'
+      });
+
+      res
+        .json()
+        .then(res => setUser(res.user))
+        .catch(err => setErrors(err))
+        .finally(() => setLoading(false));
+    };
+
     fetchData();
-  }, []);
+  }, [setUser, setLoading]);
 
   if (errors) return <h1>{errors}</h1>;
   if (loading) return <Spin />;

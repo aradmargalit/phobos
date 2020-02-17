@@ -97,6 +97,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 
 	// If we got an err, there's no user in the database
 	if err != nil {
+		fmt.Println("Could not get user from database: ", err)
 		err = e.DB.InsertUser(u)
 		if err != nil {
 			panic(err)
@@ -110,7 +111,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 
 	// Lastly, redirect the user to the front-end app.
 	// TODO::Make this dynamic based on the environment.
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/login")
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/home")
 }
 
 // Logout will clear the current users cookie
@@ -130,5 +131,5 @@ func (e *Env) Logout(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/logout")
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/")
 }
