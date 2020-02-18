@@ -6,20 +6,22 @@ import './IdentityButton.scss';
 const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default function IdentityButton() {
-  const { user, setUser, loading, setLoading } = useContext(UserContext);
+  const {
+    user, setUser, loading, setLoading,
+  } = useContext(UserContext);
   const [errors, setErrors] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       // Make sure to include the cookie with the request!
       const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-        credentials: 'include'
+        credentials: 'include',
       });
 
       res
         .json()
-        .then(res => setUser(res.user))
-        .catch(err => setErrors(err))
+        .then(({ user: respUser }) => setUser(respUser))
+        .catch((err) => setErrors(err))
         .finally(() => setLoading(false));
     };
 

@@ -1,7 +1,9 @@
+/* eslint global-require: 0 */
+
 import React, { useContext } from 'react';
-import { UserContext } from '../../contexts';
 import { Redirect } from 'react-router-dom';
 import { Spin, Button } from 'antd';
+import UserContext from '../../contexts';
 import './Landing.scss';
 
 export default function Landing() {
