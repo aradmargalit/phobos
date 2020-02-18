@@ -7,7 +7,7 @@ export default function Header() {
   return (
     <PageHeader
       className="header"
-      title="Phobos"
+      title="PHOBOS"
       subTitle="A Fitness Tracker"
       extra={[<IdentityButton key="idb" />]}
     />

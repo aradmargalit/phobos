@@ -1,0 +1,8 @@
+# API Variables
+GOOGLE_CLIENT_ID=551305443424-38fohvn89bnv7j816ja1jvtcqcamgtf0.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=Fs1HbJ5-OuGqSWuXujdt72CX
+API_DB_STRING=phobos-api:fl33b0@tcp(172.17.0.1:3308)/phobos
+
+# Database Variables
+MYSQL_ROOT_PASSWORD=TXHhsDjNXyEDNw==
+MYSQL_PASSWORD=fl33b0

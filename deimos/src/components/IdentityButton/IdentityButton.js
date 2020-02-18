@@ -3,10 +3,7 @@ import { Button, Spin } from 'antd';
 import UserContext from '../../contexts/UserContext';
 import './IdentityButton.scss';
 
-const googleIcon =
-  'https://pluspng.com/img-png/google-logo-png-google-logo-icon-png-transparent-background-1000.png';
-
-let BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default function IdentityButton() {
   const { user, setUser, loading, setLoading } = useContext(UserContext);
@@ -38,18 +35,12 @@ export default function IdentityButton() {
       <h1 className="ant-page-header-heading-title primary">
         {user.given_name}
       </h1>
-      <Button href={`${BACKEND_URL}/users/logout`} type="danger" ghost>
+      <Button icon="logout" href={`${BACKEND_URL}/users/logout`} type="danger" ghost>
         Logout
       </Button>
     </div>
   ) : (
-    <Button href={`${BACKEND_URL}/auth/google`}>
-      <img
-        alt="google-icon"
-        src={googleIcon}
-        width="20"
-        style={{ padding: '0 5px 0 0' }}
-      />
+    <Button icon="google" href={`${BACKEND_URL}/auth/google`}>
       Login with Google
     </Button>
   );

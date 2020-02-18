@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Header from './components/Header';
-import './App.css';
+import './App.scss';
 import Home from './components/Home';
 import Landing from './components/Landing';
 import { UserContext } from './contexts';
