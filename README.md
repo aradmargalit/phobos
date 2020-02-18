@@ -34,7 +34,9 @@ GOOGLE_CLIENT_SECRET= \
 docker-compose up --build
 ```
 
-Alternatively, you can set up a `server/.env` file to store these secrets. Docker compose will automatically pick up the `.env` file's variables.
+Alternatively, you can set up a `.env` file to store these secrets at the project root. Docker compose will automatically pick up the `.env` file's variables.
+
+Check out [the sample file](./.env.sample) to see the layout and format for this file.
 
 ```text
 # API Variables
