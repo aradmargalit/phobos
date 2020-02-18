@@ -15,7 +15,7 @@ services:
     environment:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - API_DB_STRING=${API_DB_STRING}
+      - API_DB_STRING=phobos-api:${MYSQL_PASSWORD}@tcp(172.17.0.1:3308)/phobos
       - GIN_MODE=release
   mysql:
     image: mysql:8.0.17
