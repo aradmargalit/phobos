@@ -20,7 +20,9 @@ export default function IdentityButton() {
 
       res
         .json()
+
         .then(({ user: respUser }) => setUser(respUser))
+
         .catch((err) => setErrors(err))
         .finally(() => setLoading(false));
     };

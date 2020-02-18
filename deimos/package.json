@@ -47,7 +47,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.3",
     "eslint-plugin-react-hooks": "^1.7.0",
-    "husky": "^4.2.3"
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7"
   },
   "husky": {
     "hooks": {
@@ -55,9 +56,8 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "./node_modules/.bin/eslint --ext js,jsx --fix",
-      "git add"
+    "src/**/*.{js,jsx}": [
+      "eslint --fix"
     ]
   }
 }
