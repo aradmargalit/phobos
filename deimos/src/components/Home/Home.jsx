@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Spin } from 'antd';
 import { Redirect } from 'react-router-dom';
 import UserContext from '../../contexts';
+import AddActivity from '../AddActivityModal';
 
 export default function Home() {
   const { user, loading } = useContext(UserContext);
@@ -11,7 +12,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1>{`Welcome Home ${user.given_name}`}</h1>
+      <h1><AddActivity /></h1>
     </div>
   );
 }
