@@ -14,21 +14,24 @@ export default function IdentityButton() {
   useEffect(() => {
     const fetchData = async () => {
       // Make sure to include the cookie with the request!
-      const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-        credentials: 'include',
-      });
+      try {
+        const res = await fetch(`${BACKEND_URL}/private/users/current`, {
+          credentials: 'include',
+        });
 
-      res
-        .json()
-        .then(({ user: respUser }) => setUser(respUser))
-        .catch((err) => setErrors(err))
-        .finally(() => setLoading(false));
+        res
+          .json()
+          .then(({ user: respUser }) => { setUser(respUser); setLoading(false); });
+      } catch (err) {
+        setErrors(':(');
+        setLoading(false);
+      }
     };
 
     fetchData();
   }, [setUser, setLoading]);
 
-  if (errors) return <h1>{errors}</h1>;
+  if (errors) return <p>{errors}</p>;
   if (loading) return <Spin />;
 
   return user ? (
