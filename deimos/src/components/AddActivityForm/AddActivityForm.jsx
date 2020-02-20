@@ -2,11 +2,13 @@ import {
   Row, Col, DatePicker, Select, InputNumber,
 } from 'antd';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import './AddActivityForm.scss';
 
 export default function AddActivityForm() {
-  const { register, handleSubmit, errors } = useForm();
+  const {
+    handleSubmit, errors, control,
+  } = useForm();
   const onSubmit = (data) => console.log(data);
   console.log(errors);
 
@@ -22,10 +24,12 @@ export default function AddActivityForm() {
           <strong>Activity Date</strong>
         </Col>
         <Col span={18}>
-          <DatePicker
+          <Controller
+            as={DatePicker}
+            control={control}
             placeholder="2020-01-01"
             name="Activity Date"
-            ref={register({ required: true })}
+            // ref={register({ required: true })}
           />
         </Col>
       </Row>
@@ -34,7 +38,10 @@ export default function AddActivityForm() {
           <strong>Activity Type</strong>
         </Col>
         <Col span={18}>
-          <Select
+          <Controller
+            as={Select}
+            control={control}
+            name="Activity Selector"
             showSearch
             style={{ width: 200 }}
             placeholder="Activity Type"
@@ -47,7 +54,7 @@ export default function AddActivityForm() {
             //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >=
             //   0
             // }
-            ref={register}
+            // ref={register}
           >
             <Option value="run">
               Run
@@ -67,7 +74,7 @@ export default function AddActivityForm() {
                 🏊
               </span>
             </Option>
-          </Select>
+          </Controller>
         </Col>
       </Row>
       <Row gutter={4}>
@@ -76,11 +83,21 @@ export default function AddActivityForm() {
         </Col>
         <Col span={18}>
           <div>
-            <InputNumber min={1} max={10} defaultValue={3} ref={register} />
+            <Controller
+              as={InputNumber}
+              min={1}
+              max={10}
+              defaultValue={3}
+              control={control}
+              name="Duration"
+            />
             <i>  minutes</i>
           </div>
         </Col>
       </Row>
+      <button className="ant-btn" type="submit">
+        Submit
+      </button>
     </form>
   );
 }
