@@ -7,8 +7,8 @@ import AddActivity from '../AddActivityModal';
 export default function Home() {
   const { user, loading } = useContext(UserContext);
 
-  if (!user) return <Redirect to="/" />;
   if (loading) return <Spin />;
+  if (!user) return <Redirect to="/" />;
 
   return (
     <div>
