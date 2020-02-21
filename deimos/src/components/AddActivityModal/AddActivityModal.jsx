@@ -1,4 +1,4 @@
-import { Modal, Button } from 'antd';
+import { Modal, Button, Icon } from 'antd';
 import React, { useState } from 'react';
 import './AddActivityModal.scss';
 import AddActivityForm from '../AddActivityForm';
@@ -8,11 +8,6 @@ export default function AddActivityModal() {
 
   const showModal = () => {
     setVisible(true);
-  };
-
-  const handleOk = (e) => {
-    console.log(e);
-    setVisible(false);
   };
 
   const handleCancel = (e) => {
@@ -27,10 +22,16 @@ export default function AddActivityModal() {
         Add Activity
       </Button>
       <Modal
-        title="Add New Activity"
+        title={(
+          <span>
+            Add New Activity
+            <Icon className="form-icon" type="form" />
+          </span>
+        )}
         visible={visible}
-        onOk={handleOk}
         onCancel={handleCancel}
+        destroyOnClose
+        footer={null}
       >
         <AddActivityForm />
       </Modal>
