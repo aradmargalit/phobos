@@ -3,6 +3,7 @@
 import {
   Form, Button, DatePicker, Select, InputNumber, Slider,
 } from 'antd';
+import PropTypes from 'prop-types';
 import React from 'react';
 import './AddActivityForm.scss';
 import { RocketOutlined } from '@ant-design/icons';
@@ -10,9 +11,10 @@ import EmojiOption from '../EmojiOption';
 
 const { Item } = Form;
 
-export default function AddActivityForm() {
+export default function AddActivityForm({ closeModal }) {
   const onFinish = (values) => {
     console.log('Success:', values);
+    closeModal();
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -108,3 +110,7 @@ export default function AddActivityForm() {
     </Form>
   );
 }
+
+AddActivityForm.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+};
