@@ -44,6 +44,7 @@ export default function AddActivityForm({ closeModal }) {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
+      {/* ============= DATEPICKER ============= */ }
       <Item
         hasFeedback
         label="Activity Date"
@@ -58,6 +59,7 @@ export default function AddActivityForm({ closeModal }) {
         <DatePicker className="fullWidth" placeholder="2020-01-01" />
       </Item>
 
+      {/* ============= ACTIVITY SELECT ============= */ }
       <Item
         hasFeedback
         label="Activity Type"
@@ -76,6 +78,7 @@ export default function AddActivityForm({ closeModal }) {
         </Select>
       </Item>
 
+      {/* ============= DURATION ============= */ }
       <Item label="Duration">
         <Item
           name="duration"
@@ -87,6 +90,7 @@ export default function AddActivityForm({ closeModal }) {
         <span className="ant-form-text"> minutes</span>
       </Item>
 
+      {/* ============= DIFFICULTY ============= */ }
       <Item name="difficulty" label="Difficulty">
         <Slider
           marks={{
@@ -97,6 +101,7 @@ export default function AddActivityForm({ closeModal }) {
         />
       </Item>
 
+      {/* ============= SUBMIT ============= */ }
       <Item {...tailLayout}>
         <Button htmlType="submit" icon={<RocketOutlined />} type="primary">
           Submit
