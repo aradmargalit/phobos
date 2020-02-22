@@ -1,6 +1,7 @@
-import { Modal, Button, Icon } from 'antd';
+import { Modal, Button } from 'antd';
 import React, { useState } from 'react';
 import './AddActivityModal.scss';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import AddActivityForm from '../AddActivityForm';
 
 export default function AddActivityModal() {
@@ -15,19 +16,13 @@ export default function AddActivityModal() {
     setVisible(false);
   };
 
-
   return (
     <div>
-      <Button icon="plus-circle" type="primary" onClick={showModal}>
+      <Button icon={<PlusCircleOutlined />} type="primary" onClick={showModal}>
         Add Activity
       </Button>
       <Modal
-        title={(
-          <span>
-            Add New Activity
-            <Icon className="form-icon" type="form" />
-          </span>
-        )}
+        title="Add New Activity"
         visible={visible}
         onCancel={handleCancel}
         destroyOnClose

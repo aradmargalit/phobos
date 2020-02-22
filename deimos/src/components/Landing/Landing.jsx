@@ -3,6 +3,7 @@
 import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Spin, Button } from 'antd';
+import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
 import UserContext from '../../contexts';
 import './Landing.scss';
 
@@ -24,11 +25,22 @@ export default function Landing() {
           alt="rocket"
         />
         <div className="landing-container__actions">
-          <Button href={`${BACKEND_URL}/auth/google`} className="ant-btn big-button" icon="google" type="primary">
+          <Button
+            href={`${BACKEND_URL}/auth/google`}
+            className="ant-btn big-button"
+            icon={<GoogleOutlined />}
+            type="primary"
+          >
             Sign Up with Google
           </Button>
           <i>already have an account?</i>
-          <Button href={`${BACKEND_URL}/auth/google`} className="ant-btn small-button" icon="login" ghost type="primary">
+          <Button
+            href={`${BACKEND_URL}/auth/google`}
+            className="ant-btn small-button"
+            icon={<LoginOutlined />}
+            ghost
+            type="primary"
+          >
             Sign In
           </Button>
         </div>

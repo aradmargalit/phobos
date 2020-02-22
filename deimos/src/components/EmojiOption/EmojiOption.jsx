@@ -9,7 +9,7 @@ export default function EmojiOption({ emoji, value, title }) {
   return (
     <Option value={value}>
       {title}
-      <span role="img" aria-label={`${value} emoji`}>
+      <span className="emoji" role="img" aria-label={`${value} emoji`}>
         {emoji}
       </span>
     </Option>
