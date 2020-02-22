@@ -76,20 +76,15 @@ export default function AddActivityForm({ closeModal }) {
         </Select>
       </Item>
 
-      <Item
-        hasFeedback
-        label="Duration (min)"
-        name="duration"
-        rules={[
-          {
-            required: true,
-            message: 'Duration is required',
-            type: 'number',
-            min: 1,
-          },
-        ]}
-      >
-        <InputNumber className="fullWidth" min={1} placeholder={30} />
+      <Item label="Duration">
+        <Item
+          name="duration"
+          rules={[{ required: true, message: 'Duration is required' }]}
+          noStyle
+        >
+          <InputNumber min={1} />
+        </Item>
+        <span className="ant-form-text"> minutes</span>
       </Item>
 
       <Item name="difficulty" label="Difficulty">
