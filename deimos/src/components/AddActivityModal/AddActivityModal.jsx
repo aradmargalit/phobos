@@ -28,7 +28,7 @@ export default function AddActivityModal() {
         destroyOnClose
         footer={null}
       >
-        <AddActivityForm />
+        <AddActivityForm closeModal={handleCancel} />
       </Modal>
     </div>
   );
