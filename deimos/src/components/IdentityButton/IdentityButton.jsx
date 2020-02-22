@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Button, Spin } from 'antd';
+import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
 import UserContext from '../../contexts/UserContext';
 import './IdentityButton.scss';
 
@@ -19,12 +20,12 @@ export default function IdentityButton() {
           credentials: 'include',
         });
 
-        res
-          .json()
-          .then(({ user: respUser }) => { setUser(respUser); setLoading(false); });
+        res.json().then(({ user: respUser }) => {
+          setUser(respUser);
+          setLoading(false);
+        });
       } catch (err) {
         setErrors(':(');
-        setLoading(false);
       }
     };
 
@@ -40,12 +41,17 @@ export default function IdentityButton() {
       <h1 className="ant-page-header-heading-title primary">
         {user.given_name}
       </h1>
-      <Button icon="logout" href={`${BACKEND_URL}/users/logout`} type="danger" ghost>
+      <Button
+        icon={<LogoutOutlined />}
+        href={`${BACKEND_URL}/users/logout`}
+        type="danger"
+        ghost
+      >
         Logout
       </Button>
     </div>
   ) : (
-    <Button icon="google" href={`${BACKEND_URL}/auth/google`}>
+    <Button icon={<GoogleOutlined />} href={`${BACKEND_URL}/auth/google`}>
       Login with Google
     </Button>
   );
