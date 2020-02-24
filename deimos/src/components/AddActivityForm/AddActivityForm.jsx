@@ -98,6 +98,7 @@ export default function AddActivityForm({ closeModal }) {
             50: 'Moderate',
             100: 'Exhausting',
           }}
+          step={10}
         />
       </Item>
 
