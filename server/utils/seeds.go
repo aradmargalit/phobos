@@ -1,5 +1,9 @@
 package utils
 
+import (
+	"server/models"
+)
+
 // ActivityTypes is a list of possible activities
 var ActivityTypes []string = []string{
 	"Ride",
@@ -34,4 +38,15 @@ var ActivityTypes []string = []string{
 	"Wheelchair",
 	"Workout",
 	"Yoga",
+}
+
+func seedActivityTypes(db *models.DB) {
+	for _, name := range ActivityTypes {
+		db.InsertActivityType(models.ActivityType{Name: name})
+	}
+}
+
+// Seed will seed the database with all application data
+func Seed(db *models.DB) {
+	seedActivityTypes(db)
 }

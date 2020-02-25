@@ -49,6 +49,14 @@ func main() {
 		private.GET("/users/current", env.CurrentUserHandler)
 	}
 
+	r.GET("/activity_types", env.ActivityTypesHandler)
+
+	// Should we seed the DB?
+	r.GET("/seed", func(c *gin.Context) {
+		utils.Seed(&db)
+		c.Status(200)
+	})
+
 	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")
 }
