@@ -25,3 +25,10 @@ func (db *DB) InsertActivityType(at ActivityType) (err error) {
 
 	return
 }
+
+// DeleteAllActivityTypes deletes all activity types, should only be used during seeding
+func (db *DB) DeleteAllActivityTypes() (err error) {
+	_, err = db.conn.Exec(`DELETE FROM activity_types`)
+
+	return
+}

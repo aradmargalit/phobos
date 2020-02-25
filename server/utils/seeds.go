@@ -41,6 +41,10 @@ var ActivityTypes []string = []string{
 }
 
 func seedActivityTypes(db *models.DB) {
+	// First, delete everything that existed already
+	db.DeleteAllActivityTypes()
+
+	// Then, seed the database
 	for _, name := range ActivityTypes {
 		db.InsertActivityType(models.ActivityType{Name: name})
 	}
