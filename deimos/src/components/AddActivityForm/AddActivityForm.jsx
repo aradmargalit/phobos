@@ -1,17 +1,39 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import {
-  Form, Button, DatePicker, Select, InputNumber, Slider,
+  Form, Button, DatePicker, Select, InputNumber, Slider, Spin,
 } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddActivityForm.scss';
 import { RocketOutlined } from '@ant-design/icons';
 import EmojiOption from '../EmojiOption';
 
 const { Item } = Form;
+const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
 
 export default function AddActivityForm({ closeModal }) {
+  const [loading, setLoading] = useState(true);
+  const [activityTypes, setActivityTypes] = useState([]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Make sure to include the cookie with the request!
+      const res = await fetch(`${BACKEND_URL}/activity_types`, {
+        credentials: 'include',
+      });
+
+      res.json().then(({ activity_types: respTypes }) => {
+        setActivityTypes(respTypes);
+        setLoading(false);
+      });
+    };
+
+    fetchData();
+  }, [setLoading]);
+
   const onFinish = (values) => {
     console.log('Success:', values);
     closeModal();
@@ -37,7 +59,7 @@ export default function AddActivityForm({ closeModal }) {
     },
   };
 
-  return (
+  return loading ? <Spin /> : (
     <Form
       {...layout}
       name="add-activity"
@@ -72,9 +94,7 @@ export default function AddActivityForm({ closeModal }) {
         ]}
       >
         <Select allowClear showSearch optionFilterProp="children">
-          {EmojiOption({ emoji: '🏃', value: 'run', title: 'Run' })}
-          {EmojiOption({ emoji: '🚴', value: 'bike', title: 'Bike' })}
-          {EmojiOption({ emoji: '🏊', value: 'swim', title: 'Swimming' })}
+          {activityTypes.map(({ name }) => EmojiOption({ value: name.toLowerCase(), title: name }))}
         </Select>
       </Item>
 
