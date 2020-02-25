@@ -1,3 +1,4 @@
+# ======== USERS ========
 CREATE TABLE `users` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `name` text,
@@ -7,4 +8,13 @@ CREATE TABLE `users` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY `email` (`email`)
-)
+);
+
+# ======== ACTIVITY TYPES ========
+CREATE TABLE `activity_types` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `name` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
