@@ -5,11 +5,10 @@ import { Redirect } from 'react-router-dom';
 import { Spin, Button } from 'antd';
 import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
 import UserContext from '../../contexts';
+import { BACKEND_URL } from '../../constants';
 import './Landing.scss';
 
 export default function Landing() {
-  const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
   const { user, loading } = useContext(UserContext);
   if (loading) return <Spin />;
   if (user) return <Redirect to="/home" />;

@@ -1,22 +1,26 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import {
-  Form, Button, DatePicker, Select, InputNumber, Slider, Spin,
+  Form,
+  Button,
+  DatePicker,
+  Select,
+  InputNumber,
+  Slider,
+  Spin,
 } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import './AddActivityForm.scss';
 import { RocketOutlined } from '@ant-design/icons';
 import EmojiOption from '../EmojiOption';
+import { BACKEND_URL } from '../../constants';
 
 const { Item } = Form;
-const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
 
 export default function AddActivityForm({ closeModal }) {
   const [loading, setLoading] = useState(true);
   const [activityTypes, setActivityTypes] = useState([]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,14 +63,16 @@ export default function AddActivityForm({ closeModal }) {
     },
   };
 
-  return loading ? <Spin /> : (
+  return loading ? (
+    <Spin />
+  ) : (
     <Form
       {...layout}
       name="add-activity"
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      {/* ============= DATEPICKER ============= */ }
+      {/* ============= DATEPICKER ============= */}
       <Item
         hasFeedback
         label="Activity Date"
@@ -81,7 +87,7 @@ export default function AddActivityForm({ closeModal }) {
         <DatePicker className="fullWidth" placeholder="2020-01-01" />
       </Item>
 
-      {/* ============= ACTIVITY SELECT ============= */ }
+      {/* ============= ACTIVITY SELECT ============= */}
       <Item
         hasFeedback
         label="Activity Type"
@@ -98,7 +104,7 @@ export default function AddActivityForm({ closeModal }) {
         </Select>
       </Item>
 
-      {/* ============= DURATION ============= */ }
+      {/* ============= DURATION ============= */}
       <Item label="Duration">
         <Item
           name="duration"
@@ -110,7 +116,7 @@ export default function AddActivityForm({ closeModal }) {
         <span className="ant-form-text"> minutes</span>
       </Item>
 
-      {/* ============= DIFFICULTY ============= */ }
+      {/* ============= DIFFICULTY ============= */}
       <Item name="difficulty" label="Difficulty">
         <Slider
           marks={{
@@ -122,7 +128,7 @@ export default function AddActivityForm({ closeModal }) {
         />
       </Item>
 
-      {/* ============= SUBMIT ============= */ }
+      {/* ============= SUBMIT ============= */}
       <Item {...tailLayout}>
         <Button htmlType="submit" icon={<RocketOutlined />} type="primary">
           Submit
