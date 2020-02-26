@@ -49,13 +49,16 @@ func main() {
 		private.GET("/users/current", env.CurrentUserHandler)
 	}
 
-	r.GET("/activity_types", env.ActivityTypesHandler)
+	metadata := r.Group("/metadata")
+	{
+		metadata.GET("/activity_types", env.ActivityTypesHandler)
+	}
 
-	// Should we seed the DB?
-	r.GET("/seed", func(c *gin.Context) {
-		utils.Seed(&db)
-		c.Status(200)
-	})
+	admin := r.Group("/admin")
+	admin.Use(middleware.NonProd)
+	{
+		admin.GET("/seed", env.SeedHandler)
+	}
 
 	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")

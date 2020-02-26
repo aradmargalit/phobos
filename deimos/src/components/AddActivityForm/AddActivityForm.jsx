@@ -21,7 +21,7 @@ export default function AddActivityForm({ closeModal }) {
   useEffect(() => {
     const fetchData = async () => {
       // Make sure to include the cookie with the request!
-      const res = await fetch(`${BACKEND_URL}/activity_types`, {
+      const res = await fetch(`${BACKEND_URL}/metadata/activity_types`, {
         credentials: 'include',
       });
 
