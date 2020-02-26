@@ -1,7 +1,10 @@
-package utils
+package controllers
 
 import (
+	"net/http"
 	"server/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 // ActivityTypes is a list of possible activities
@@ -40,17 +43,28 @@ var ActivityTypes []string = []string{
 	"Yoga",
 }
 
-func seedActivityTypes(db *models.DB) {
+func seedActivityTypes(db *models.DB) (err error) {
 	// First, delete everything that existed already
-	db.DeleteAllActivityTypes()
+	err = db.DeleteAllActivityTypes()
+	if err != nil {
+		return
+	}
 
 	// Then, seed the database
 	for _, name := range ActivityTypes {
-		db.InsertActivityType(models.ActivityType{Name: name})
+		err = db.InsertActivityType(models.ActivityType{Name: name})
+		if err != nil {
+			return
+		}
 	}
+	return
 }
 
-// Seed will seed the database with all application data
-func Seed(db *models.DB) {
-	seedActivityTypes(db)
+// SeedHander will seed the database with all application data
+func (e *Env) SeedHandler(c *gin.Context) {
+	err := seedActivityTypes(e.DB)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+	c.String(http.StatusOK, "Successfully seeded database.")
 }

@@ -15,6 +15,5 @@ func (e *Env) ActivityTypesHandler(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("could not fetch activity types"))
 	}
 
-	fmt.Println(at)
 	c.JSON(http.StatusOK, gin.H{"activity_types": at})
 }
