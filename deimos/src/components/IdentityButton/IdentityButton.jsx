@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Button, Spin } from 'antd';
 import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
+import { BACKEND_URL } from '../../constants';
 import UserContext from '../../contexts/UserContext';
 import './IdentityButton.scss';
-
-const BACKEND_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
 export default function IdentityButton() {
   const {
     user, setUser, loading, setLoading,
   } = useContext(UserContext);
+
   const [errors, setErrors] = useState(false);
 
   useEffect(() => {
