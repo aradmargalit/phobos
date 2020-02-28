@@ -5,3 +5,8 @@
 .fullWidth {
   width: 100%;
 }
+
+.inline-item {
+  display: inline-block;
+  width: calc(50% - 12px);
+}

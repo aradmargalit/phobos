@@ -13,10 +13,12 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import './AddActivityForm.scss';
 import { RocketOutlined } from '@ant-design/icons';
+import moment from 'moment';
 import EmojiOption from '../EmojiOption';
 import { BACKEND_URL } from '../../constants';
 
 const { Item } = Form;
+const { Option } = Select;
 
 export default function AddActivityForm({ closeModal }) {
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function AddActivityForm({ closeModal }) {
           },
         ]}
       >
-        <DatePicker className="fullWidth" placeholder="2020-01-01" />
+        <DatePicker defaultValue={moment(new Date())} className="fullWidth" placeholder="2020-01-01" />
       </Item>
 
       {/* ============= ACTIVITY SELECT ============= */}
@@ -115,6 +117,23 @@ export default function AddActivityForm({ closeModal }) {
         </Item>
         <span className="ant-form-text"> minutes</span>
       </Item>
+
+      {/* ============= DISTANCE ============= */}
+      <Item label="Distance" style={{ marginBottom: 0 }}>
+        <Item
+          name="distance"
+          className="inline-item"
+        >
+          <InputNumber min={0} placeholder={5} />
+        </Item>
+        <Item name="distance-units" className="inline-item">
+          <Select defaultValue="miles">
+            <Option value="miles">miles</Option>
+            <Option value="yards">yards</Option>
+          </Select>
+        </Item>
+      </Item>
+
 
       {/* ============= DIFFICULTY ============= */}
       <Item name="difficulty" label="Difficulty">
