@@ -3,6 +3,7 @@ import {
   Button,
   DatePicker,
   Select,
+  Input,
   InputNumber,
   Spin,
   notification,
@@ -79,6 +80,14 @@ export default function AddActivityForm() {
           onValuesChange={onChange}
           initialValues={{ activity_date: moment(new Date()), unit: 'miles' }}
         >
+          {/* ============= NAME ============= */}
+          <Item
+            hasFeedback
+            label="Name"
+            name="name"
+          >
+            <Input className="fullWidth" placeholder="Activity Name" />
+          </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
             hasFeedback
@@ -114,15 +123,13 @@ export default function AddActivityForm() {
           </Item>
 
           {/* ============= DURATION ============= */}
-          <Item label="Duration">
-            <Item
-              name="duration"
-              rules={[{ required: true, message: 'Duration is required' }]}
-              noStyle
-            >
-              <InputNumber min={0.1} />
-            </Item>
-            <span className="ant-form-text"> minutes</span>
+          <Item
+            hasFeedback
+            label="Duration (min)"
+            name="duration"
+            rules={[{ required: true, message: 'Duration is required' }]}
+          >
+            <InputNumber className="fullWidth" min={0.1} />
           </Item>
 
           {/* ============= DISTANCE ============= */}
