@@ -27,12 +27,6 @@ var conf *oauth2.Config
 var randomState string
 
 func init() {
-	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"} {
-		if os.Getenv(v) == "" {
-			panic(fmt.Sprintf("%v must be set in the environment!", v))
-		}
-	}
-
 	conf = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),

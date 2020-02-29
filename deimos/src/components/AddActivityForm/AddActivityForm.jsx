@@ -69,13 +69,13 @@ export default function AddActivityForm({ closeModal }) {
         {...layout}
         name="add-activity"
         onFinish={onFinish}
-        initialValues={{ 'activity-date': moment(new Date()) }}
+        initialValues={{ activity_date: moment(new Date()) }}
       >
         {/* ============= DATEPICKER ============= */}
         <Item
           hasFeedback
           label="Activity Date"
-          name="activity-date"
+          name="activity_date"
           rules={[
             {
               required: true,
@@ -90,7 +90,7 @@ export default function AddActivityForm({ closeModal }) {
         <Item
           hasFeedback
           label="Activity Type"
-          name="activity-type"
+          name="activity_type"
           rules={[
             {
               required: true,
