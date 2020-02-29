@@ -15,3 +15,22 @@
   margin-left: 3px;
   width: 100px;
 }
+
+.ant-form {
+  width: 80%;
+  text-align: left;
+}
+
+.ant-statistic {
+  width: 20%;
+}
+
+.form-flex {
+  display: flex;
+}
+
+.button-row {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-start;
+}

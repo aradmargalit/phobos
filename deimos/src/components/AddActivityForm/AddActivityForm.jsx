@@ -22,7 +22,7 @@ const { Option } = Select;
 export default function AddActivityForm() {
   const [loading, setLoading] = useState(true);
   const [activityTypes, setActivityTypes] = useState([]);
-  const [activity, setActivity] = useState({});
+  const [activity, setActivity] = useState({ unit: 'miles' });
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -48,6 +48,11 @@ export default function AddActivityForm() {
 
   const onReset = () => {
     form.resetFields();
+    setActivity(form.getFieldsValue());
+  };
+
+  const onSubmit = () => {
+    form.submit();
   };
 
   const onChange = (_, all) => {
@@ -63,90 +68,86 @@ export default function AddActivityForm() {
     },
   };
 
-  const tailLayout = {
-    wrapperCol: { offset: 8, span: 16 },
-  };
-
   return (
     <Spin spinning={loading}>
-      <Form
-        {...layout}
-        form={form}
-        name="add-activity"
-        onFinish={onFinish}
-        onValuesChange={onChange}
-        initialValues={{ activity_date: moment(new Date()), unit: 'miles' }}
-      >
-        {/* ============= DATEPICKER ============= */}
-        <Item
-          hasFeedback
-          label="Activity Date"
-          name="activity_date"
-          rules={[
-            {
-              required: true,
-              message: 'Activity Date is required',
-            },
-          ]}
+      <div className="form-flex">
+        <Form
+          {...layout}
+          form={form}
+          name="add-activity"
+          onFinish={onFinish}
+          onValuesChange={onChange}
+          initialValues={{ activity_date: moment(new Date()), unit: 'miles' }}
         >
-          <DatePicker className="fullWidth" placeholder="2020-01-01" />
-        </Item>
-
-        {/* ============= ACTIVITY SELECT ============= */}
-        <Item
-          hasFeedback
-          label="Activity Type"
-          name="activity_type"
-          rules={[
-            {
-              required: true,
-              message: 'Activity Type is required',
-            },
-          ]}
-        >
-          <Select allowClear showSearch optionFilterProp="children">
-            {activityTypes.map(
-              ({ name }) => EmojiOption({ value: name.toLowerCase(), title: name }),
-            )}
-          </Select>
-        </Item>
-
-        {/* ============= DURATION ============= */}
-        <Item label="Duration">
+          {/* ============= DATEPICKER ============= */}
           <Item
-            name="duration"
-            rules={[{ required: true, message: 'Duration is required' }]}
-            noStyle
+            hasFeedback
+            label="Activity Date"
+            name="activity_date"
+            rules={[
+              {
+                required: true,
+                message: 'Activity Date is required',
+              },
+            ]}
           >
-            <InputNumber min={0.1} />
+            <DatePicker className="fullWidth" placeholder="2020-01-01" />
           </Item>
-          <span className="ant-form-text"> minutes</span>
-        </Item>
 
-        {/* ============= DISTANCE ============= */}
-        <Item label="Distance" style={{ marginBottom: 0 }}>
-          <Item name="distance" className="inline-item">
-            <InputNumber min={0.1} placeholder={5} />
-          </Item>
-          <Item name="unit" className="inline-item">
-            <Select defaultValue="miles">
-              <Option value="miles">miles</Option>
-              <Option value="yards">yards</Option>
+          {/* ============= ACTIVITY SELECT ============= */}
+          <Item
+            hasFeedback
+            label="Activity Type"
+            name="activity_type"
+            rules={[
+              {
+                required: true,
+                message: 'Activity Type is required',
+              },
+            ]}
+          >
+            <Select allowClear showSearch optionFilterProp="children">
+              {activityTypes.map(
+                ({ name }) => EmojiOption({ value: name.toLowerCase(), title: name }),
+              )}
             </Select>
           </Item>
-        </Item>
 
-        {/* ============= SUBMIT ============= */}
-        <Item {...tailLayout}>
-          <Button htmlType="submit" icon={<RocketOutlined />} type="primary">
-            Submit
-          </Button>
-          <Button ghost onClick={onReset} type="primary">
-            Reset
-          </Button>
-        </Item>
-      </Form>
-      <CalculatedActivityFields activity={activity} />
+          {/* ============= DURATION ============= */}
+          <Item label="Duration">
+            <Item
+              name="duration"
+              rules={[{ required: true, message: 'Duration is required' }]}
+              noStyle
+            >
+              <InputNumber min={0.1} />
+            </Item>
+            <span className="ant-form-text"> minutes</span>
+          </Item>
+
+          {/* ============= DISTANCE ============= */}
+          <Item label="Distance" style={{ marginBottom: 0 }}>
+            <Item name="distance" className="inline-item">
+              <InputNumber min={0.1} placeholder={5} />
+            </Item>
+            <Item name="unit" className="inline-item">
+              <Select>
+                <Option value="miles">miles</Option>
+                <Option value="yards">yards</Option>
+              </Select>
+            </Item>
+          </Item>
+        </Form>
+        <CalculatedActivityFields activity={activity} />
+      </div>
+      <div className="button-row">
+        <Button onClick={onSubmit} icon={<RocketOutlined rotate={45} />} type="primary">
+          Submit
+        </Button>
+        <Button ghost onClick={onReset} type="primary">
+          Reset
+        </Button>
+      </div>
     </Spin>
   );
 }
