@@ -73,6 +73,7 @@ export default function AddActivityForm({ closeModal }) {
       name="add-activity"
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
+      initialValues={{ 'activity-date': moment(new Date()) }}
     >
       {/* ============= DATEPICKER ============= */}
       <Item
@@ -86,7 +87,7 @@ export default function AddActivityForm({ closeModal }) {
           },
         ]}
       >
-        <DatePicker defaultValue={moment(new Date())} className="fullWidth" placeholder="2020-01-01" />
+        <DatePicker className="fullWidth" placeholder="2020-01-01" />
       </Item>
 
       {/* ============= ACTIVITY SELECT ============= */}
@@ -120,10 +121,7 @@ export default function AddActivityForm({ closeModal }) {
 
       {/* ============= DISTANCE ============= */}
       <Item label="Distance" style={{ marginBottom: 0 }}>
-        <Item
-          name="distance"
-          className="inline-item"
-        >
+        <Item name="distance" className="inline-item">
           <InputNumber min={0} placeholder={5} />
         </Item>
         <Item name="distance-units" className="inline-item">
@@ -133,7 +131,6 @@ export default function AddActivityForm({ closeModal }) {
           </Select>
         </Item>
       </Item>
-
 
       {/* ============= DIFFICULTY ============= */}
       <Item name="difficulty" label="Difficulty">
