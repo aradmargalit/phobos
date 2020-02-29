@@ -4,15 +4,23 @@ import (
 	controllers "server/controllers"
 	middleware "server/middleware"
 	models "server/models"
-	utils "server/utils"
 
 	"fmt"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
+
+func init() {
+	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN"} {
+		if os.Getenv(v) == "" {
+			panic(fmt.Sprintf("%v must be set in the environment!", v))
+		}
+	}
+}
 
 func main() {
 	r := gin.Default()
@@ -24,7 +32,7 @@ func main() {
 
 	// Session Management
 	// Because this token is random sessions are invalidated when the server restarts
-	store := cookie.NewStore([]byte(utils.RandomToken()))
+	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))
 	r.Use(sessions.Sessions("phobos-auth", store))
 
 	// CORS to allow localhost in development
@@ -47,6 +55,7 @@ func main() {
 	private.Use(middleware.AuthRequired)
 	{
 		private.GET("/users/current", env.CurrentUserHandler)
+		private.POST("/activities", env.AddActivityHandler)
 	}
 
 	metadata := r.Group("/metadata")

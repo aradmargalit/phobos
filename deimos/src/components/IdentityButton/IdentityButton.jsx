@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Button, Spin } from 'antd';
+import { Button, Spin, notification } from 'antd';
 import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
 import { BACKEND_URL } from '../../constants';
 import UserContext from '../../contexts/UserContext';
@@ -25,7 +25,12 @@ export default function IdentityButton() {
           setLoading(false);
         });
       } catch (err) {
-        setErrors(':(');
+        notification.error({
+          message: 'Unexpected Error',
+          description: `Error: ${err}`,
+        });
+        setErrors('API Dead?');
+        setLoading(false);
       }
     };
 
