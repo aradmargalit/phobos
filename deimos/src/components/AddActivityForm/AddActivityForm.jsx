@@ -1,29 +1,29 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import {
   Form,
   Button,
   DatePicker,
   Select,
   InputNumber,
-  Slider,
   Spin,
   notification,
   message,
 } from 'antd';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import './AddActivityForm.scss';
 import { RocketOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import EmojiOption from '../EmojiOption';
+import CalculatedActivityFields from '../CalculatedActivityFields';
 import { fetchActivityTypes, postActivity } from '../../apis/phobos-api';
 
 const { Item } = Form;
 const { Option } = Select;
 
-export default function AddActivityForm({ closeModal }) {
+export default function AddActivityForm() {
   const [loading, setLoading] = useState(true);
   const [activityTypes, setActivityTypes] = useState([]);
+  const [activity, setActivity] = useState({});
+  const [form] = Form.useForm();
 
   useEffect(() => {
     fetchActivityTypes(setActivityTypes, setLoading);
@@ -34,7 +34,6 @@ export default function AddActivityForm({ closeModal }) {
     postActivity(values)
       .then((data) => {
         message.success(`Successfully created activity: ${data}`);
-        closeModal();
       })
       .catch((err) => {
         notification.error({
@@ -47,6 +46,14 @@ export default function AddActivityForm({ closeModal }) {
       });
   };
 
+  const onReset = () => {
+    form.resetFields();
+  };
+
+  const onChange = (_, all) => {
+    setActivity(all);
+  };
+
   const layout = {
     labelCol: {
       span: 6,
@@ -57,19 +64,18 @@ export default function AddActivityForm({ closeModal }) {
   };
 
   const tailLayout = {
-    wrapperCol: {
-      offset: 18,
-      span: 6,
-    },
+    wrapperCol: { offset: 8, span: 16 },
   };
 
   return (
     <Spin spinning={loading}>
       <Form
         {...layout}
+        form={form}
         name="add-activity"
         onFinish={onFinish}
-        initialValues={{ activity_date: moment(new Date()) }}
+        onValuesChange={onChange}
+        initialValues={{ activity_date: moment(new Date()), unit: 'miles' }}
       >
         {/* ============= DATEPICKER ============= */}
         <Item
@@ -112,7 +118,7 @@ export default function AddActivityForm({ closeModal }) {
             rules={[{ required: true, message: 'Duration is required' }]}
             noStyle
           >
-            <InputNumber min={1} />
+            <InputNumber min={0.1} />
           </Item>
           <span className="ant-form-text"> minutes</span>
         </Item>
@@ -120,9 +126,9 @@ export default function AddActivityForm({ closeModal }) {
         {/* ============= DISTANCE ============= */}
         <Item label="Distance" style={{ marginBottom: 0 }}>
           <Item name="distance" className="inline-item">
-            <InputNumber min={0} placeholder={5} />
+            <InputNumber min={0.1} placeholder={5} />
           </Item>
-          <Item name="distance-units" className="inline-item">
+          <Item name="unit" className="inline-item">
             <Select defaultValue="miles">
               <Option value="miles">miles</Option>
               <Option value="yards">yards</Option>
@@ -130,29 +136,17 @@ export default function AddActivityForm({ closeModal }) {
           </Item>
         </Item>
 
-        {/* ============= DIFFICULTY ============= */}
-        <Item name="difficulty" label="Difficulty">
-          <Slider
-            marks={{
-              0: 'Easy',
-              50: 'Moderate',
-              100: 'Exhausting',
-            }}
-            step={10}
-          />
-        </Item>
-
         {/* ============= SUBMIT ============= */}
         <Item {...tailLayout}>
           <Button htmlType="submit" icon={<RocketOutlined />} type="primary">
             Submit
           </Button>
+          <Button ghost onClick={onReset} type="primary">
+            Reset
+          </Button>
         </Item>
       </Form>
+      <CalculatedActivityFields activity={activity} />
     </Spin>
   );
 }
-
-AddActivityForm.propTypes = {
-  closeModal: PropTypes.func.isRequired,
-};

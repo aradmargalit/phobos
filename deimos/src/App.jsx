@@ -23,14 +23,16 @@ export default function App() {
         <BrowserRouter>
           <div>
             <Header />
-            <Switch>
-              <Route exact path="/home">
-                <Home />
-              </Route>
-              <Route exact path="/">
-                <Landing />
-              </Route>
-            </Switch>
+            <div className="app-content">
+              <Switch>
+                <Route exact path="/home">
+                  <Home />
+                </Route>
+                <Route exact path="/">
+                  <Landing />
+                </Route>
+              </Switch>
+            </div>
           </div>
         </BrowserRouter>
       </div>
