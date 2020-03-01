@@ -11,11 +11,6 @@
   width: calc(50% - 18px);
 }
 
-.ant-btn {
-  margin-left: 3px;
-  width: 100px;
-}
-
 .ant-form {
   width: 80%;
   text-align: left;
@@ -33,4 +28,9 @@
   margin-top: 15px;
   display: flex;
   justify-content: flex-start;
+
+  &-item {
+    margin-left: 3px;
+    width: 100px;
+  }
 }

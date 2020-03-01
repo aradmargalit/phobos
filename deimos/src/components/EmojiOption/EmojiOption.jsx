@@ -12,7 +12,7 @@ const nameEmojiMap = {
 
 // This _should_ be a HOC, but Antd doesn't allow it, so here we are
 export default function EmojiOption({ value, title }) {
-  const emoji = nameEmojiMap[value];
+  const emoji = nameEmojiMap[title.toLowerCase()];
 
   return (
     <Option key={value} value={value}>
