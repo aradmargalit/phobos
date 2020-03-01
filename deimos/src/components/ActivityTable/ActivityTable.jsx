@@ -3,9 +3,8 @@ import './ActivityTable.scss';
 import { Empty, Spin, Table } from 'antd';
 import { snakeCase as _snakeCase } from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { fetchActivities, fetchActivityTypes } from '../../apis/phobos-api';
 
 const toCol = (name, render) => {
   const snakeName = _snakeCase(name);
@@ -23,18 +22,8 @@ const formatDate = (date) => {
   return moment(localDate).format(dateFormat);
 };
 
-export default function ActivityTable() {
-  const [activities, setActivities] = useState(null);
-  const [activityTypes, setActivityTypes] = useState(null);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchActivities(setActivities, setLoading);
-    fetchActivityTypes(setActivityTypes, setLoading);
-  }, [setLoading]);
-
-  if (loading || !activityTypes) return <Spin />;
+export default function ActivityTable({ loading, activityTypes, activities }) {
+  if (loading || !activityTypes.length) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
 
   const columns = [

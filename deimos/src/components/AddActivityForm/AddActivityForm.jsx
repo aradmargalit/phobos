@@ -13,9 +13,9 @@ import {
   Spin,
 } from 'antd';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { fetchActivityTypes, postActivity } from '../../apis/phobos-api';
+import { postActivity } from '../../apis/phobos-api';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import EmojiOption from '../EmojiOption';
 
@@ -23,28 +23,22 @@ import EmojiOption from '../EmojiOption';
 const { Item } = Form;
 const { Option } = Select;
 
-export default function AddActivityForm() {
-  const [loading, setLoading] = useState(true);
-  const [activityTypes, setActivityTypes] = useState([]);
+export default function AddActivityForm({
+  activityTypes, loading, refetch,
+}) {
   const [activity, setActivity] = useState({ unit: 'miles' });
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    fetchActivityTypes(setActivityTypes, setLoading);
-  }, [setLoading]);
-
   const onFinish = async (values) => {
-    setLoading(true);
     try {
       await postActivity(values);
       message.success('Successfully created activity!');
+      refetch();
     } catch (err) {
       notification.error({
         message: 'Unexpected Error',
         description: `Error: ${err}`,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
