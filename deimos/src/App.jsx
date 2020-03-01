@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import Header from './components/Header';
 import './App.scss';
+
+import React, { useState } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import Header from './components/Header';
 import Home from './components/Home';
 import Landing from './components/Landing';
 import UserContext from './contexts';
@@ -23,16 +25,14 @@ export default function App() {
         <BrowserRouter>
           <div>
             <Header />
-            <div className="app-content">
-              <Switch>
-                <Route exact path="/home">
-                  <Home />
-                </Route>
-                <Route exact path="/">
-                  <Landing />
-                </Route>
-              </Switch>
-            </div>
+            <Switch>
+              <Route exact path="/home">
+                <Home />
+              </Route>
+              <Route exact path="/">
+                <Landing />
+              </Route>
+            </Switch>
           </div>
         </BrowserRouter>
       </div>
