@@ -60,7 +60,7 @@ func seedActivityTypes(db *models.DB) (err error) {
 	return
 }
 
-// SeedHander will seed the database with all application data
+// SeedHandler will seed the database with all application data
 func (e *Env) SeedHandler(c *gin.Context) {
 	err := seedActivityTypes(e.DB)
 	if err != nil {

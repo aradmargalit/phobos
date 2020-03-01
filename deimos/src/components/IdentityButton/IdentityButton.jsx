@@ -56,7 +56,7 @@ export default function IdentityButton() {
       </Button>
     </div>
   ) : (
-    <Button icon={<GoogleOutlined />} href={`${BACKEND_URL}/auth/google`}>
+    <Button className="login-button" icon={<GoogleOutlined />} href={`${BACKEND_URL}/auth/google`}>
       Login with Google
     </Button>
   );

@@ -107,7 +107,7 @@ export default function AddActivityForm() {
           <Item
             hasFeedback
             label="Activity Type"
-            name="activity_type"
+            name="activity_type_id"
             rules={[
               {
                 required: true,
@@ -117,7 +117,7 @@ export default function AddActivityForm() {
           >
             <Select allowClear showSearch optionFilterProp="children">
               {activityTypes.map(
-                ({ name }) => EmojiOption({ value: name.toLowerCase(), title: name }),
+                ({ id, name }) => EmojiOption({ value: id, title: name }),
               )}
             </Select>
           </Item>
@@ -148,10 +148,10 @@ export default function AddActivityForm() {
         <CalculatedActivityFields activity={activity} />
       </div>
       <div className="button-row">
-        <Button onClick={onSubmit} icon={<RocketOutlined rotate={45} />} type="primary">
+        <Button className="button-row-item" onClick={onSubmit} icon={<RocketOutlined rotate={45} />} type="primary">
           Submit
         </Button>
-        <Button ghost onClick={onReset} type="primary">
+        <Button className="button-row-item" ghost onClick={onReset} type="primary">
           Reset
         </Button>
       </div>
