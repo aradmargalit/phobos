@@ -19,6 +19,7 @@ import { fetchActivityTypes, postActivity } from '../../apis/phobos-api';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import EmojiOption from '../EmojiOption';
 
+
 const { Item } = Form;
 const { Option } = Select;
 
@@ -129,13 +130,17 @@ export default function AddActivityForm() {
             name="duration"
             rules={[{ required: true, message: 'Duration is required' }]}
           >
-            <InputNumber className="fullWidth" min={0.1} />
+            <InputNumber
+              className="fullWidth"
+              min={0.5}
+              step={0.5}
+            />
           </Item>
 
           {/* ============= DISTANCE ============= */}
           <Item label="Distance" style={{ marginBottom: 0 }}>
             <Item name="distance" className="inline-item">
-              <InputNumber min={0.1} placeholder={5} />
+              <InputNumber min={0.1} step={0.1} placeholder={5} />
             </Item>
             <Item name="unit" className="inline-item">
               <Select>
