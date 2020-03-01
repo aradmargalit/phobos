@@ -25,6 +25,7 @@ CREATE TABLE `activities` (
   `name` text,
   `activity_date` DATETIME,
   `activity_type_id` int(11),
+  `owner_id` int(11),
   `duration` DOUBLE,
   `distance` DOUBLE,
   `unit` text,
