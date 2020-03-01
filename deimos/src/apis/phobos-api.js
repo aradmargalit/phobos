@@ -12,7 +12,6 @@ const postOptions = {
 
 const protectedGet = async (setValue, setLoading, endpoint, dataKey) => {
   // Make sure to include the cookie with the request!
-  setLoading(true);
   const res = await fetch(`${BACKEND_URL}${endpoint}`, {
     credentials: 'include',
   });

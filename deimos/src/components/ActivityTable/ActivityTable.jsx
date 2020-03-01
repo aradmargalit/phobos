@@ -32,7 +32,9 @@ export default function ActivityTable({ loading, activityTypes, activities }) {
       dataIndex: 'id',
     },
     toCol('Name'),
-    toCol('Activity Date', formatDate),
+    // We want to format this one as the time it was entered, since it's time is 00:00:00
+    // and we don't want to cross date boundaries by converting timezones
+    toCol('Activity Date', (date) => moment(date).format(dateFormat)),
     {
       title: 'Activity Type',
       dataIndex: 'activity_type_id',

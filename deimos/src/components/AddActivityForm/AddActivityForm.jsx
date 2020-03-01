@@ -20,11 +20,13 @@ import CalculatedActivityFields from '../CalculatedActivityFields';
 import EmojiOption from '../EmojiOption';
 
 
+const dateFormat = 'MMMM Do, YYYY';
+
 const { Item } = Form;
 const { Option } = Select;
 
 export default function AddActivityForm({
-  activityTypes, loading, refetch,
+  activityTypes, loading, refetch, userName,
 }) {
   const [activity, setActivity] = useState({ unit: 'miles' });
   const [form] = Form.useForm();
@@ -81,7 +83,7 @@ export default function AddActivityForm({
             label="Activity Name"
             name="name"
           >
-            <Input className="fullWidth" placeholder="(Optional) Activity Name" />
+            <Input className="fullWidth" placeholder={`${userName}'s Favorite Run`} />
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
@@ -95,7 +97,7 @@ export default function AddActivityForm({
               },
             ]}
           >
-            <DatePicker className="fullWidth" placeholder="2020-01-01" />
+            <DatePicker format={dateFormat} className="fullWidth" placeholder="2020-01-01" />
           </Item>
 
           {/* ============= ACTIVITY SELECT ============= */}
@@ -126,6 +128,7 @@ export default function AddActivityForm({
           >
             <InputNumber
               className="fullWidth"
+              precision={2}
               placeholder={30}
               min={0.5}
               step={0.5}
@@ -135,7 +138,12 @@ export default function AddActivityForm({
           {/* ============= DISTANCE ============= */}
           <Item label="Distance" style={{ marginBottom: 0 }}>
             <Item name="distance" className="inline-item">
-              <InputNumber min={0.1} step={0.1} placeholder={5} />
+              <InputNumber
+                precision={2}
+                min={0.1}
+                step={0.1}
+                placeholder={5}
+              />
             </Item>
             <Item name="unit" className="inline-item">
               <Select>
