@@ -25,7 +25,7 @@ export default function Home() {
   if (!user) return <Redirect to="/" />;
 
   return (
-    <div>
+    <div className="app-content">
       <div className="container input-form">
         <h3 className="home-header">Add Activity</h3>
         <AddActivityForm
