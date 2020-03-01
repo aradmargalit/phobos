@@ -32,21 +32,19 @@ export default function AddActivityForm() {
     fetchActivityTypes(setActivityTypes, setLoading);
   }, [setLoading]);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     setLoading(true);
-    postActivity(values)
-      .then(() => {
-        message.success('Successfully created activity!');
-      })
-      .catch((err) => {
-        notification.error({
-          message: 'Unexpected Error',
-          description: `Error: ${err}`,
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      await postActivity(values);
+      message.success('Successfully created activity!');
+    } catch (err) {
+      notification.error({
+        message: 'Unexpected Error',
+        description: `Error: ${err}`,
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onReset = () => {

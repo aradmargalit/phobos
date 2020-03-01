@@ -1,18 +1,22 @@
 package models
 
+import "fmt"
+
 // Activity represents a workout session
 type Activity struct {
-	ID             int    `json:"id" db:"id"`
-	Name           string `json:"name" db:"name"`
-	ActivityDate   string `json:"activity_date" db:"activity_date"`
-	ActivityTypeID int    `json:"activity_type_id" db:"activity_type_id"`
-	Duration       int    `json:"duration" db:"duration"`
-	CreatedAt      string `json:"created_at" db:"created_at"`
-	UpdatedAt      string `json:"updated_at" db:"updated_at"`
+	ID             int     `json:"id" db:"id"`
+	Name           string  `json:"name" db:"name"`
+	ActivityDate   string  `json:"activity_date" db:"activity_date"`
+	ActivityTypeID int     `json:"activity_type_id" db:"activity_type_id"`
+	Duration       float64 `json:"duration" db:"duration"`
+	Distance       float64 `json:"distance" db:"distance"`
+	Unit           string  `json:"unit" db:"unit"`
+	CreatedAt      string  `json:"created_at" db:"created_at"`
+	UpdatedAt      string  `json:"updated_at" db:"updated_at"`
 }
 
 const (
-	activityInsertSQL = `INSERT INTO activities (name, activity_date, activity_type_id, duration) VALUES (:name, :activity_date, :activity_type_id, :duration)`
+	activityInsertSQL = `INSERT INTO activities (name, activity_date, activity_type_id, duration, distance, unit) VALUES (:name, :activity_date, :activity_type_id, :duration, :distance, :unit)`
 )
 
 // InsertActivity adds a new activity to the database
@@ -35,5 +39,11 @@ func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
 // GetActivityByID returns a single activity by Id
 func (db *DB) GetActivityByID(id int) (activity Activity, err error) {
 	err = db.conn.Get(&activity, `SELECT * FROM activities WHERE id=?`, id)
+	return
+}
+
+// GetActivitiesByUser returns all activies from auser
+func (db *DB) GetActivitiesByUser() (activities []Activity, err error) {
+	err = db.conn.Select(&activities, `SELECT * FROM activities`)
 	return
 }

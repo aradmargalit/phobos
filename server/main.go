@@ -56,6 +56,7 @@ func main() {
 	{
 		private.GET("/users/current", env.CurrentUserHandler)
 		private.POST("/activities", env.AddActivityHandler)
+		private.GET("/activities", env.GetActivitiesHandler)
 	}
 
 	metadata := r.Group("/metadata")

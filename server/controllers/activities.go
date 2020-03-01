@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	models "server/models"
 	"time"
@@ -27,4 +28,14 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, record)
+}
+
+// GetActivitiesHandler returns all the user's activities
+func (e *Env) GetActivitiesHandler(c *gin.Context) {
+	a, err := e.DB.GetActivitiesByUser()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("could not fetch activities"))
+	}
+
+	c.JSON(http.StatusOK, gin.H{"activities": a})
 }

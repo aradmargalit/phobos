@@ -10,7 +10,6 @@ type ActivityType struct {
 
 // GetActivityTypes gets all activity types from the database
 func (db *DB) GetActivityTypes() (at []ActivityType, err error) {
-	at = []ActivityType{}
 	err = db.conn.Select(&at, "SELECT * FROM `activity_types`;")
 	if err != nil {
 		return nil, err

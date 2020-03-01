@@ -21,7 +21,7 @@ export default function Home() {
         <AddActivityForm />
       </div>
       <br />
-      <div className="container">
+      <div className="container data-table">
         <h2>Your Activities</h2>
         <ActivityTable />
       </div>
