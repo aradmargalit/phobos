@@ -16,13 +16,13 @@ export default function Home() {
 
   return (
     <div>
-      <div className="container">
-        <h2>Add Activity</h2>
+      <div className="container input-form">
+        <h3>Add Activity</h3>
         <AddActivityForm />
       </div>
       <br />
       <div className="container data-table">
-        <h2>Your Activities</h2>
+        <h3>Your Activities</h3>
         <ActivityTable />
       </div>
     </div>

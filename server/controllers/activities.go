@@ -21,6 +21,14 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	activity.ActivityDate = d.Format("2006-01-02")
 
+	// Add the owner ID to the activituy
+	uid, ok := c.Get("user")
+	if !ok {
+		panic("Could not get user from cookie")
+	}
+
+	activity.OwnerID = uid.(int)
+
 	record, err := e.DB.InsertActivity(activity)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
