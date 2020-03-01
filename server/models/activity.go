@@ -18,7 +18,16 @@ const (
 // InsertActivity adds a new activity to the database
 func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
 	res, err := db.conn.NamedExec(activityInsertSQL, a)
+	if err != nil {
+		return
+	}
+
 	inserted, err := res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	// Return the recently inserted record back to the user
 	activity, err = db.GetActivityByID(int(inserted))
 	return
 }

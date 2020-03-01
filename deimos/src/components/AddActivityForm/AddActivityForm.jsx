@@ -1,21 +1,23 @@
+import './AddActivityForm.scss';
+
+import { RocketOutlined } from '@ant-design/icons';
 import {
-  Form,
   Button,
   DatePicker,
-  Select,
+  Form,
   Input,
   InputNumber,
-  Spin,
-  notification,
   message,
+  notification,
+  Select,
+  Spin,
 } from 'antd';
-import React, { useState, useEffect } from 'react';
-import './AddActivityForm.scss';
-import { RocketOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import EmojiOption from '../EmojiOption';
-import CalculatedActivityFields from '../CalculatedActivityFields';
+import React, { useEffect, useState } from 'react';
+
 import { fetchActivityTypes, postActivity } from '../../apis/phobos-api';
+import CalculatedActivityFields from '../CalculatedActivityFields';
+import EmojiOption from '../EmojiOption';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -33,8 +35,8 @@ export default function AddActivityForm() {
   const onFinish = (values) => {
     setLoading(true);
     postActivity(values)
-      .then((data) => {
-        message.success(`Successfully created activity: ${data}`);
+      .then(() => {
+        message.success('Successfully created activity!');
       })
       .catch((err) => {
         notification.error({

@@ -20,9 +20,11 @@ module.exports = {
   },
   plugins: [
     'react',
+    'simple-import-sort',
   ],
   rules: {
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
+    "simple-import-sort/sort": "error"
   }
 };
