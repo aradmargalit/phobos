@@ -1,9 +1,12 @@
-import React, { useContext } from 'react';
-import { Spin } from 'antd';
-import { Redirect } from 'react-router-dom';
-import UserContext from '../../contexts';
-import AddActivityForm from '../AddActivityForm';
 import './Home.scss';
+
+import { Spin } from 'antd';
+import React, { useContext } from 'react';
+import { Redirect } from 'react-router-dom';
+
+import UserContext from '../../contexts';
+import ActivityTable from '../ActivityTable';
+import AddActivityForm from '../AddActivityForm';
 
 export default function Home() {
   const { user, loading } = useContext(UserContext);
@@ -12,9 +15,16 @@ export default function Home() {
   if (!user) return <Redirect to="/" />;
 
   return (
-    <div className="form-container">
-      <h2>Add Activity</h2>
-      <AddActivityForm />
+    <div>
+      <div className="container">
+        <h2>Add Activity</h2>
+        <AddActivityForm />
+      </div>
+      <br />
+      <div className="container">
+        <h2>Your Activities</h2>
+        <ActivityTable />
+      </div>
     </div>
   );
 }

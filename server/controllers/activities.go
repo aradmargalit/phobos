@@ -16,6 +16,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 		return
 	}
 
+	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	activity.ActivityDate = d.Format("2006-01-02")
 
