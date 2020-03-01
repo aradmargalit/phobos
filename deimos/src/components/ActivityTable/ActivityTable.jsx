@@ -18,6 +18,11 @@ const toCol = (name, render) => {
 
 const dateFormat = 'MMMM Do, YYYY';
 
+const formatDate = (date) => {
+  const localDate = new Date(`${date} UTC`);
+  return moment(localDate).format(dateFormat);
+};
+
 export default function ActivityTable() {
   const [activities, setActivities] = useState(null);
   const [activityTypes, setActivityTypes] = useState(null);
@@ -34,19 +39,19 @@ export default function ActivityTable() {
 
   const columns = [
     {
-      title: 'Activity No.',
+      title: 'No.',
       dataIndex: 'id',
     },
     toCol('Name'),
-    toCol('Activity Date', (date) => moment(date).format(dateFormat)),
+    toCol('Activity Date', formatDate),
     {
       title: 'Activity Type',
       dataIndex: 'activity_type_id',
       render: (id) => activityTypes.find((at) => at.id === id).name,
     },
-    toCol('Duration', (duration) => <p>{`${duration} min`}</p>),
-    toCol('Distance', (distance, record) => <p>{`${distance} ${record.unit}`}</p>),
-    toCol('Created At', (date) => moment(date).format(dateFormat)),
+    toCol('Duration', (duration) => `${duration} min`),
+    toCol('Distance', (distance, record) => `${distance} ${record.unit}`),
+    toCol('Created At', formatDate),
   ];
-  return <Table rowKey="id" dataSource={activities} columns={columns} />;
+  return <Table pagination={false} rowKey="id" dataSource={activities} columns={columns} />;
 }

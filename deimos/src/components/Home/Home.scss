@@ -3,9 +3,14 @@
   background-color: #fcfcfc;
   border-radius: 2px;
   border: 1px solid lightgray;
-  padding: 20px;
+  padding: 10px;
 }
 
 .data-table {
   width: 1000px;
+}
+
+h3 {
+  color: var(--primary);
+  margin-bottom: 10px;
 }
