@@ -1,13 +1,12 @@
 package models
 
-import "fmt"
-
 // Activity represents a workout session
 type Activity struct {
 	ID             int     `json:"id" db:"id"`
 	Name           string  `json:"name" db:"name"`
 	ActivityDate   string  `json:"activity_date" db:"activity_date"`
 	ActivityTypeID int     `json:"activity_type_id" db:"activity_type_id"`
+	OwnerID        int     `json:"owner_id" db:"owner_id"`
 	Duration       float64 `json:"duration" db:"duration"`
 	Distance       float64 `json:"distance" db:"distance"`
 	Unit           string  `json:"unit" db:"unit"`
@@ -16,7 +15,7 @@ type Activity struct {
 }
 
 const (
-	activityInsertSQL = `INSERT INTO activities (name, activity_date, activity_type_id, duration, distance, unit) VALUES (:name, :activity_date, :activity_type_id, :duration, :distance, :unit)`
+	activityInsertSQL = `INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit) VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit)`
 )
 
 // InsertActivity adds a new activity to the database
@@ -43,7 +42,7 @@ func (db *DB) GetActivityByID(id int) (activity Activity, err error) {
 }
 
 // GetActivitiesByUser returns all activies from auser
-func (db *DB) GetActivitiesByUser() (activities []Activity, err error) {
-	err = db.conn.Select(&activities, `SELECT * FROM activities`)
+func (db *DB) GetActivitiesByUser(uid int) (activities []Activity, err error) {
+	err = db.conn.Select(&activities, `SELECT * FROM activities WHERE owner_id=?`, uid)
 	return
 }

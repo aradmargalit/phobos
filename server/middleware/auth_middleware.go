@@ -11,9 +11,9 @@ import (
 // AuthRequired is a simple middleware to check the session
 func AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get(controllers.UserID)
+	uid := session.Get(controllers.UserID)
 
-	if user == nil {
+	if uid == nil {
 		// Abort the request with the appropriate error code
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
@@ -21,7 +21,7 @@ func AuthRequired(c *gin.Context) {
 
 	// Store the user
 	// You can get this in any protected route with c.Get("user")
-	c.Set("user", user)
+	c.Set("user", uid)
 
 	// Continue down the chain to handler etc
 	c.Next()

@@ -32,9 +32,16 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 
 // GetActivitiesHandler returns all the user's activities
 func (e *Env) GetActivitiesHandler(c *gin.Context) {
-	a, err := e.DB.GetActivitiesByUser()
+	// Pull user out of context to figure out which activities to grab
+	uid, ok := c.Get("user")
+	fmt.Println(uid)
+	if !ok {
+		panic("No user id in cookie!")
+	}
+
+	a, err := e.DB.GetActivitiesByUser(uid.(int))
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("could not fetch activities"))
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"activities": a})

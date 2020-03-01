@@ -92,15 +92,22 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	// If we got an err, there's no user in the database
 	if err != nil {
 		fmt.Println("Could not get user from database: ", err)
-		err = e.DB.InsertUser(u)
+		_, err = e.DB.InsertUser(u)
 		if err != nil {
 			panic(err)
 		}
 	}
 
+	// In both the new and return case, pull the user from the DB to get their ID
+	dbUser, err := e.DB.GetUserByEmail(u.Email)
+	if err != nil {
+		panic(err)
+	}
+
 	// Now that we have some information about the user, let's store it to a session
 	session := sessions.Default(c)
-	session.Set(UserID, u.Email)
+	fmt.Printf("Here!: %T, %v", dbUser.ID, dbUser.ID)
+	session.Set(UserID, dbUser.ID)
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.

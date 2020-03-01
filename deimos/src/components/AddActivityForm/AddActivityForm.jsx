@@ -84,10 +84,10 @@ export default function AddActivityForm() {
           {/* ============= NAME ============= */}
           <Item
             hasFeedback
-            label="Name"
+            label="Activity Name"
             name="name"
           >
-            <Input className="fullWidth" placeholder="Activity Name" />
+            <Input className="fullWidth" placeholder="(Optional) Activity Name" />
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
@@ -132,6 +132,7 @@ export default function AddActivityForm() {
           >
             <InputNumber
               className="fullWidth"
+              placeholder={30}
               min={0.5}
               step={0.5}
             />
