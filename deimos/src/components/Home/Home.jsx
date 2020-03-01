@@ -1,9 +1,10 @@
 import './Home.scss';
 
 import { Spin } from 'antd';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { fetchActivities, fetchActivityTypes } from '../../apis/phobos-api';
 import UserContext from '../../contexts';
 import ActivityTable from '../ActivityTable';
 import AddActivityForm from '../AddActivityForm';
@@ -11,19 +12,36 @@ import AddActivityForm from '../AddActivityForm';
 export default function Home() {
   const { user, loading } = useContext(UserContext);
 
+  const [activities, setActivities] = useState(null);
+  const [activityTypes, setActivityTypes] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+
+  useEffect(() => {
+    fetchActivities(setActivities, setActivityLoading);
+    fetchActivityTypes(setActivityTypes, setActivityLoading);
+  }, [setActivityLoading]);
+
   if (loading) return <Spin />;
   if (!user) return <Redirect to="/" />;
 
   return (
     <div>
       <div className="container input-form">
-        <h3>Add Activity</h3>
-        <AddActivityForm />
+        <h3 className="home-header">Add Activity</h3>
+        <AddActivityForm
+          activityTypes={activityTypes}
+          loading={activityLoading}
+          refetch={() => fetchActivities(setActivities, setActivityLoading)}
+        />
       </div>
       <br />
       <div className="container data-table">
-        <h3>Your Activities</h3>
-        <ActivityTable />
+        <h3 className="home-header">Your Activities</h3>
+        <ActivityTable
+          activityTypes={activityTypes}
+          activities={activities}
+          loading={activityLoading}
+        />
       </div>
     </div>
   );

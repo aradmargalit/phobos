@@ -43,6 +43,6 @@ func (db *DB) GetActivityByID(id int) (activity Activity, err error) {
 
 // GetActivitiesByUser returns all activies from auser
 func (db *DB) GetActivitiesByUser(uid int) (activities []Activity, err error) {
-	err = db.conn.Select(&activities, `SELECT * FROM activities WHERE owner_id=?`, uid)
+	err = db.conn.Select(&activities, `SELECT * FROM activities WHERE owner_id=? ORDER BY id DESC`, uid)
 	return
 }
