@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { BACKEND_URL } from '../constants';
 
 const postOptions = {
@@ -9,20 +10,30 @@ const postOptions = {
   },
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
+const protectedGet = async (setValue, setLoading, endpoint, dataKey) => {
   // Make sure to include the cookie with the request!
-  const res = await fetch(`${BACKEND_URL}/metadata/activity_types`, {
+  setLoading(true);
+  const res = await fetch(`${BACKEND_URL}${endpoint}`, {
     credentials: 'include',
   });
 
-  res.json().then(({ activity_types: respTypes }) => {
-    setActivityTypes(respTypes);
-    setLoading(false);
-  });
+  const response = await res.json();
+  setValue(response[dataKey]);
+  setLoading(false);
+};
+
+export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
+  await protectedGet(setActivityTypes, setLoading, '/metadata/activity_types', 'activity_types');
+};
+
+export const fetchActivities = async (setActivities, setLoading) => {
+  await protectedGet(setActivities, setLoading, '/private/activities', 'activities');
 };
 
 export const postActivity = async (activity) => {
   const res = await fetch(`${BACKEND_URL}/private/activities`, { ...postOptions, body: JSON.stringify(activity) });
-  return res.json();
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
 };
