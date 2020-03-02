@@ -5,15 +5,16 @@ import {
   EditOutlined,
 } from '@ant-design/icons';
 import {
-  Button, Empty, Popconfirm,
+  Button, Empty, Modal,
+  Popconfirm,
   Spin, Table,
 } from 'antd';
 import { snakeCase as _snakeCase } from 'lodash';
 import moment from 'moment';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
-
+import AddActivityForm from '../AddActivityForm';
 
 const toCol = (name, render) => {
   const snakeName = _snakeCase(name);
@@ -35,26 +36,22 @@ const formatDate = (date) => {
 export default function ActivityTable({
   loading, activityTypes, activities, refetch,
 }) {
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+
   if (loading || !activityTypes.length) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
 
-  const renderEditButtons = ({ id }) => (
-    <Popconfirm
-      title="Are you sure?"
-      okText="Delete"
-      icon={<DeleteOutlined style={{ color: 'red' }} />}
-      onConfirm={async () => {
-        await deleteActivity(id);
-        refetch();
-      }}
+  const renderEditButtons = (activity) => (
+    <Button onClick={() => {
+      const toEdit = { ...activity };
+      toEdit.activity_date = moment(activity.activity_date);
+      setEditingActivity(toEdit);
+      setEditModalVisible(true);
+    }}
     >
-      <Button
-        ghost
-        type="danger"
-      >
-        Delete
-      </Button>
-    </Popconfirm>
+      Edit
+    </Button>
   );
 
   const columns = [
@@ -77,8 +74,54 @@ export default function ActivityTable({
     {
       title: <EditOutlined />,
       key: 'edit',
+      align: 'center',
       render: renderEditButtons,
     },
+    {
+      title: <DeleteOutlined />,
+      key: 'delete',
+      align: 'center',
+      render: ({ id }) => (
+        <Popconfirm
+          title="Are you sure?"
+          okText="Delete"
+          icon={<DeleteOutlined style={{ color: 'red' }} />}
+          onConfirm={async () => {
+            await deleteActivity(id);
+            refetch();
+          }}
+        >
+          <Button ghost type="danger">Delete</Button>
+        </Popconfirm>
+      ),
+    },
   ];
-  return <Table scroll={{ y: 240 }} pagination={false} rowKey="id" dataSource={activities} columns={columns} />;
+
+  return (
+    <div>
+      <Table
+        pagination={false}
+        rowKey="id"
+        dataSource={activities}
+        columns={columns}
+      />
+      <Modal
+        title="Edit Activity"
+        visible={editModalVisible}
+        onOk={() => setEditModalVisible(false)}
+        onCancel={() => setEditModalVisible(false)}
+        width={600}
+        footer={null}
+        destroyOnClose
+      >
+        <AddActivityForm
+          activityTypes={activityTypes}
+          loading={loading}
+          refetch={refetch}
+          initialActivity={editingActivity}
+          modalClose={() => setEditModalVisible(false)}
+        />
+      </Modal>
+    </div>
+  );
 }

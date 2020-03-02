@@ -32,7 +32,6 @@ export default function Home() {
           activityTypes={activityTypes}
           loading={activityLoading}
           refetch={() => fetchActivities(setActivities, setActivityLoading)}
-          userName={user.given_name}
         />
       </div>
       <br />

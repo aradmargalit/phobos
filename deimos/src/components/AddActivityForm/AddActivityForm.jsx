@@ -1,6 +1,6 @@
 import './AddActivityForm.scss';
 
-import { RocketOutlined } from '@ant-design/icons';
+import { EditOutlined, RocketOutlined } from '@ant-design/icons';
 import {
   Button,
   DatePicker,
@@ -13,9 +13,10 @@ import {
   Spin,
 } from 'antd';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { postActivity } from '../../apis/phobos-api';
+import UserContext from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import EmojiOption from '../EmojiOption';
 
@@ -26,12 +27,20 @@ const { Item } = Form;
 const { Option } = Select;
 
 export default function AddActivityForm({
-  activityTypes, loading, refetch, userName,
+  activityTypes, loading, refetch, initialActivity, modalClose,
 }) {
-  const [activity, setActivity] = useState({ unit: 'miles' });
+  const { user } = useContext(UserContext);
+  const [activity, setActivity] = useState({ ...initialActivity, unit: 'miles' });
   const [form] = Form.useForm();
 
+  const editing = !!initialActivity;
+
   const onFinish = async (values) => {
+    if (editing) {
+      modalClose();
+      return;
+    }
+
     try {
       await postActivity(values);
       message.success('Successfully created activity!');
@@ -75,7 +84,7 @@ export default function AddActivityForm({
           name="add-activity"
           onFinish={onFinish}
           onValuesChange={onChange}
-          initialValues={{ activity_date: moment(new Date()), unit: 'miles' }}
+          initialValues={{ activity_date: moment(new Date()), unit: 'miles', ...initialActivity }}
         >
           {/* ============= NAME ============= */}
           <Item
@@ -83,7 +92,7 @@ export default function AddActivityForm({
             label="Activity Name"
             name="name"
           >
-            <Input className="fullWidth" placeholder={`${userName}'s Favorite Run`} />
+            <Input className="fullWidth" placeholder={`${user.given_name}'s Favorite Run`} />
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
@@ -156,8 +165,8 @@ export default function AddActivityForm({
         <CalculatedActivityFields activity={activity} />
       </div>
       <div className="button-row">
-        <Button className="button-row-item" onClick={onSubmit} icon={<RocketOutlined rotate={45} />} type="primary">
-          Submit
+        <Button className="button-row-item" onClick={onSubmit} icon={editing ? <EditOutlined /> : <RocketOutlined rotate={45} />} type="primary">
+          {editing ? 'Edit' : 'Submit'}
         </Button>
         <Button className="button-row-item" ghost onClick={onReset} type="primary">
           Reset
