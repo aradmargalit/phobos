@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	models "server/models"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,6 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
 	uid, ok := c.Get("user")
-	fmt.Println(uid)
 	if !ok {
 		panic("No user id in cookie!")
 	}
@@ -53,4 +52,26 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"activities": a})
+}
+
+// DeleteActivityHandler returns all the user's activities
+func (e *Env) DeleteActivityHandler(c *gin.Context) {
+	// Pull user out of context to confirm it's safe to delete the activity
+	uid, ok := c.Get("user")
+	if !ok {
+		panic("No user id in cookie!")
+	}
+
+	activityID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = e.DB.DeleteActivityByID(uid.(int), activityID)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
+	return
 }

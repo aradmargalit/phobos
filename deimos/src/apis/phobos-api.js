@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { BACKEND_URL } from '../constants';
 
-const postOptions = {
+const options = {
   method: 'POST',
   mode: 'cors',
   credentials: 'include',
@@ -30,7 +30,15 @@ export const fetchActivities = async (setActivities, setLoading) => {
 };
 
 export const postActivity = async (activity) => {
-  const res = await fetch(`${BACKEND_URL}/private/activities`, { ...postOptions, body: JSON.stringify(activity) });
+  const res = await fetch(`${BACKEND_URL}/private/activities`, { ...options, method: 'POST', body: JSON.stringify(activity) });
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
+};
+
+export const deleteActivity = async (id) => {
+  const res = await fetch(`${BACKEND_URL}/private/activities/${id}`, { ...options, method: 'DELETE' });
   const { error } = await res.json();
   if (error) {
     throw error;

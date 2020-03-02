@@ -41,6 +41,7 @@ export default function Home() {
         <ActivityTable
           activityTypes={activityTypes}
           activities={activities}
+          refetch={() => fetchActivities(setActivities, setActivityLoading)}
           loading={activityLoading}
         />
       </div>
