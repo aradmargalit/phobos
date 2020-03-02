@@ -46,3 +46,13 @@ func (db *DB) GetActivitiesByUser(uid int) (activities []Activity, err error) {
 	err = db.conn.Select(&activities, `SELECT * FROM activities WHERE owner_id=? ORDER BY id DESC`, uid)
 	return
 }
+
+// DeleteActivityByID deletes an activity by ID, verified with userID
+func (db *DB) DeleteActivityByID(uid int, activityID int) (err error) {
+	_, err = db.conn.Exec(`DELETE FROM activities WHERE id=? AND owner_id=?`, activityID, uid)
+	if err != nil {
+		return
+	}
+
+	return
+}

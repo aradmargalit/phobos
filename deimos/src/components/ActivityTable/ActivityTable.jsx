@@ -1,9 +1,18 @@
 import './ActivityTable.scss';
 
-import { Empty, Spin, Table } from 'antd';
+import {
+  DeleteOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
+import {
+  Button, Empty, Popconfirm,
+  Spin, Table,
+} from 'antd';
 import { snakeCase as _snakeCase } from 'lodash';
 import moment from 'moment';
 import React from 'react';
+
+import { deleteActivity } from '../../apis/phobos-api';
 
 
 const toCol = (name, render) => {
@@ -22,9 +31,31 @@ const formatDate = (date) => {
   return moment(localDate).format(dateFormat);
 };
 
-export default function ActivityTable({ loading, activityTypes, activities }) {
+
+export default function ActivityTable({
+  loading, activityTypes, activities, refetch,
+}) {
   if (loading || !activityTypes.length) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
+
+  const renderEditButtons = ({ id }) => (
+    <Popconfirm
+      title="Are you sure?"
+      okText="Delete"
+      icon={<DeleteOutlined style={{ color: 'red' }} />}
+      onConfirm={async () => {
+        await deleteActivity(id);
+        refetch();
+      }}
+    >
+      <Button
+        ghost
+        type="danger"
+      >
+        Delete
+      </Button>
+    </Popconfirm>
+  );
 
   const columns = [
     {
@@ -43,6 +74,11 @@ export default function ActivityTable({ loading, activityTypes, activities }) {
     toCol('Duration', (duration) => `${duration} min`),
     toCol('Distance', (distance, record) => `${distance} ${record.unit}`),
     toCol('Created At', formatDate),
+    {
+      title: <EditOutlined />,
+      key: 'edit',
+      render: renderEditButtons,
+    },
   ];
-  return <Table pagination={false} rowKey="id" dataSource={activities} columns={columns} />;
+  return <Table scroll={{ y: 240 }} pagination={false} rowKey="id" dataSource={activities} columns={columns} />;
 }
