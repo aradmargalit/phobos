@@ -15,7 +15,7 @@ import {
 import moment from 'moment';
 import React, { useContext, useState } from 'react';
 
-import { postActivity } from '../../apis/phobos-api';
+import { postActivity, putActivity } from '../../apis/phobos-api';
 import UserContext from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import EmojiOption from '../EmojiOption';
@@ -35,21 +35,27 @@ export default function AddActivityForm({
 
   const editing = !!initialActivity;
 
-  const onFinish = async (values) => {
-    if (editing) {
-      modalClose();
-      return;
-    }
-
+  const upsert = async (values, apiCall) => {
     try {
-      await postActivity(values);
-      message.success('Successfully created activity!');
+      await apiCall(values);
+      message.success(`Successfully ${editing ? 'updated' : 'created'} activity!`);
       refetch();
     } catch (err) {
       notification.error({
         message: 'Unexpected Error',
         description: `Error: ${err}`,
       });
+    }
+  };
+
+  const onFinish = async (values) => {
+    if (editing) {
+      const activityToPut = { ...values };
+      activityToPut.id = initialActivity.id;
+      await upsert(activityToPut, putActivity);
+      modalClose();
+    } else {
+      await upsert(values, postActivity);
     }
   };
 

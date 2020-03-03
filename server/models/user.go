@@ -27,7 +27,7 @@ func (db *DB) InsertUser(u User) (user User, err error) {
 	user, err = db.GetUserByID(int(insertedID))
 	if err != nil {
 		panic(err)
-	}	
+	}
 
 	return
 }

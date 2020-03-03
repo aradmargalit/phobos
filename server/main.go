@@ -58,7 +58,7 @@ func main() {
 		private.POST("/activities", env.AddActivityHandler)
 		private.GET("/activities", env.GetActivitiesHandler)
 		private.DELETE("/activities/:id", env.DeleteActivityHandler)
-
+		private.PUT("/activities/:id", env.UpdateActivityHandler)
 	}
 
 	metadata := r.Group("/metadata")
