@@ -37,6 +37,14 @@ export const postActivity = async (activity) => {
   }
 };
 
+export const putActivity = async (activity) => {
+  const res = await fetch(`${BACKEND_URL}/private/activities/${activity.id}`, { ...options, method: 'PUT', body: JSON.stringify(activity) });
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
+};
+
 export const deleteActivity = async (id) => {
   const res = await fetch(`${BACKEND_URL}/private/activities/${id}`, { ...options, method: 'DELETE' });
   const { error } = await res.json();

@@ -1,5 +1,10 @@
 package models
 
+import (
+	"errors"
+	"strconv"
+)
+
 // Activity represents a workout session
 type Activity struct {
 	ID             int     `json:"id" db:"id"`
@@ -15,7 +20,22 @@ type Activity struct {
 }
 
 const (
-	activityInsertSQL = `INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit) VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit)`
+	activityInsertSQL = `
+		INSERT INTO activities 
+		(name, activity_date, activity_type_id, owner_id, duration, distance, unit)
+		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit)
+	`
+	activityUpdateSQL = `
+		UPDATE activities 
+		SET 
+			name=:name, 
+			activity_date=:activity_date,
+			activity_type_id=:activity_type_id,
+			duration=:duration,
+			distance=:distance,
+			unit=:unit
+		WHERE id=:id
+		`
 )
 
 // InsertActivity adds a new activity to the database
@@ -32,6 +52,26 @@ func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
 
 	// Return the recently inserted record back to the user
 	activity, err = db.GetActivityByID(int(inserted))
+	return
+}
+
+// UpdateActivity adds a new activity to the database
+func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
+	res, err := db.conn.NamedExec(activityUpdateSQL, a)
+	if err != nil {
+		return
+	}
+
+	updatedCount, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if updatedCount != 1 {
+		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
+	}
+
+	// Return the recently inserted record back to the user
+	activity, err = db.GetActivityByID(a.ID)
 	return
 }
 

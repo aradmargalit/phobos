@@ -38,6 +38,27 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, record)
 }
 
+// UpdateActivityHandler adds a new activity to the database
+func (e *Env) UpdateActivityHandler(c *gin.Context) {
+	var activity models.Activity
+	if err := c.ShouldBindJSON(&activity); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
+	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
+	activity.ActivityDate = d.Format("2006-01-02")
+
+	record, err := e.DB.UpdateActivity(activity)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, record)
+}
+
 // GetActivitiesHandler returns all the user's activities
 func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
