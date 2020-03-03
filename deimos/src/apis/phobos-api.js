@@ -21,6 +21,14 @@ const protectedGet = async (setValue, setLoading, endpoint, dataKey) => {
   setLoading(false);
 };
 
+const protectedUpsert = async (endpoint, method, body) => {
+  const res = await fetch(`${BACKEND_URL}${endpoint}`, { ...options, method, body: JSON.stringify(body) });
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
+};
+
 export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
   await protectedGet(setActivityTypes, setLoading, '/metadata/activity_types', 'activity_types');
 };
@@ -30,19 +38,11 @@ export const fetchActivities = async (setActivities, setLoading) => {
 };
 
 export const postActivity = async (activity) => {
-  const res = await fetch(`${BACKEND_URL}/private/activities`, { ...options, method: 'POST', body: JSON.stringify(activity) });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
-  }
+  await protectedUpsert('/private/activities', 'POST', activity);
 };
 
 export const putActivity = async (activity) => {
-  const res = await fetch(`${BACKEND_URL}/private/activities/${activity.id}`, { ...options, method: 'PUT', body: JSON.stringify(activity) });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
-  }
+  await protectedUpsert(`/private/activities/${activity.id}`, 'PUT', activity);
 };
 
 export const deleteActivity = async (id) => {
