@@ -18,8 +18,8 @@ import React, { useContext, useState } from 'react';
 import { postActivity, putActivity } from '../../apis/phobos-api';
 import UserContext from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
+import DurationPicker from '../DurationPicker';
 import EmojiOption from '../EmojiOption';
-
 
 const dateFormat = 'MMMM Do, YYYY';
 
@@ -90,11 +90,12 @@ export default function AddActivityForm({
           name="add-activity"
           onFinish={onFinish}
           onValuesChange={onChange}
-          initialValues={{ activity_date: moment(new Date()), unit: 'miles', ...initialActivity }}
+          initialValues={{
+            activity_date: moment(new Date()), unit: 'miles', ...initialActivity,
+          }}
         >
           {/* ============= NAME ============= */}
           <Item
-            hasFeedback
             label="Activity Name"
             name="name"
           >
@@ -102,7 +103,6 @@ export default function AddActivityForm({
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
-            hasFeedback
             label="Activity Date"
             name="activity_date"
             rules={[
@@ -114,10 +114,8 @@ export default function AddActivityForm({
           >
             <DatePicker format={dateFormat} className="fullWidth" placeholder="2020-01-01" />
           </Item>
-
           {/* ============= ACTIVITY SELECT ============= */}
           <Item
-            hasFeedback
             label="Activity Type"
             name="activity_type_id"
             rules={[
@@ -127,29 +125,20 @@ export default function AddActivityForm({
               },
             ]}
           >
-            <Select allowClear showSearch optionFilterProp="children">
+            <Select allowClear showSearch placeholder="Run" optionFilterProp="children">
               {activityTypes.map(
                 ({ id, name }) => EmojiOption({ value: id, title: name }),
               )}
             </Select>
           </Item>
-
           {/* ============= DURATION ============= */}
           <Item
-            hasFeedback
-            label="Duration (min)"
+            label="Duration"
             name="duration"
             rules={[{ required: true, message: 'Duration is required' }]}
           >
-            <InputNumber
-              className="fullWidth"
-              precision={2}
-              placeholder={30}
-              min={0.5}
-              step={0.5}
-            />
+            <DurationPicker />
           </Item>
-
           {/* ============= DISTANCE ============= */}
           <Item label="Distance" style={{ marginBottom: 0 }}>
             <Item name="distance" className="inline-item">
