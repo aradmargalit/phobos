@@ -1,0 +1,13 @@
+.duration-input-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  & > .ant-input-number {
+    width: 28%;
+  }
+
+  & > p {
+    font-weight: 600;
+  }
+}

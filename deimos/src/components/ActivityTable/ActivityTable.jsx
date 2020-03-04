@@ -14,6 +14,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
+import { minutesToHMS } from '../../utils/dataFormatUtils';
 import AddActivityForm from '../AddActivityForm';
 
 const toCol = (name, render) => {
@@ -68,8 +69,8 @@ export default function ActivityTable({
       dataIndex: 'activity_type_id',
       render: (id) => activityTypes.find((at) => at.id === id).name,
     },
-    toCol('Duration', (duration) => `${duration} min`),
-    toCol('Distance', (distance, record) => `${distance} ${record.unit}`),
+    toCol('Duration', minutesToHMS),
+    toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
     toCol('Created At', formatDate),
     {
       title: <EditOutlined />,
