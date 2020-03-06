@@ -67,7 +67,10 @@ export default function ActivityTable({
     {
       title: 'Activity Type',
       dataIndex: 'activity_type_id',
-      render: (id) => activityTypes.find((at) => at.id === id).name,
+      render: (id) => {
+        const aT = activityTypes.find((at) => at.id === id);
+        return aT ? aT.name : '';
+      },
     },
     toCol('Duration', minutesToHMS),
     toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
@@ -101,7 +104,6 @@ export default function ActivityTable({
   return (
     <div>
       <Table
-        pagination={false}
         rowKey="id"
         dataSource={activities}
         columns={columns}

@@ -10,14 +10,14 @@ const options = {
   },
 };
 
-const protectedGet = async (setValue, setLoading, endpoint, dataKey) => {
+const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
   // Make sure to include the cookie with the request!
   const res = await fetch(`${BACKEND_URL}${endpoint}`, {
     credentials: 'include',
   });
 
   const response = await res.json();
-  setValue(response[dataKey]);
+  setValue(dataKey ? response[dataKey] : response);
   setLoading(false);
 };
 
@@ -51,4 +51,8 @@ export const deleteActivity = async (id) => {
   if (error) {
     throw error;
   }
+};
+
+export const fetchMonthlySums = async (setMonthlySums, setLoading) => {
+  await protectedGet(setMonthlySums, setLoading, '/private/activities/monthly');
 };
