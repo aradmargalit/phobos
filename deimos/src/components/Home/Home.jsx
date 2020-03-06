@@ -6,9 +6,9 @@ import { Redirect } from 'react-router-dom';
 
 import { fetchActivities, fetchActivityTypes } from '../../apis/phobos-api';
 import UserContext from '../../contexts';
-import ActivityGraph from '../ActivityGraph';
 import ActivityTable from '../ActivityTable';
 import AddActivityForm from '../AddActivityForm';
+import Statistics from '../Statistics';
 
 export default function Home() {
   const { user, loading } = useContext(UserContext);
@@ -35,9 +35,9 @@ export default function Home() {
           refetch={() => fetchActivities(setActivities, setActivityLoading)}
         />
       </div>
-      <div className="container activity-graph">
-        <h3 className="home-header">Chorts</h3>
-        <ActivityGraph />
+      <div className="container statistics">
+        <h3 className="home-header">Your Statistics</h3>
+        <Statistics />
       </div>
       <div className="container data-table">
         <h3 className="home-header">Your Activities</h3>

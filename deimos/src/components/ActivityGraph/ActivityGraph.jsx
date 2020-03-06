@@ -1,3 +1,5 @@
+import './ActivityGraph.scss';
+
 import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
@@ -16,17 +18,15 @@ export default function ActivityGraph() {
   }, [setLoading]);
 
   const transform = (data) => data.map(({ month, duration }) => (
-    // I apologies for this, but I need to:
-    // 1. Get to 2 decimal points, which returns a string via toFixed
-    // 2. Convert that back to a number type so the graph renders properly
-    { month, duration: parseFloat((parseFloat(duration) / 60).toFixed(2)) }
+    { month, duration: parseFloat((duration / 60).toFixed(2)) }
   ));
 
   return (
     <Spin spinning={loading}>
       <LineChart
-        width={500}
-        height={300}
+        className="activity-graph"
+        width={1000}
+        height={500}
         data={transform(monthlyData)}
         margin={{
           top: 5, right: 30, left: 20, bottom: 5,
