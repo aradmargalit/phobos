@@ -9,6 +9,7 @@ import (
 
 // ActivityTypes is a list of possible activities
 var ActivityTypes []string = []string{
+	// Start Strava Types
 	"Ride",
 	"Run",
 	"Swim",
@@ -41,6 +42,12 @@ var ActivityTypes []string = []string{
 	"Wheelchair",
 	"Workout",
 	"Yoga",
+	// Start Custom Types
+	"Basketball",
+	"Soccer",
+	"Ultimate",
+	"Tennis",
+	"Volleyball",
 }
 
 func seedActivityTypes(db *models.DB) (err error) {
