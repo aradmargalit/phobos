@@ -3,6 +3,7 @@ import './App.scss';
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import ActivityGraph from './components/ActivityGraph';
 import Header from './components/Header';
 import Home from './components/Home';
 import Landing from './components/Landing';
@@ -28,6 +29,9 @@ export default function App() {
             <Switch>
               <Route exact path="/home">
                 <Home />
+              </Route>
+              <Route exact path="/graph">
+                <ActivityGraph />
               </Route>
               <Route exact path="/">
                 <Landing />

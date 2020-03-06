@@ -19,12 +19,12 @@
   grid-column: 1 / span 2;
 }
 
+.statistics {
+  width: 100%;
+  height: 100%;
+}
+
 .home-header {
   color: var(--primary);
   margin-bottom: 10px;
-}
-
-.activity-graph {
-  width: 100%;
-  height: 100%;
 }

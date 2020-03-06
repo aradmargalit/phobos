@@ -123,10 +123,14 @@ func (e *Env) GetMonthlyDurationSums(c *gin.Context) {
 		monthMap[month] += activity.Duration
 	}
 
-	response := []map[string]string{}
-	for k, v := range monthMap {
-		response = append(response, map[string]string{"month": k, "duration": fmt.Sprintf("%f", v)})
+	type monthlySum struct {
+		Month    string  `json:"month"`
+		Duration float64 `json:"duration"`
 	}
 
+	response := []monthlySum{}
+	for k, v := range monthMap {
+		response = append(response, monthlySum{k, v})
+	}
 	c.JSON(http.StatusOK, response)
 }

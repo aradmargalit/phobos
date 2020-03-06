@@ -1,0 +1,16 @@
+.statistics {
+
+  & > .stats {
+    & > .ant-statistic {
+      width: 200px;
+      margin: auto;
+    }
+    margin: 10px 0;
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+  }
+
+  & > .recharts-wrapper {
+    margin: 25px auto;
+  }
+}
