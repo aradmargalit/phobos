@@ -36,10 +36,9 @@ export default function ActivityGraph() {
         <XAxis tick={false} dataKey="activity_date" />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey="duration" stroke="#de541e" dot={false} strokeWidth={3} />
+        <Line type="monotone" dataKey="duration" stroke="#0e5a6d" dot={false} strokeWidth={3} />
       </LineChart>
     </Spin>
-
   );
 }
 

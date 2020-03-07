@@ -4,10 +4,10 @@ module.exports = override(
   fixBabelImports('import', {
     libraryName: 'antd',
     libraryDirectory: 'es',
-    style: true
+    style: true,
   }),
   addLessLoader({
     javascriptEnabled: true,
-    modifyVars: { '@primary-color': '#DE541E', '@link-color': '#2E86AB' }
-  })
+    modifyVars: { '@primary-color': '#0e5a6d', '@link-color': '#117088' },
+  }),
 );
