@@ -30,7 +30,13 @@ export default function AddActivityForm({
   activityTypes, loading, refetch, initialActivity, modalClose,
 }) {
   const { user } = useContext(UserContext);
-  const [activity, setActivity] = useState({ ...initialActivity, unit: 'miles' });
+  const [activity, setActivity] = useState({
+    ...initialActivity,
+    unit: 'miles',
+    duration: {
+      hours: null, minutes: null, seconds: null, total: 0,
+    },
+  });
   const [form] = Form.useForm();
 
   const editing = !!initialActivity;
@@ -91,7 +97,12 @@ export default function AddActivityForm({
           onFinish={onFinish}
           onValuesChange={onChange}
           initialValues={{
-            activity_date: moment(new Date()), unit: 'miles', ...initialActivity,
+            activity_date: moment(new Date()),
+            unit: 'miles',
+            duration: {
+              hours: null, minutes: null, seconds: null, total: 0,
+            },
+            ...initialActivity,
           }}
         >
           {/* ============= NAME ============= */}
