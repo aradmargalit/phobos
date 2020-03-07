@@ -151,7 +151,7 @@ export default function AddActivityForm({
             <DurationPicker />
           </Item>
           {/* ============= DISTANCE ============= */}
-          <Item label="Distance" style={{ marginBottom: 0 }}>
+          <Item label="Distance" className="distance-wrapper">
             <Item name="distance" className="inline-item">
               <InputNumber
                 precision={2}
@@ -160,7 +160,7 @@ export default function AddActivityForm({
                 placeholder={5}
               />
             </Item>
-            <Item name="unit" className="inline-item">
+            <Item name="unit" className="unit inline-item">
               <Select>
                 <Option value="miles">miles</Option>
                 <Option value="yards">yards</Option>

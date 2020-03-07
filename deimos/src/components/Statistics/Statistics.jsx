@@ -1,11 +1,13 @@
 import './Statistics.scss';
 
 import { CheckOutlined, ClockCircleOutlined, LineChartOutlined } from '@ant-design/icons';
-import { Button, Statistic } from 'antd';
-import React from 'react';
+import { Button, Spin, Statistic } from 'antd';
+import React, { useEffect, useState } from 'react';
 import {
   Line, LineChart,
 } from 'recharts';
+
+import { fetchStatistics } from '../../apis/phobos-api';
 
 const data = [
   {
@@ -32,44 +34,54 @@ const data = [
 ];
 
 export default function Statistics() {
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ workouts: 0, hours: 0, miles: 0 });
+  const { workouts, hours, miles } = stats;
+
+  useEffect(() => {
+    fetchStatistics(setStats, setLoading);
+  }, [setLoading]);
+
   return (
-    <div className="statistics">
-      <div className="stats">
-        <Statistic
-          title={(
-            <span>
-              Total Workouts
-              {' '}
-              <CheckOutlined />
-            </span>
+    <Spin spinning={loading}>
+      <div className="statistics">
+        <div className="stats">
+          <Statistic
+            title={(
+              <span>
+                Total Workouts
+                {' '}
+                <CheckOutlined />
+              </span>
           )}
-          value={3452}
-        />
-        <Statistic
-          title={(
-            <span>
-              Total Hours Active
-              {' '}
-              <ClockCircleOutlined />
-            </span>
+            value={workouts}
+          />
+          <Statistic
+            title={(
+              <span>
+                Total Hours Active
+                {' '}
+                <ClockCircleOutlined />
+              </span>
           )}
-          value={1586.12}
-        />
-        <Statistic
-          title={(
-            <span>
-              Total Miles
-              {' '}
-              <LineChartOutlined />
-            </span>
+            value={hours.toFixed(2)}
+          />
+          <Statistic
+            title={(
+              <span>
+                Total Miles
+                {' '}
+                <LineChartOutlined />
+              </span>
           )}
-          value={1232}
-        />
+            value={miles.toFixed(2)}
+          />
+        </div>
+        <LineChart width={300} height={100} data={data}>
+          <Line type="monotone" dataKey="pv" stroke="#de541e" strokeWidth={2} dot={false} />
+        </LineChart>
+        <Button href="http://localhost:3000/graph">More Graph?</Button>
       </div>
-      <LineChart width={300} height={100} data={data}>
-        <Line type="monotone" dataKey="pv" stroke="#de541e" strokeWidth={2} dot={false} />
-      </LineChart>
-      <Button href="http://localhost:3000/graph">More Graph?</Button>
-    </div>
+    </Spin>
   );
 }

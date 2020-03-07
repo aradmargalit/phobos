@@ -60,6 +60,7 @@ func main() {
 		private.DELETE("/activities/:id", env.DeleteActivityHandler)
 		private.PUT("/activities/:id", env.UpdateActivityHandler)
 		private.GET("/activities/monthly", env.GetMonthlyDurationSums)
+		private.GET("/statistics", env.GetUserStatistics)
 	}
 
 	metadata := r.Group("/metadata")
