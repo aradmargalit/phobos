@@ -92,6 +92,7 @@ export default function AddActivityForm({
       <div className="form-flex">
         <Form
           {...layout}
+          autocomplete="off"
           form={form}
           name="add-activity"
           onFinish={onFinish}
@@ -110,7 +111,8 @@ export default function AddActivityForm({
             label="Activity Name"
             name="name"
           >
-            <Input className="fullWidth" placeholder={`${user.given_name}'s Favorite Run`} />
+            {/* Data LP ignore is to stop LastPass from trying to fill the form */}
+            <Input data-lpignore="true" className="fullWidth" placeholder={`${user.given_name}'s Favorite Run`} />
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item

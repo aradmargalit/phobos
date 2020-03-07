@@ -78,7 +78,7 @@ export default function Statistics() {
           />
         </div>
         <LineChart width={300} height={100} data={data}>
-          <Line type="monotone" dataKey="pv" stroke="#de541e" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="pv" stroke="#0e5a6d" strokeWidth={2} dot={false} />
         </LineChart>
         <Button href="http://localhost:3000/graph">More Graph?</Button>
       </div>

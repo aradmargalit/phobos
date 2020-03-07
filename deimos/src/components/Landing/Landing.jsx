@@ -1,12 +1,14 @@
-/* eslint global-require: 0 */
+/* eslint-disable global-require */
 
+import './Landing.scss';
+
+import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
+import { Button, Spin } from 'antd';
 import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Spin, Button } from 'antd';
-import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
-import UserContext from '../../contexts';
+
 import { BACKEND_URL } from '../../constants';
-import './Landing.scss';
+import UserContext from '../../contexts';
 
 export default function Landing() {
   const { user, loading } = useContext(UserContext);
