@@ -14,8 +14,9 @@ import moment from 'moment';
 import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
-import { minutesToHMS } from '../../utils/dataFormatUtils';
+import { formatDate, minutesToHMS, toLocalDate } from '../../utils/dataFormatUtils';
 import AddActivityForm from '../AddActivityForm';
+import TableSearch from '../TableSearch';
 
 const toCol = (name, render) => {
   const snakeName = _snakeCase(name);
@@ -26,22 +27,21 @@ const toCol = (name, render) => {
   return col;
 };
 
-const dateFormat = 'MMMM Do, YYYY';
-
-const formatDate = (date) => {
-  const localDate = new Date(`${date} UTC`);
-  return moment(localDate).format(dateFormat);
-};
-
 
 export default function ActivityTable({
   loading, activityTypes, activities, refetch,
 }) {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
+  const [tableActivities, setTableActivities] = useState(activities);
+  const [filtered, setFiltered] = useState(false);
 
   if (loading || !activityTypes.length) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
+  if (!tableActivities || (!filtered && tableActivities.length !== activities.length)) {
+    setTableActivities(activities);
+  }
+
 
   const renderEditButtons = (activity) => (
     <Button onClick={() => {
@@ -63,7 +63,7 @@ export default function ActivityTable({
     toCol('Name'),
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
-    toCol('Activity Date', (date) => moment(date).format(dateFormat)),
+    toCol('Activity Date', formatDate),
     {
       title: 'Activity Type',
       dataIndex: 'activity_type_id',
@@ -74,7 +74,7 @@ export default function ActivityTable({
     },
     toCol('Duration', minutesToHMS),
     toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
-    toCol('Created At', formatDate),
+    toCol('Created At', toLocalDate),
     {
       title: <EditOutlined />,
       key: 'edit',
@@ -103,9 +103,15 @@ export default function ActivityTable({
 
   return (
     <div>
+      <TableSearch
+        activityTypes={activityTypes}
+        setFiltered={setFiltered}
+        tableActivities={tableActivities}
+        setTableActivities={setTableActivities}
+      />
       <Table
         rowKey="id"
-        dataSource={activities}
+        dataSource={tableActivities}
         columns={columns}
       />
       <Modal

@@ -42,8 +42,10 @@ export default function AddActivityForm({
   const editing = !!initialActivity;
 
   const upsert = async (values, apiCall) => {
+    // First, we need to grab the total for duration
+    const postValues = { ...values, duration: values.duration.total };
     try {
-      await apiCall(values);
+      await apiCall(postValues);
       message.success(`Successfully ${editing ? 'updated' : 'created'} activity!`);
       refetch();
     } catch (err) {
@@ -92,7 +94,7 @@ export default function AddActivityForm({
       <div className="form-flex">
         <Form
           {...layout}
-          autocomplete="off"
+          autoComplete="off"
           form={form}
           name="add-activity"
           onFinish={onFinish}
