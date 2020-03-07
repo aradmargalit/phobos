@@ -8,7 +8,7 @@
 
 .inline-item {
   display: inline-block;
-  width: calc(50% - 18px);
+  width: calc(50% - 6px);
 }
 
 .ant-form {
@@ -25,12 +25,24 @@
 }
 
 .button-row {
-  margin-top: 15px;
+  margin: 15px 0px;
   display: flex;
   justify-content: center;
 
   &-item {
     margin-left: 3px;
     width: 100px;
+  }
+}
+
+.unit {
+  margin-left: auto;
+}
+
+.distance-wrapper > .ant-form-item-control > .ant-form-item-control-input {
+  display: flex;
+
+  & > .ant-form-item {
+    margin-bottom: 0;
   }
 }

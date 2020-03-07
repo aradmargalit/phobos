@@ -56,3 +56,7 @@ export const deleteActivity = async (id) => {
 export const fetchMonthlySums = async (setMonthlySums, setLoading) => {
   await protectedGet(setMonthlySums, setLoading, '/private/activities/monthly');
 };
+
+export const fetchStatistics = async (setStats, setLoading) => {
+  await protectedGet(setStats, setLoading, '/private/statistics');
+};

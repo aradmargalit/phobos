@@ -1,5 +1,12 @@
 package controllers
 
+import (
+	"net/http"
+	"server/models"
+
+	"github.com/gin-gonic/gin"
+)
+
 // GetUserStatistics returns some fun user statistics for the frontend
 func (e *Env) GetUserStatistics(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
@@ -13,26 +20,40 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
-	monthMap := map[string]float64{}
+	// Now that we have activities, let's cronch the numbies
+	totalWorkouts := len(a)
+	totalHours := calculateTotalHours(a)
+	totalMiles := calculateMileage(a)
 
-	for _, activity := range a {
-		m, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
-		month := fmt.Sprintf("%v %v", m.Month(), m.Year())
-		_, ok := monthMap[month]
-		if !ok {
-			monthMap[month] = 0
-		}
-		monthMap[month] += activity.Duration
+	response := struct {
+		Workouts int     `json:"workouts"`
+		Hours    float64 `json:"hours"`
+		Miles    float64 `json:"miles"`
+	}{
+		totalWorkouts, totalHours, totalMiles,
 	}
 
-	type monthlySum struct {
-		Month    string  `json:"month"`
-		Duration float64 `json:"duration"`
-	}
-
-	response := []monthlySum{}
-	for k, v := range monthMap {
-		response = append(response, monthlySum{k, v})
-	}
 	c.JSON(http.StatusOK, response)
+}
+
+func calculateTotalHours(activities []models.Activity) float64 {
+	var running float64 = 0
+
+	for _, activity := range activities {
+		running += activity.Duration
+	}
+
+	return running / 60
+}
+
+func calculateMileage(activities []models.Activity) float64 {
+	var running float64 = 0
+
+	for _, activity := range activities {
+		if activity.Unit == "miles" {
+			running += activity.Distance
+		}
+	}
+
+	return running
 }
