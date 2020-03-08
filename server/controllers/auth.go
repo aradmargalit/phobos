@@ -57,8 +57,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	// Handle the exchange code to initiate a transport.
 	token, err := conf.Exchange(oauth2.NoContext, c.Query("code"))
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		panic(err)
 	}
 
 	// Construct the client.
@@ -67,7 +66,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	// Fetch the user information from Google
 	resp, err := client.Get(googleUserInfoEndpoint)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		panic(err)
 		return
 	}
 
@@ -75,7 +74,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	defer resp.Body.Close()
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		panic(err)
 		return
 	}
 
