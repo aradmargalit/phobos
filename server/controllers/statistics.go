@@ -17,7 +17,7 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 
 	a, err := e.DB.GetActivitiesByUser(uid.(int))
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		panic(err)
 	}
 
 	// Now that we have activities, let's cronch the numbies

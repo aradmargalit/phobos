@@ -70,7 +70,7 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 
 	a, err := e.DB.ExperimentalGetActivitiesByUser(uid.(int))
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		panic(err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"activities": a})
@@ -91,7 +91,7 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 
 	err = e.DB.DeleteActivityByID(uid.(int), activityID)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		panic(err)
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
@@ -108,7 +108,7 @@ func (e *Env) GetMonthlyDurationSums(c *gin.Context) {
 
 	a, err := e.DB.GetActivitiesByUser(uid.(int))
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		panic(err)
 	}
 
 	monthMap := map[string]float64{}
