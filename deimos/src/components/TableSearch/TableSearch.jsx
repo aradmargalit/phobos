@@ -1,5 +1,10 @@
+import './TableSearch.scss';
+
 import { Input } from 'antd';
+import { uniq as _uniq } from 'lodash';
 import React from 'react';
+
+import { formatDate } from '../../utils/dataFormatUtils';
 
 const { Search } = Input;
 
@@ -22,13 +27,18 @@ export default function TableSearch({
       (ta) => activityTypes.find((at) => at.id === ta.activity_type_id)
         .name.toLowerCase().includes(searchTerm),
     );
+
+    const filteredByDate = tableActivities.filter(
+      (ta) => formatDate(ta.activity_date).toLowerCase().includes(searchTerm),
+    );
     setFiltered(true);
-    setTableActivities([...filteredByName, ...filteredByType]);
+    setTableActivities(_uniq([...filteredByName, ...filteredByType, ...filteredByDate]));
   };
   return (
     <Search
+      className="search-bar"
       allowClear
-      placeholder="Search by name, type, distance, or date..."
+      placeholder="Search by name, type, or date..."
       onSearch={(value) => console.log(value)}
       onChange={onChangeHandler}
       width="50%"

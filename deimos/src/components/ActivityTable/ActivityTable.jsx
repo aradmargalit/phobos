@@ -14,7 +14,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
-import { formatDate, minutesToHMS, toLocalDate } from '../../utils/dataFormatUtils';
+import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
 import AddActivityForm from '../AddActivityForm';
 import TableSearch from '../TableSearch';
 
@@ -74,7 +74,6 @@ export default function ActivityTable({
     },
     toCol('Duration', minutesToHMS),
     toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
-    toCol('Created At', toLocalDate),
     {
       title: <EditOutlined />,
       key: 'edit',
