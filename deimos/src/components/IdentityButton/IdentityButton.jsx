@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Button, Spin, notification } from 'antd';
+import './IdentityButton.scss';
+
 import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Button, notification, Spin } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+
 import { BACKEND_URL } from '../../constants';
 import UserContext from '../../contexts/UserContext';
-import './IdentityButton.scss';
 
 export default function IdentityButton() {
   const {
