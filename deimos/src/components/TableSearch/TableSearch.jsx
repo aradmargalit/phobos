@@ -10,7 +10,7 @@ const { Search } = Input;
 
 
 export default function TableSearch({
-  tableActivities, setTableActivities, setFiltered, activityTypes,
+  tableActivities, setTableActivities, setFiltered,
 }) {
   const onChangeHandler = (e) => {
     if (!e.target.value || !e.target.value.length) {
@@ -20,12 +20,12 @@ export default function TableSearch({
     }
 
     const searchTerm = e.target.value.toLowerCase();
+
     const filteredByName = tableActivities.filter(
       (ta) => ta.name.toLowerCase().includes(searchTerm),
     );
     const filteredByType = tableActivities.filter(
-      (ta) => activityTypes.find((at) => at.id === ta.activity_type_id)
-        .name.toLowerCase().includes(searchTerm),
+      (ta) => ta.activity_type.name.toLowerCase().includes(searchTerm),
     );
 
     const filteredByDate = tableActivities.filter(

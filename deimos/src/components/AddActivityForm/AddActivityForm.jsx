@@ -13,9 +13,9 @@ import {
   Spin,
 } from 'antd';
 import moment from 'moment';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import { postActivity, putActivity } from '../../apis/phobos-api';
+import { fetchActivityTypes, postActivity, putActivity } from '../../apis/phobos-api';
 import UserContext from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import DurationPicker from '../DurationPicker';
@@ -27,7 +27,7 @@ const { Item } = Form;
 const { Option } = Select;
 
 export default function AddActivityForm({
-  activityTypes, loading, refetch, initialActivity, modalClose,
+  refetch, initialActivity, modalClose,
 }) {
   const { user } = useContext(UserContext);
   const [activity, setActivity] = useState({
@@ -37,7 +37,13 @@ export default function AddActivityForm({
       hours: null, minutes: null, seconds: null, total: 0,
     },
   });
+  const [activityTypes, setActivityTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    fetchActivityTypes(setActivityTypes, setLoading);
+  }, [setLoading]);
 
   const editing = !!initialActivity;
 

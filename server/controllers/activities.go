@@ -68,7 +68,7 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 		panic("No user id in cookie!")
 	}
 
-	a, err := e.DB.GetActivitiesByUser(uid.(int))
+	a, err := e.DB.ExperimentalGetActivitiesByUser(uid.(int))
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}

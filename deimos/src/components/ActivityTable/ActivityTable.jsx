@@ -29,14 +29,14 @@ const toCol = (name, render) => {
 
 
 export default function ActivityTable({
-  loading, activityTypes, activities, refetch,
+  loading, activities, refetch,
 }) {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
   const [tableActivities, setTableActivities] = useState(activities);
   const [filtered, setFiltered] = useState(false);
 
-  if (loading || !activityTypes.length) return <Spin />;
+  if (loading) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
   if (!tableActivities || (!filtered && tableActivities.length !== activities.length)) {
     setTableActivities(activities);
@@ -66,11 +66,7 @@ export default function ActivityTable({
     toCol('Activity Date', formatDate),
     {
       title: 'Activity Type',
-      dataIndex: 'activity_type_id',
-      render: (id) => {
-        const aT = activityTypes.find((at) => at.id === id);
-        return aT ? aT.name : '';
-      },
+      dataIndex: ['activity_type', 'name'],
     },
     toCol('Duration', minutesToHMS),
     toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
@@ -103,7 +99,6 @@ export default function ActivityTable({
   return (
     <div>
       <TableSearch
-        activityTypes={activityTypes}
         setFiltered={setFiltered}
         tableActivities={tableActivities}
         setTableActivities={setTableActivities}
@@ -123,8 +118,6 @@ export default function ActivityTable({
         destroyOnClose
       >
         <AddActivityForm
-          activityTypes={activityTypes}
-          loading={loading}
           refetch={refetch}
           initialActivity={editingActivity}
           modalClose={() => setEditModalVisible(false)}

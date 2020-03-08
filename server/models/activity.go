@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	responsetypes "server/response_types"
 	"strconv"
 )
 
@@ -94,5 +95,11 @@ func (db *DB) DeleteActivityByID(uid int, activityID int) (err error) {
 		return
 	}
 
+	return
+}
+
+// ExperimentalGetActivitiesByUser returns all activies from auser
+func (db *DB) ExperimentalGetActivitiesByUser(uid int) (activities []responsetypes.ActivityResponse, err error) {
+	err = db.conn.Select(&activities, `SELECT a.*, at.id "activity_type.id", at.name "activity_type.name" FROM activities a JOIN activity_types at ON at.id = a.activity_type_id WHERE owner_id=? ORDER BY a.id DESC`, uid)
 	return
 }
