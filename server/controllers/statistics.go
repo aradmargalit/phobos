@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"server/models"
 
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,13 +26,15 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 	totalWorkouts := len(a)
 	totalHours := calculateTotalHours(a)
 	totalMiles := calculateMileage(a)
+	lastTen := calculateLastTenDays(a)
 
 	response := struct {
-		Workouts int     `json:"workouts"`
-		Hours    float64 `json:"hours"`
-		Miles    float64 `json:"miles"`
+		Workouts int       `json:"workouts"`
+		Hours    float64   `json:"hours"`
+		Miles    float64   `json:"miles"`
+		LastTen  []float64 `json:"last_ten"`
 	}{
-		totalWorkouts, totalHours, totalMiles,
+		totalWorkouts, totalHours, totalMiles, lastTen,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -56,4 +60,28 @@ func calculateMileage(activities []models.Activity) float64 {
 	}
 
 	return running
+}
+
+func calculateLastTenDays(activities []models.Activity) (lastTen []float64) {
+	// For each of the past 10 days, we need to sum up the durations from those days
+	for i := 9; i >= 0; i-- {
+		// Get the date for "i" days ago
+		date := time.Now().AddDate(0, 0, -1*i)
+
+		// Start a running duration for that date
+		var running float64
+		for _, a := range activities {
+			// Parse the DB date
+			dbDate, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
+
+			// If it's the same date, add to the running total
+			if dbDate.YearDay() == date.YearDay() && dbDate.Year() == date.Year() {
+				running += a.Duration
+			}
+		}
+
+		// Append the sum to the slice
+		lastTen = append(lastTen, running)
+	}
+	return
 }
