@@ -7,7 +7,7 @@ import ActivityGraph from './components/ActivityGraph';
 import Header from './components/Header';
 import Home from './components/Home';
 import Landing from './components/Landing';
-import UserContext from './contexts';
+import { UserContext } from './contexts';
 
 export default function App() {
   const [user, setUser] = useState(null);

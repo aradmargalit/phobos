@@ -8,7 +8,7 @@ import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { BACKEND_URL } from '../../constants';
-import UserContext from '../../contexts';
+import { UserContext } from '../../contexts';
 
 export default function Landing() {
   const { user, loading } = useContext(UserContext);

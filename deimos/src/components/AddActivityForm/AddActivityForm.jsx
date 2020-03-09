@@ -16,7 +16,7 @@ import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { fetchActivityTypes, postActivity, putActivity } from '../../apis/phobos-api';
-import UserContext from '../../contexts';
+import { UserContext } from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import DurationPicker from '../DurationPicker';
 import EmojiOption from '../EmojiOption';
@@ -49,7 +49,7 @@ export default function AddActivityForm({
 
   const upsert = async (values, apiCall) => {
     // First, we need to grab the total for duration
-    const postValues = { ...values, duration: values.duration.total };
+    const postValues = { ...values, duration: values.duration.total, activity_date: new Date(`${values.activity_date} UTC`) };
     try {
       await apiCall(postValues);
       message.success(`Successfully ${editing ? 'updated' : 'created'} activity!`);
