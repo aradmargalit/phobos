@@ -16,12 +16,18 @@ export default function Home() {
   const [activities, setActivities] = useState(null);
   const [activityLoading, setActivityLoading] = useState(true);
   const [stats, setStats] = useState({
-    workouts: 0, hours: 0, miles: 0, last_ten: [],
+    workouts: 0,
+    hours: 0,
+    miles: 0,
+    last_ten: [],
   });
   const [statsLoading, setStatsLoading] = useState(true);
-  useEffect(() => {
-    fetchActivities(setActivities, setActivityLoading);
-  }, [setActivityLoading]);
+  useEffect(
+    () => {
+      fetchActivities(setActivities, setActivityLoading);
+    },
+    [setActivityLoading]
+  );
 
   if (loading) return <Spin />;
   if (!user) return <Redirect to="/" />;

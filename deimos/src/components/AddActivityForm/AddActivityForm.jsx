@@ -15,7 +15,11 @@ import {
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { fetchActivityTypes, postActivity, putActivity } from '../../apis/phobos-api';
+import {
+  fetchActivityTypes,
+  postActivity,
+  putActivity,
+} from '../../apis/phobos-api';
 import { UserContext } from '../../contexts';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import DurationPicker from '../DurationPicker';
@@ -27,32 +31,46 @@ const { Item } = Form;
 const { Option } = Select;
 
 export default function AddActivityForm({
-  refetch, initialActivity, modalClose,
+  refetch,
+  initialActivity,
+  modalClose,
 }) {
   const { user } = useContext(UserContext);
   const [activity, setActivity] = useState({
     ...initialActivity,
     unit: 'miles',
     duration: {
-      hours: null, minutes: null, seconds: null, total: 0,
+      hours: null,
+      minutes: null,
+      seconds: null,
+      total: 0,
     },
   });
   const [activityTypes, setActivityTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    fetchActivityTypes(setActivityTypes, setLoading);
-  }, [setLoading]);
+  useEffect(
+    () => {
+      fetchActivityTypes(setActivityTypes, setLoading);
+    },
+    [setLoading]
+  );
 
   const editing = !!initialActivity;
 
   const upsert = async (values, apiCall) => {
     // First, we need to grab the total for duration
-    const postValues = { ...values, duration: values.duration.total, activity_date: new Date(`${values.activity_date} UTC`) };
+    const postValues = {
+      ...values,
+      duration: values.duration.total,
+      activity_date: new Date(`${values.activity_date} UTC`),
+    };
     try {
       await apiCall(postValues);
-      message.success(`Successfully ${editing ? 'updated' : 'created'} activity!`);
+      message.success(
+        `Successfully ${editing ? 'updated' : 'created'} activity!`
+      );
       refetch();
     } catch (err) {
       notification.error({
@@ -62,7 +80,7 @@ export default function AddActivityForm({
     }
   };
 
-  const onFinish = async (values) => {
+  const onFinish = async values => {
     if (editing) {
       const activityToPut = { ...values };
       activityToPut.id = initialActivity.id;
@@ -109,18 +127,22 @@ export default function AddActivityForm({
             activity_date: moment(new Date()),
             unit: 'miles',
             duration: {
-              hours: null, minutes: null, seconds: null, total: 0,
+              hours: null,
+              minutes: null,
+              seconds: null,
+              total: 0,
             },
             ...initialActivity,
           }}
         >
           {/* ============= NAME ============= */}
-          <Item
-            label="Activity Name"
-            name="name"
-          >
+          <Item label="Activity Name" name="name">
             {/* Data LP ignore is to stop LastPass from trying to fill the form */}
-            <Input data-lpignore="true" className="fullWidth" placeholder={`${user.given_name}'s Favorite Run`} />
+            <Input
+              data-lpignore="true"
+              className="fullWidth"
+              placeholder={`${user.given_name}'s Favorite Run`}
+            />
           </Item>
           {/* ============= DATEPICKER ============= */}
           <Item
@@ -133,7 +155,11 @@ export default function AddActivityForm({
               },
             ]}
           >
-            <DatePicker format={dateFormat} className="fullWidth" placeholder="2020-01-01" />
+            <DatePicker
+              format={dateFormat}
+              className="fullWidth"
+              placeholder="2020-01-01"
+            />
           </Item>
           {/* ============= ACTIVITY SELECT ============= */}
           <Item
@@ -146,9 +172,14 @@ export default function AddActivityForm({
               },
             ]}
           >
-            <Select allowClear showSearch placeholder="Run" optionFilterProp="children">
-              {activityTypes.map(
-                ({ id, name }) => EmojiOption({ value: id, title: name }),
+            <Select
+              allowClear
+              showSearch
+              placeholder="Run"
+              optionFilterProp="children"
+            >
+              {activityTypes.map(({ id, name }) =>
+                EmojiOption({ value: id, title: name })
               )}
             </Select>
           </Item>
@@ -163,12 +194,7 @@ export default function AddActivityForm({
           {/* ============= DISTANCE ============= */}
           <Item label="Distance" className="distance-wrapper">
             <Item name="distance" className="inline-item">
-              <InputNumber
-                precision={2}
-                min={0.1}
-                step={0.1}
-                placeholder={5}
-              />
+              <InputNumber precision={2} min={0.1} step={0.1} placeholder={5} />
             </Item>
             <Item name="unit" className="unit inline-item">
               <Select>
@@ -181,10 +207,20 @@ export default function AddActivityForm({
         <CalculatedActivityFields activity={activity} />
       </div>
       <div className="button-row">
-        <Button className="button-row-item" onClick={onSubmit} icon={editing ? <EditOutlined /> : <RocketOutlined rotate={45} />} type="primary">
+        <Button
+          className="button-row-item"
+          onClick={onSubmit}
+          icon={editing ? <EditOutlined /> : <RocketOutlined rotate={45} />}
+          type="primary"
+        >
           {editing ? 'Edit' : 'Submit'}
         </Button>
-        <Button className="button-row-item" ghost onClick={onReset} type="primary">
+        <Button
+          className="button-row-item"
+          ghost
+          onClick={onReset}
+          type="primary"
+        >
           Reset
         </Button>
       </div>

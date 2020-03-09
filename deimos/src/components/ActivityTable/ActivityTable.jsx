@@ -1,14 +1,7 @@
 import './ActivityTable.scss';
 
-import {
-  DeleteOutlined,
-  EditOutlined,
-} from '@ant-design/icons';
-import {
-  Button, Empty, Modal,
-  Popconfirm,
-  Spin, Table,
-} from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Empty, Modal, Popconfirm, Spin, Table } from 'antd';
 import { snakeCase as _snakeCase } from 'lodash';
 import moment from 'moment';
 import React, { useState } from 'react';
@@ -27,10 +20,7 @@ const toCol = (name, render) => {
   return col;
 };
 
-
-export default function ActivityTable({
-  loading, activities, refetch,
-}) {
+export default function ActivityTable({ loading, activities, refetch }) {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
   const [tableActivities, setTableActivities] = useState(activities);
@@ -38,18 +28,21 @@ export default function ActivityTable({
 
   if (loading) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
-  if (!tableActivities || (!filtered && tableActivities.length !== activities.length)) {
+  if (
+    !tableActivities ||
+    (!filtered && tableActivities.length !== activities.length)
+  ) {
     setTableActivities(activities);
   }
 
-
-  const renderEditButtons = (activity) => (
-    <Button onClick={() => {
-      const toEdit = { ...activity };
-      toEdit.activity_date = moment(activity.activity_date);
-      setEditingActivity(toEdit);
-      setEditModalVisible(true);
-    }}
+  const renderEditButtons = activity => (
+    <Button
+      onClick={() => {
+        const toEdit = { ...activity };
+        toEdit.activity_date = moment(activity.activity_date);
+        setEditingActivity(toEdit);
+        setEditModalVisible(true);
+      }}
     >
       Edit
     </Button>
@@ -69,7 +62,10 @@ export default function ActivityTable({
       dataIndex: ['activity_type', 'name'],
     },
     toCol('Duration', minutesToHMS),
-    toCol('Distance', (distance, record) => ((distance > 0) ? `${distance} ${record.unit}` : '-')),
+    toCol(
+      'Distance',
+      (distance, record) => (distance > 0 ? `${distance} ${record.unit}` : '-')
+    ),
     {
       title: <EditOutlined />,
       key: 'edit',
@@ -90,7 +86,9 @@ export default function ActivityTable({
             refetch();
           }}
         >
-          <Button ghost type="danger">Delete</Button>
+          <Button ghost type="danger">
+            Delete
+          </Button>
         </Popconfirm>
       ),
     },
@@ -103,11 +101,7 @@ export default function ActivityTable({
         tableActivities={tableActivities}
         setTableActivities={setTableActivities}
       />
-      <Table
-        rowKey="id"
-        dataSource={tableActivities}
-        columns={columns}
-      />
+      <Table rowKey="id" dataSource={tableActivities} columns={columns} />
       <Modal
         title="Edit Activity"
         visible={editModalVisible}

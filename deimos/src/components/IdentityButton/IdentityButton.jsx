@@ -8,36 +8,37 @@ import { BACKEND_URL } from '../../constants';
 import { UserContext } from '../../contexts';
 
 export default function IdentityButton() {
-  const {
-    user, setUser, loading, setLoading,
-  } = useContext(UserContext);
+  const { user, setUser, loading, setLoading } = useContext(UserContext);
 
   const [errors, setErrors] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Make sure to include the cookie with the request!
-      try {
-        const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-          credentials: 'include',
-        });
+  useEffect(
+    () => {
+      const fetchData = async () => {
+        // Make sure to include the cookie with the request!
+        try {
+          const res = await fetch(`${BACKEND_URL}/private/users/current`, {
+            credentials: 'include',
+          });
 
-        res.json().then(({ user: respUser }) => {
-          setUser(respUser);
+          res.json().then(({ user: respUser }) => {
+            setUser(respUser);
+            setLoading(false);
+          });
+        } catch (err) {
+          notification.error({
+            message: 'Unexpected Error',
+            description: `Error: ${err}`,
+          });
+          setErrors('API Dead?');
           setLoading(false);
-        });
-      } catch (err) {
-        notification.error({
-          message: 'Unexpected Error',
-          description: `Error: ${err}`,
-        });
-        setErrors('API Dead?');
-        setLoading(false);
-      }
-    };
+        }
+      };
 
-    fetchData();
-  }, [setUser, setLoading]);
+      fetchData();
+    },
+    [setUser, setLoading]
+  );
 
   if (errors) return <p>{errors}</p>;
   if (loading) return <Spin />;
@@ -58,7 +59,11 @@ export default function IdentityButton() {
       </Button>
     </div>
   ) : (
-    <Button className="login-button" icon={<GoogleOutlined />} href={`${BACKEND_URL}/auth/google`}>
+    <Button
+      className="login-button"
+      icon={<GoogleOutlined />}
+      href={`${BACKEND_URL}/auth/google`}
+    >
       Login with Google
     </Button>
   );

@@ -4,7 +4,11 @@ import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   CartesianGrid,
-  Line, LineChart, Tooltip, XAxis, YAxis,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 
 import { fetchMonthlySums } from '../../apis/phobos-api';
@@ -13,13 +17,18 @@ export default function ActivityGraph() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchMonthlySums(setMonthlyData, setLoading);
-  }, [setLoading]);
+  useEffect(
+    () => {
+      fetchMonthlySums(setMonthlyData, setLoading);
+    },
+    [setLoading]
+  );
 
-  const transform = (data) => data.map(({ month, duration }) => (
-    { month, duration: parseFloat((duration / 60).toFixed(2)) }
-  ));
+  const transform = data =>
+    data.map(({ month, duration }) => ({
+      month,
+      duration: parseFloat((duration / 60).toFixed(2)),
+    }));
 
   return (
     <Spin spinning={loading}>
@@ -29,19 +38,27 @@ export default function ActivityGraph() {
         height={500}
         data={transform(monthlyData)}
         margin={{
-          top: 5, right: 30, left: 20, bottom: 5,
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray="10 10" />
         <XAxis tick={false} dataKey="activity_date" />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey="duration" stroke="#0e5a6d" dot={false} strokeWidth={3} />
+        <Line
+          type="monotone"
+          dataKey="duration"
+          stroke="#0e5a6d"
+          dot={false}
+          strokeWidth={3}
+        />
       </LineChart>
     </Spin>
   );
 }
-
 
 /*
 import React, { PureComponent } from 'react';
