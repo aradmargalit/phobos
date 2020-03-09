@@ -17,11 +17,10 @@ export default function EmojiOption({ value, title }) {
   return (
     <Option key={value} value={value}>
       {title}
-      { emoji
-      && (
-      <span className="emoji" role="img" aria-label={`${value} emoji`}>
-        {emoji}
-      </span>
+      {emoji && (
+        <span className="emoji" role="img" aria-label={`${value} emoji`}>
+          {emoji}
+        </span>
       )}
     </Option>
   );
