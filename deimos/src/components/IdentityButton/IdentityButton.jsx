@@ -5,7 +5,7 @@ import { Button, notification, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { BACKEND_URL } from '../../constants';
-import UserContext from '../../contexts/UserContext';
+import { UserContext } from '../../contexts';
 
 export default function IdentityButton() {
   const {

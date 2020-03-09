@@ -2,27 +2,25 @@ import './Statistics.scss';
 
 import { CheckOutlined, ClockCircleOutlined, LineChartOutlined } from '@ant-design/icons';
 import { Button, Spin, Statistic } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Line, LineChart,
 } from 'recharts';
 
 import { fetchStatistics } from '../../apis/phobos-api';
+import { StatsContext } from '../../contexts';
 
 const makeGraphData = (arr) => arr.map((datum, idx) => ({ idx, datum }));
 
-export default function Statistics() {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    workouts: 0, hours: 0, miles: 0, last_ten: [],
-  });
+export default function Statistics({ loading, setLoading }) {
+  const { stats, setStats } = useContext(StatsContext);
   const {
     workouts, hours, miles, last_ten: lastTen,
   } = stats;
 
   useEffect(() => {
     fetchStatistics(setStats, setLoading);
-  }, [setLoading]);
+  }, [setStats, setLoading]);
 
   return (
     <Spin spinning={loading}>

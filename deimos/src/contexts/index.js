@@ -1,3 +1,2 @@
-import UserContext from './UserContext';
-
-export default UserContext;
+export { default as UserContext } from './UserContext';
+export { default as StatsContext } from './StatsContext';
