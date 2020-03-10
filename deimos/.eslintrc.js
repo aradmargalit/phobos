@@ -24,7 +24,11 @@ module.exports = {
     'react/prop-types': 0,
     'react/jsx-props-no-spreading': 0,
     'simple-import-sort/sort': 'error',
-    'max-len': 120,
+    'max-len': ['error', { code: 120 }],
     'prettier/prettier': 'error',
+    'react/jsx-wrap-multilines': [
+      'error',
+      { declaration: false, assignment: false },
+    ],
   },
 };
