@@ -24,20 +24,20 @@ export default function App() {
     <UserContext.Provider value={userValue}>
       <div className="App">
         <BrowserRouter>
-          <div>
-            <Header />
-            <Switch>
-              <Route exact path="/home">
-                <Home />
-              </Route>
-              <Route exact path="/graph">
-                <ActivityGraph />
-              </Route>
-              <Route exact path="/">
-                <Landing />
-              </Route>
-            </Switch>
-          </div>
+          <Switch>
+            <Route exact path="/home">
+              <Header />
+              <Home />
+            </Route>
+            <Route exact path="/graph">
+              <Header showBack />
+              <ActivityGraph />
+            </Route>
+            <Route exact path="/">
+              <Header />
+              <Landing />
+            </Route>
+          </Switch>
         </BrowserRouter>
       </div>
     </UserContext.Provider>
