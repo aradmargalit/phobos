@@ -50,12 +50,9 @@ export default function AddActivityForm({
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
 
-  useEffect(
-    () => {
-      fetchActivityTypes(setActivityTypes, setLoading);
-    },
-    [setLoading]
-  );
+  useEffect(() => {
+    fetchActivityTypes(setActivityTypes, setLoading);
+  }, [setLoading]);
 
   const editing = !!initialActivity;
 

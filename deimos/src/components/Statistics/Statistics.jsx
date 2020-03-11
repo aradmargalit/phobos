@@ -6,8 +6,9 @@ import {
   ClockCircleOutlined,
   LineChartOutlined,
 } from '@ant-design/icons';
-import { Button, Spin, Statistic } from 'antd';
+import { Empty, Spin, Statistic } from 'antd';
 import React, { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Cell, Line, LineChart, Pie, PieChart } from 'recharts';
 
 import { fetchStatistics } from '../../apis/phobos-api';
@@ -63,9 +64,10 @@ export default function Statistics({ loading, setLoading }) {
             }
             value={miles.toFixed(2)}
           />
+          <Empty />
           <div className="statistics--trendline">
             <h3>Last 10 Days</h3>
-            <LineChart width={250} height={70} data={makeGraphData(lastTen)}>
+            <LineChart width={250} height={65} data={makeGraphData(lastTen)}>
               <Line
                 type="monotone"
                 dataKey="datum"
@@ -74,27 +76,27 @@ export default function Statistics({ loading, setLoading }) {
                 dot={false}
               />
             </LineChart>
-            <Button href="http://localhost:3000/graph">More Graph?</Button>
+            <Link to="/graph">More Graph </Link>.
           </div>
-        </div>
 
-        <div className="statistics--pie">
-          <PieChart width={500} height={300}>
-            <Pie
-              data={typeBreakdown}
-              innerRadius={80}
-              outerRadius={100}
-              fill="#8884d8"
-              paddingAngle={3}
-              dataKey="portion"
-              nameKey="name"
-              label={renderLabel}
-            >
-              {typeBreakdown.map((entry, index) => (
-                <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-          </PieChart>
+          <div className="statistics--pie">
+            <PieChart width={400} height={200}>
+              <Pie
+                data={typeBreakdown}
+                innerRadius={40}
+                outerRadius={60}
+                fill="#8884d8"
+                paddingAngle={1}
+                dataKey="portion"
+                nameKey="name"
+                label={renderLabel}
+              >
+                {typeBreakdown.map((entry, index) => (
+                  <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </div>
         </div>
       </div>
     </Spin>
