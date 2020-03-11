@@ -1,10 +1,31 @@
 import './ActivityGraph.scss';
 
 import { Spin } from 'antd';
+import { meanBy as _meanBy } from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { CartesianGrid, Line, LineChart, Text, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceLine,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 import { fetchMonthlySums } from '../../apis/phobos-api';
+
+const transform = data =>
+  data
+    // Todo, convert these to a moment-compliant format
+    .sort((a, b) => moment(a.month) - moment(b.month))
+    .map(({ month, duration }) => ({
+      month,
+      duration: parseFloat((duration / 60).toFixed(2)),
+    }));
+
+const calculateAverage = data => _meanBy(data, 'duration') / 60;
 
 export default function ActivityGraph() {
   const [monthlyData, setMonthlyData] = useState([]);
@@ -14,101 +35,72 @@ export default function ActivityGraph() {
     fetchMonthlySums(setMonthlyData, setLoading);
   }, [setLoading]);
 
-  const transform = data =>
-    data.map(({ month, duration }) => ({
-      month,
-      duration: parseFloat((duration / 60).toFixed(2)),
-    }));
-
+  if (loading) return <Spin />;
   return (
-    <Spin spinning={loading}>
-      <LineChart
+    <div>
+      <div className="graph-header">
+        <h2>M O N T H L Y</h2>
+        <h2>W O R K O U T</h2>
+        <h2>H O U R S</h2>
+      </div>
+
+      <AreaChart
         className="activity-graph"
-        width={1200}
+        width={1250}
         height={500}
         data={transform(monthlyData)}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
+        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+        padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
       >
-        <CartesianGrid strokeDasharray="10 10" />
-        <XAxis label="Months" dataKey="activity_date" />
-        <YAxis
-          padding={{ left: 40 }}
-          type="number"
-          label={
-            <Text x={0} y={0} dx={50} dy={250} offset={0} angle={-90}>
-              Hours Worked out
-            </Text>
-          }
+        <defs>
+          <linearGradient id="durationColor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#117088" stopOpacity={0.6} />
+            <stop offset="95%" stopColor="#117088" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis
+          interval={3}
+          dataKey="month"
+          height={120}
+          tick={<CustomizedAxisTick />}
         />
-        <Line
-          type="monotone"
+        <YAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <ReferenceLine
+          y={calculateAverage(monthlyData)}
+          stroke="red"
+          strokeDasharray="3 3"
+        />
+        <Tooltip
+          separator={null}
+          formatter={value => [`${value} Hours`, '']}
+          animationDuration={300}
+        />
+        <Area
           dataKey="duration"
+          type="monotone"
           stroke="#0e5a6d"
-          dot={false}
-          strokeWidth={2}
+          fillOpacity={1}
+          fill="url(#durationColor)"
         />
-      </LineChart>
-    </Spin>
+      </AreaChart>
+    </div>
   );
 }
 
-/*
-import React, { PureComponent } from 'react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
-
-const data = [
-  {
-    name: 'Page A', uv: 4000, pv: 2400, amt: 2400,
-  },
-  {
-    name: 'Page B', uv: 3000, pv: 1398, amt: 2210,
-  },
-  {
-    name: 'Page C', uv: 2000, pv: 9800, amt: 2290,
-  },
-  {
-    name: 'Page D', uv: 2780, pv: 3908, amt: 2000,
-  },
-  {
-    name: 'Page E', uv: 1890, pv: 4800, amt: 2181,
-  },
-  {
-    name: 'Page F', uv: 2390, pv: 3800, amt: 2500,
-  },
-  {
-    name: 'Page G', uv: 3490, pv: 4300, amt: 2100,
-  },
-];
-
-export default class Example extends PureComponent {
-  static jsfiddleUrl = 'https://jsfiddle.net/alidingling/xqjtetw0/';
-
-  render() {
-    return (
-      <LineChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{
-          top: 5, right: 30, left: 20, bottom: 5,
-        }}
+const CustomizedAxisTick = ({ x, y, payload }) => {
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={16}
+        textAnchor="end"
+        fill="#666"
+        transform="rotate(-45)"
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    );
-  }
-}
-*/
+        {payload.value}
+      </text>
+    </g>
+  );
+};
