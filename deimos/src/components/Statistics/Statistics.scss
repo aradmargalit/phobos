@@ -9,7 +9,11 @@
     grid-template: 1fr 1fr / 1fr 1fr;
   }
 
-  & > .recharts-wrapper {
-    margin: 25px auto;
+  & > .statistics--trendline > .recharts-wrapper {
+    margin: 10px auto;
+  }
+
+  & > .statistics--pie > .recharts-wrapper {
+    margin: 10px auto;
   }
 }

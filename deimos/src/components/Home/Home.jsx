@@ -22,12 +22,9 @@ export default function Home() {
     last_ten: [],
   });
   const [statsLoading, setStatsLoading] = useState(true);
-  useEffect(
-    () => {
-      fetchActivities(setActivities, setActivityLoading);
-    },
-    [setActivityLoading]
-  );
+  useEffect(() => {
+    fetchActivities(setActivities, setActivityLoading);
+  }, [setActivityLoading]);
 
   if (loading) return <Spin />;
   if (!user) return <Redirect to="/" />;
