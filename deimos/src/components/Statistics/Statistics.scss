@@ -4,16 +4,22 @@
       width: 200px;
       margin: auto;
     }
-    margin: 10px 0;
+    margin: 5px 0;
     display: grid;
-    grid-template: 1fr 1fr / 1fr 1fr;
+    grid-template: auto auto auto / auto auto;
   }
 
-  & > .statistics--trendline > .recharts-wrapper {
-    margin: 10px auto;
+  & > .statistics--trendline {
+    & > .recharts-wrapper {
+      margin: 5px auto;
+    }
+
+    & > h3 {
+      color: gray;
+    }
   }
 
   & > .statistics--pie > .recharts-wrapper {
-    margin: 10px auto;
+    margin: 5px auto;
   }
 }

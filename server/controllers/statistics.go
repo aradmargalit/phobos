@@ -99,6 +99,7 @@ func calculateLastTenDays(activities []models.Activity) (lastTen []float64) {
 }
 
 func calculateTypeBreakdown(activities []models.Activity, activityTypes []models.ActivityType) (typePortions []typePortion) {
+	total := float64(len(activities))
 	typeMap := make(map[int]int)
 	for _, activity := range activities {
 		running, ok := typeMap[activity.ActivityTypeID]
@@ -116,9 +117,16 @@ func calculateTypeBreakdown(activities []models.Activity, activityTypes []models
 		activityTypeMap[aT.ID] = aT.Name
 	}
 
+	var insignificantTally int
 	// Now, calculate proportions
 	for typeID, count := range typeMap {
+		// Check to make sure it's significant enough to show
+		if (float64(count) / total) < .05 {
+			insignificantTally += count
+			continue
+		}
 		typePortions = append(typePortions, typePortion{activityTypeMap[typeID], count})
 	}
+	typePortions = append(typePortions, typePortion{"Other", insignificantTally})
 	return
 }

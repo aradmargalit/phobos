@@ -46,3 +46,14 @@
     margin-bottom: 0;
   }
 }
+
+.ant-spin-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90%;
+}
+
+.ant-spin-nested-loading {
+  height: 100%;
+}

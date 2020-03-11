@@ -82,6 +82,19 @@ export default function ActivityGraph() {
           stroke="#0e5a6d"
           fillOpacity={1}
           fill="url(#durationColor)"
+          label={({ x, y, stroke, value }) => (
+            <text
+              x={x}
+              y={y}
+              dy={-15}
+              stroke={stroke}
+              fontSize={12}
+              textAnchor="middle"
+              fill="gray"
+            >
+              {value}
+            </text>
+          )}
         />
       </AreaChart>
     </div>
