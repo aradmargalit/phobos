@@ -37,7 +37,6 @@ export default function AddActivityForm({
 }) {
   const { user } = useContext(UserContext);
   const [activity, setActivity] = useState({
-    ...initialActivity,
     unit: 'miles',
     duration: {
       hours: null,
@@ -45,6 +44,7 @@ export default function AddActivityForm({
       seconds: null,
       total: 0,
     },
+    ...initialActivity,
   });
   const [activityTypes, setActivityTypes] = useState([]);
   const [loading, setLoading] = useState(true);

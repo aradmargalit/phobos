@@ -3,7 +3,7 @@ import moment from 'moment';
 const dateFormat = 'MMMM Do, YYYY';
 
 export const minutesToHMS = minutes => {
-  if (!minutes || minutes === 0) {
+  if (!minutes || minutes === 0 || !Number.isFinite(minutes)) {
     return '-';
   }
   return moment()
