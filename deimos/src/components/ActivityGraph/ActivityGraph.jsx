@@ -22,14 +22,20 @@ const transform = data =>
     .sort((a, b) => moment(a.month) - moment(b.month))
     .map(({ month, duration }) => ({
       month,
+      rawDuration: duration,
       duration: parseFloat((duration / 60).toFixed(2)),
     }));
 
-const calculateAverage = data => _meanBy(data, 'duration') / 60;
+const calculateAverage = data => _meanBy(data, 'rawDuration') / 60;
+const calculateCurrentMonth = data =>
+  (moment().daysInMonth() * data[data.length - 1].duration) /
+  moment(new Date()).date();
 
 export default function ActivityGraph() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const data = transform(monthlyData);
 
   useEffect(() => {
     fetchMonthlySums(setMonthlyData, setLoading);
@@ -48,7 +54,7 @@ export default function ActivityGraph() {
         className="activity-graph"
         width={1250}
         height={500}
-        data={transform(monthlyData)}
+        data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
       >
@@ -67,9 +73,15 @@ export default function ActivityGraph() {
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />
         <ReferenceLine
-          y={calculateAverage(monthlyData)}
+          y={calculateAverage(data)}
           stroke="red"
           strokeDasharray="3 3"
+        />
+        <ReferenceLine
+          y={calculateCurrentMonth(data)}
+          stroke="blue"
+          strokeDasharray="3 3"
+          label="Current Month Projection"
         />
         <Tooltip
           separator={null}
