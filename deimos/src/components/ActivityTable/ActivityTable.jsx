@@ -13,7 +13,7 @@ import TableSearch from '../TableSearch';
 
 const toCol = (name, render) => {
   const snakeName = _snakeCase(name);
-  const col = { title: name, dataIndex: snakeName };
+  const col = { title: name, dataIndex: snakeName, ellipsis: true };
   if (render) {
     col.render = render;
   }
@@ -53,7 +53,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
       title: 'No.',
       dataIndex: 'id',
     },
-    toCol('Name'),
+    { ...toCol('Name'), width: 300 },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
     toCol('Activity Date', formatDate),
@@ -62,9 +62,8 @@ export default function ActivityTable({ loading, activities, refetch }) {
       dataIndex: ['activity_type', 'name'],
     },
     toCol('Duration', minutesToHMS),
-    toCol(
-      'Distance',
-      (distance, record) => (distance > 0 ? `${distance} ${record.unit}` : '-')
+    toCol('Distance', (distance, record) =>
+      distance > 0 ? `${distance} ${record.unit}` : '-'
     ),
     {
       title: <EditOutlined />,
