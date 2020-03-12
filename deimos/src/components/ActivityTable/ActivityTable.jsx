@@ -1,45 +1,43 @@
 import './ActivityTable.scss';
 
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Empty, Modal, Popconfirm, Spin, Table } from 'antd';
-import { snakeCase as _snakeCase } from 'lodash';
+import { Button, Empty, Input, Modal, Popconfirm, Spin, Table } from 'antd';
+import { debounce as _debounce } from 'lodash';
 import moment from 'moment';
 import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
 import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
 import AddActivityForm from '../AddActivityForm';
-import TableSearch from '../TableSearch';
+import { filterActivities, makeDurationBreakdown, toCol } from './tableUtils';
 
-const toCol = (name, render) => {
-  const snakeName = _snakeCase(name);
-  const col = { title: name, dataIndex: snakeName, ellipsis: true };
-  if (render) {
-    col.render = render;
-  }
-  return col;
-};
+const { Search } = Input;
 
 export default function ActivityTable({ loading, activities, refetch }) {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
-  const [tableActivities, setTableActivities] = useState(activities);
-  const [filtered, setFiltered] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(null);
 
   if (loading) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
-  if (
-    !tableActivities ||
-    (!filtered && tableActivities.length !== activities.length)
-  ) {
-    setTableActivities(activities);
-  }
+
+  const bouncedSetSearchTerm = _debounce(setSearchTerm, 500);
+
+  const onChangeHandler = e => {
+    if (!e.target.value || !e.target.value.length) {
+      setSearchTerm(null);
+      return;
+    }
+    bouncedSetSearchTerm(e.target.value);
+  };
 
   const renderEditButtons = activity => (
     <Button
       onClick={() => {
         const toEdit = { ...activity };
         toEdit.activity_date = moment(activity.activity_date);
+        // This is dumb, but we need to set the full duration object until I get smarter
+        toEdit.duration = makeDurationBreakdown(activity.duration);
         setEditingActivity(toEdit);
         setEditModalVisible(true);
       }}
@@ -48,12 +46,30 @@ export default function ActivityTable({ loading, activities, refetch }) {
     </Button>
   );
 
+  const confirmDelete = ({ id }) => (
+    <Popconfirm
+      title="Are you sure?"
+      okText="Delete"
+      icon={<DeleteOutlined style={{ color: 'red' }} />}
+      onConfirm={async () => {
+        await deleteActivity(id);
+        refetch();
+      }}
+    >
+      <Button ghost type="danger">
+        Delete
+      </Button>
+    </Popconfirm>
+  );
+
+  const closeModal = () => setEditModalVisible(false);
+
   const columns = [
     {
       title: 'No.',
       dataIndex: 'id',
     },
-    { ...toCol('Name'), width: 300 },
+    { ...toCol('Name'), width: 250 },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
     toCol('Activity Date', formatDate),
@@ -75,45 +91,38 @@ export default function ActivityTable({ loading, activities, refetch }) {
       title: <DeleteOutlined />,
       key: 'delete',
       align: 'center',
-      render: ({ id }) => (
-        <Popconfirm
-          title="Are you sure?"
-          okText="Delete"
-          icon={<DeleteOutlined style={{ color: 'red' }} />}
-          onConfirm={async () => {
-            await deleteActivity(id);
-            refetch();
-          }}
-        >
-          <Button ghost type="danger">
-            Delete
-          </Button>
-        </Popconfirm>
-      ),
+      render: confirmDelete,
     },
   ];
 
   return (
     <div>
-      <TableSearch
-        setFiltered={setFiltered}
-        tableActivities={tableActivities}
-        setTableActivities={setTableActivities}
+      <Search
+        className="search-bar"
+        allowClear
+        placeholder="Search by name, type, or date..."
+        onSearch={onChangeHandler}
+        onChange={onChangeHandler}
+        width="50%"
       />
-      <Table rowKey="id" dataSource={tableActivities} columns={columns} />
+      <Table
+        rowKey="id"
+        dataSource={filterActivities(searchTerm, activities)}
+        columns={columns}
+      />
       <Modal
         title="Edit Activity"
         visible={editModalVisible}
-        onOk={() => setEditModalVisible(false)}
-        onCancel={() => setEditModalVisible(false)}
-        width={600}
+        onOk={closeModal}
+        onCancel={closeModal}
+        width={750}
         footer={null}
         destroyOnClose
       >
         <AddActivityForm
           refetch={refetch}
           initialActivity={editingActivity}
-          modalClose={() => setEditModalVisible(false)}
+          modalClose={closeModal}
         />
       </Modal>
     </div>
