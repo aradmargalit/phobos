@@ -6,10 +6,22 @@ import {
   ClockCircleOutlined,
   LineChartOutlined,
 } from '@ant-design/icons';
-import { Empty, Spin, Statistic } from 'antd';
+import { Spin, Statistic } from 'antd';
 import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Cell, Line, LineChart, Pie, PieChart } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 import { fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
@@ -28,6 +40,7 @@ export default function Statistics({ loading, setLoading }) {
     miles,
     last_ten: lastTen,
     type_breakdown: typeBreakdown,
+    day_breakdown: dayBreakdown,
   } = stats;
 
   useEffect(() => {
@@ -64,7 +77,25 @@ export default function Statistics({ loading, setLoading }) {
             }
             value={miles.toFixed(2)}
           />
-          <Empty />
+          <div className="statistics--dow">
+            <BarChart
+              width={250}
+              height={125}
+              data={dayBreakdown}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day_of_week" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#0e5a6d" />
+            </BarChart>
+          </div>
           <div className="statistics--trendline">
             <h3>Last 10 Days</h3>
             <LineChart width={250} height={65} data={makeGraphData(lastTen)}>
