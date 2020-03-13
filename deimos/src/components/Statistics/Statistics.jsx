@@ -16,7 +16,7 @@ import { StatsContext } from '../../contexts';
 
 const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#bd4946', '#d4524e', '#ec5b57', '#f07c79', '#f49d9a'];
 
 const renderLabel = d => d.name;
 
