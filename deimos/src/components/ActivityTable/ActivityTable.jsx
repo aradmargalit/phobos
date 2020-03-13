@@ -63,11 +63,11 @@ export default function ActivityTable({ loading, activities, refetch }) {
   );
 
   const closeModal = () => setEditModalVisible(false);
-
   const columns = [
     {
       title: 'No.',
-      dataIndex: 'id',
+      dataIndex: 'idx',
+      render: (text, record, idx) => activities.length - idx,
     },
     { ...toCol('Name'), width: 250 },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
