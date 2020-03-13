@@ -8,6 +8,7 @@
     display: grid;
     grid-template: auto auto auto / auto auto;
     align-items: center;
+    justify-items: center;
   }
 
   & > .statistics--trendline {

@@ -14,6 +14,11 @@ type typePortion struct {
 	Portion int    `json:"portion"`
 }
 
+type dayBreakdown struct {
+	DOW   string `json:"day_of_week"`
+	Count int    `json:"count"`
+}
+
 // GetUserStatistics returns some fun user statistics for the frontend
 func (e *Env) GetUserStatistics(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
@@ -38,15 +43,17 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 	totalMiles := calculateMileage(a)
 	lastTen := calculateLastTenDays(a)
 	typeBreakdown := calculateTypeBreakdown(a, at)
+	dayBreakdowns := calculateDayBreakdown(a)
 
 	response := struct {
-		Workouts      int           `json:"workouts"`
-		Hours         float64       `json:"hours"`
-		Miles         float64       `json:"miles"`
-		LastTen       []float64     `json:"last_ten"`
-		TypeBreakdown []typePortion `json:"type_breakdown"`
+		Workouts      int            `json:"workouts"`
+		Hours         float64        `json:"hours"`
+		Miles         float64        `json:"miles"`
+		LastTen       []float64      `json:"last_ten"`
+		TypeBreakdown []typePortion  `json:"type_breakdown"`
+		DayBreakdown  []dayBreakdown `json:"day_breakdown"`
 	}{
-		totalWorkouts, totalHours, totalMiles, lastTen, typeBreakdown,
+		totalWorkouts, totalHours, totalMiles, lastTen, typeBreakdown, dayBreakdowns,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -128,5 +135,27 @@ func calculateTypeBreakdown(activities []models.Activity, activityTypes []models
 		typePortions = append(typePortions, typePortion{activityTypeMap[typeID], count})
 	}
 	typePortions = append(typePortions, typePortion{"Other", insignificantTally})
+	return
+}
+
+func calculateDayBreakdown(activities []models.Activity) (dayBreakdowns []dayBreakdown) {
+	dayMap := make(map[string]int)
+	for _, activity := range activities {
+		// Parse date from activity
+		dbDate, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+		dow := dbDate.Weekday().String()
+
+		running, ok := dayMap[dow]
+		if !ok {
+			running = 0
+		}
+
+		running++
+		dayMap[dow] = running
+	}
+
+	for _, day := range []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"} {
+		dayBreakdowns = append(dayBreakdowns, dayBreakdown{day, dayMap[day]})
+	}
 	return
 }
