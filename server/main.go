@@ -69,7 +69,8 @@ func main() {
 	}
 
 	admin := r.Group("/admin")
-	admin.Use(middleware.NonProd)
+	// Eventually, I'll want to restrict what happens in production, but not yet.
+	// admin.Use(middleware.NonProd)
 	{
 		admin.GET("/seed", env.SeedHandler)
 	}
