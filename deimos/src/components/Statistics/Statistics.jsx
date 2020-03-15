@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/jsx-one-expression-per-line */
 import './Statistics.scss';
 
@@ -78,6 +79,7 @@ export default function Statistics({ loading, setLoading }) {
             value={miles.toFixed(2)}
           />
           <div className="statistics--dow">
+            <h3>Daily Breakdown</h3>
             <BarChart
               width={250}
               height={125}
@@ -93,7 +95,14 @@ export default function Statistics({ loading, setLoading }) {
               <XAxis dataKey="day_of_week" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#0e5a6d" />
+              <Bar dataKey="count" fill="#0e5a6d">
+                {dayBreakdown.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </div>
           <div className="statistics--trendline">
