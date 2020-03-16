@@ -3,7 +3,7 @@ import './ActivityGraph.scss';
 import { Spin } from 'antd';
 import { meanBy as _meanBy } from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Area,
   AreaChart,
@@ -14,7 +14,6 @@ import {
   YAxis,
 } from 'recharts';
 
-import { fetchMonthlySums } from '../../apis/phobos-api';
 import AngledGraphTick from '../AngledGraphTick';
 
 const transform = data =>
@@ -32,17 +31,11 @@ const calculateCurrentMonth = data =>
   (moment().daysInMonth() * data[data.length - 1].duration) /
   moment(new Date()).date();
 
-export default function ActivityGraph() {
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+export default function ActivityGraph({ loading, monthlyData }) {
   const data = transform(monthlyData);
 
-  useEffect(() => {
-    fetchMonthlySums(setMonthlyData, setLoading);
-  }, [setLoading]);
-
   if (loading) return <Spin />;
+
   return (
     <div className="activity-graph-wrapper">
       <div className="graph-header">
