@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 
 import { fetchMonthlySums } from '../../apis/phobos-api';
+import AngledGraphTick from '../AngledGraphTick';
 
 const transform = data =>
   data
@@ -43,7 +44,7 @@ export default function ActivityGraph() {
 
   if (loading) return <Spin />;
   return (
-    <div>
+    <div className="activity-graph-wrapper">
       <div className="graph-header">
         <h2>M O N T H L Y</h2>
         <h2>W O R K O U T</h2>
@@ -68,7 +69,7 @@ export default function ActivityGraph() {
           interval={3}
           dataKey="month"
           height={120}
-          tick={<CustomizedAxisTick />}
+          tick={<AngledGraphTick />}
         />
         <YAxis />
         <CartesianGrid strokeDasharray="3 3" />
@@ -112,20 +113,3 @@ export default function ActivityGraph() {
     </div>
   );
 }
-
-const CustomizedAxisTick = ({ x, y, payload }) => {
-  return (
-    <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={0}
-        dy={16}
-        textAnchor="end"
-        fill="#666"
-        transform="rotate(-45)"
-      >
-        {payload.value}
-      </text>
-    </g>
-  );
-};

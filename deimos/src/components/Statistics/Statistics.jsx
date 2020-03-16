@@ -76,60 +76,9 @@ export default function Statistics({ loading, setLoading }) {
               />
             </LineChart>
           </ResponsiveContainer>
-          <Link to="/graph">More Graph </Link>.
+          <Link to="/graph">More Graph</Link>
         </div>
       </div>
     </Spin>
   );
 }
-
-// TODO: Find a home for these
-// const COLORS = ['#bd4946', '#d4524e', '#ec5b57', '#f07c79', '#f49d9a'];
-
-// const renderLabel = d => d.name;
-
-/* <div className="statistics--dow">
-            <h3>Daily Breakdown</h3>
-            <BarChart
-              width={250}
-              height={125}
-              data={dayBreakdown}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day_of_week" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#0e5a6d">
-                {dayBreakdown.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </div>
-          <div className="statistics--pie">
-            <PieChart width={400} height={200}>
-              <Pie
-                data={typeBreakdown}
-                innerRadius={40}
-                outerRadius={60}
-                fill="#8884d8"
-                paddingAngle={1}
-                dataKey="portion"
-                nameKey="name"
-                label={renderLabel}
-              >
-                {typeBreakdown.map((entry, index) => (
-                  <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-            </PieChart>
-                </div> */

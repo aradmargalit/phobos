@@ -1,0 +1,14 @@
+.graphs {
+  display: grid;
+  grid-template: auto auto / 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+}
+
+.activity-graph-wrapper {
+  grid-column: 1 / 4;
+}
+
+.statistics--dow {
+  width: 100%;
+}
