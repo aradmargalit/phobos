@@ -76,7 +76,9 @@ export default function Statistics({ loading, setLoading }) {
               />
             </LineChart>
           </ResponsiveContainer>
-          <Link to="/graph">More Graph</Link>
+          <Link className="ant-btn" to="/graph">
+            More Graph <LineChartOutlined style={{ marginLeft: '10px' }} />
+          </Link>
         </div>
       </div>
     </Spin>
