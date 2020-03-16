@@ -62,23 +62,23 @@ export default function Statistics({ loading, setLoading }) {
             }
             value={miles.toFixed(2)}
           />
-        </div>
-        <div className="statistics--trendline">
-          <h3>Last 10 Days</h3>
-          <ResponsiveContainer id="trendline-wrapper" width="75%">
-            <LineChart data={makeGraphData(lastTen)}>
-              <Line
-                type="monotone"
-                dataKey="datum"
-                stroke="#0e5a6d"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          <Link className="ant-btn" to="/graph">
-            More Graph <LineChartOutlined style={{ marginLeft: '10px' }} />
-          </Link>
+          <div className="statistics--trendline">
+            <h3>Last 10 Days</h3>
+            <ResponsiveContainer id="trendline-wrapper" width="100%">
+              <LineChart data={makeGraphData(lastTen)}>
+                <Line
+                  type="monotone"
+                  dataKey="datum"
+                  stroke="#0e5a6d"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <Link style={{ marginTop: '20px' }} className="ant-btn" to="/graph">
+              More Graph <LineChartOutlined style={{ marginLeft: '10px' }} />
+            </Link>
+          </div>
         </div>
       </div>
     </Spin>
