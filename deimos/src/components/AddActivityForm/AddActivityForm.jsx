@@ -10,7 +10,6 @@ import {
   message,
   notification,
   Select,
-  Spin,
 } from 'antd';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
@@ -57,6 +56,7 @@ export default function AddActivityForm({
   const editing = !!initialActivity;
 
   const upsert = async (values, apiCall) => {
+    setLoading(true);
     // First, we need to grab the total for duration
     const postValues = {
       ...values,
@@ -74,6 +74,8 @@ export default function AddActivityForm({
         message: 'Unexpected Error',
         description: `Error: ${err}`,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,7 +113,7 @@ export default function AddActivityForm({
   };
 
   return (
-    <Spin spinning={loading}>
+    <div>
       <div className="form-flex">
         <Form
           {...layout}
@@ -209,6 +211,8 @@ export default function AddActivityForm({
           onClick={onSubmit}
           icon={editing ? <EditOutlined /> : <RocketOutlined rotate={45} />}
           type="primary"
+          loading={loading}
+          disabled={loading}
         >
           {editing ? 'Edit' : 'Submit'}
         </Button>
@@ -221,6 +225,6 @@ export default function AddActivityForm({
           Reset
         </Button>
       </div>
-    </Spin>
+    </div>
   );
 }
