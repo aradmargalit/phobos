@@ -1,27 +1,20 @@
-.statistics {
-  & > .stats {
-    & > .ant-statistic {
-      width: 200px;
-      margin: auto;
-    }
-    margin: 5px 0;
-    display: grid;
-    grid-template: auto auto auto / auto auto;
-    align-items: center;
-    justify-items: center;
-  }
+.statistics--trendline {
+  height: 100%;
+}
 
-  & > .statistics--trendline {
-    & > .recharts-wrapper {
-      margin: 5px auto;
-    }
+.stats {
+  height: 35%;
+}
 
-    & > h3 {
-      color: gray;
-    }
-  }
+#trendline-wrapper {
+  margin: auto;
+}
 
-  & > .statistics--pie > .recharts-wrapper {
-    margin: 5px auto;
-  }
+.statistics-grid {
+  display: grid;
+  grid-gap: 20px;
+  grid-template: 1fr / 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  margin-bottom: 15%;
 }
