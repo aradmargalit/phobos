@@ -15,6 +15,7 @@ export default function CalculatedActivityFields({ activity }) {
 
   return (
     <Statistic
+      className="form-statistic"
       title={`min / ${singularize(unit)}`}
       value={totalMinutes / distance}
       formatter={minutesToHMS}
