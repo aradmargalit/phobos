@@ -110,7 +110,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 
 	// Lastly, redirect the user to the front-end app.
 	// TODO::Make this dynamic based on the environment.
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8080/home")
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL") + "/home")
 }
 
 // Logout will clear the current users cookie
@@ -130,5 +130,5 @@ func (e *Env) Logout(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:8080/")
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL"))
 }
