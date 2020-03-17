@@ -10,6 +10,8 @@ I wanted to keep a list of lessons I learned while building this projects, parti
 
   Becuase `process.env.REACT_APP_X` is interpolated/replaced at _build_ time, you need to expose environment variables from `docker-compose.yml` during the "build phase".
 
+- Now for the real plot twist - I wouldn't recommend serving the front end on its own. It's possible, but for small-scale applications, I find it easier to have the API serve up the client bundle.
+
 - If we plan on using cookies for sessions management (which we are in this application), `fetch` calls need to include credentials:
 
   ```javascript

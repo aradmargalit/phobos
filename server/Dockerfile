@@ -20,4 +20,3 @@ COPY --from=builder /usr/src/app/build ./deimos/build
 
 RUN go build -o main . 
 CMD ["/server/main"]
-
