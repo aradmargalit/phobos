@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { BACKEND_URL } from '../constants';
 
 const options = {
   method: 'POST',
@@ -12,7 +11,7 @@ const options = {
 
 const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
   // Make sure to include the cookie with the request!
-  const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+  const res = await fetch(endpoint, {
     credentials: 'include',
   });
 
@@ -22,7 +21,7 @@ const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
 };
 
 const protectedUpsert = async (endpoint, method, body) => {
-  const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+  const res = await fetch(endpoint, {
     ...options,
     method,
     body: JSON.stringify(body),
@@ -60,7 +59,7 @@ export const putActivity = async activity => {
 };
 
 export const deleteActivity = async id => {
-  const res = await fetch(`${BACKEND_URL}/private/activities/${id}`, {
+  const res = await fetch(`/private/activities/${id}`, {
     ...options,
     method: 'DELETE',
   });
