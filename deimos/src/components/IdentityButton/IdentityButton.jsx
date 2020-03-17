@@ -4,7 +4,6 @@ import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Button, notification, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { BACKEND_URL } from '../../constants';
 import { UserContext } from '../../contexts';
 
 export default function IdentityButton() {
@@ -12,33 +11,30 @@ export default function IdentityButton() {
 
   const [errors, setErrors] = useState(false);
 
-  useEffect(
-    () => {
-      const fetchData = async () => {
-        // Make sure to include the cookie with the request!
-        try {
-          const res = await fetch(`${BACKEND_URL}/private/users/current`, {
-            credentials: 'include',
-          });
+  useEffect(() => {
+    const fetchData = async () => {
+      // Make sure to include the cookie with the request!
+      try {
+        const res = await fetch(`/private/users/current`, {
+          credentials: 'include',
+        });
 
-          res.json().then(({ user: respUser }) => {
-            setUser(respUser);
-            setLoading(false);
-          });
-        } catch (err) {
-          notification.error({
-            message: 'Unexpected Error',
-            description: `Error: ${err}`,
-          });
-          setErrors('API Dead?');
+        res.json().then(({ user: respUser }) => {
+          setUser(respUser);
           setLoading(false);
-        }
-      };
+        });
+      } catch (err) {
+        notification.error({
+          message: 'Unexpected Error',
+          description: `Error: ${err}`,
+        });
+        setErrors('API Dead?');
+        setLoading(false);
+      }
+    };
 
-      fetchData();
-    },
-    [setUser, setLoading]
-  );
+    fetchData();
+  }, [setUser, setLoading]);
 
   if (errors) return <p>{errors}</p>;
   if (loading) return <Spin />;
@@ -51,7 +47,7 @@ export default function IdentityButton() {
       </h1>
       <Button
         icon={<LogoutOutlined />}
-        href={`${BACKEND_URL}/users/logout`}
+        href="/users/logout"
         type="danger"
         ghost
       >
@@ -62,7 +58,7 @@ export default function IdentityButton() {
     <Button
       className="login-button"
       icon={<GoogleOutlined />}
-      href={`${BACKEND_URL}/auth/google`}
+      href="/auth/google"
     >
       Login with Google
     </Button>

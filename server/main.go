@@ -11,6 +11,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,10 +39,13 @@ func main() {
 	// CORS to allow localhost in development
 	// Make sure to allow credentials so we can read the cookie
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowOrigins = []string{"http://localhost:8080"}
 	config.AllowCredentials = true
 
 	r.Use(cors.New(config))
+
+	// First thing's first - serve up the client JS
+	r.Use(static.Serve("/", static.LocalFile("../deimos/build", true)))
 
 	// Called by the UI when the user clicks the "Login with Google Button"
 	r.GET("/auth/google", env.HandleLogin)
