@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"server/controllers"
 
@@ -15,7 +14,6 @@ func AuthRequired(c *gin.Context) {
 	uid := session.Get(controllers.UserID)
 
 	if uid == nil {
-		fmt.Println("Aborting")
 		// Abort the request with the appropriate error code
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
