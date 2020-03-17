@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	controllers "server/controllers"
 	middleware "server/middleware"
 	models "server/models"
@@ -11,11 +12,12 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
-	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN"} {
+	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN", "FRONTEND_URL"} {
 		if os.Getenv(v) == "" {
 			panic(fmt.Sprintf("%v must be set in the environment!", v))
 		}
@@ -38,10 +40,16 @@ func main() {
 	// CORS to allow localhost in development
 	// Make sure to allow credentials so we can read the cookie
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowOrigins = []string{os.Getenv("FRONTEND_URL")}
 	config.AllowCredentials = true
 
 	r.Use(cors.New(config))
+
+	// First thing's first - serve up the client JS
+	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
+	r.NoRoute(func(c *gin.Context){
+		c.Redirect(http.StatusTemporaryRedirect, "/")
+	})
 
 	// Called by the UI when the user clicks the "Login with Google Button"
 	r.GET("/auth/google", env.HandleLogin)
