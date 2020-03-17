@@ -7,7 +7,6 @@ import { Button, Spin } from 'antd';
 import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { BACKEND_URL } from '../../constants';
 import { UserContext } from '../../contexts';
 
 export default function Landing() {
@@ -27,7 +26,7 @@ export default function Landing() {
         />
         <div className="landing-container__actions">
           <Button
-            href={`${BACKEND_URL}/auth/google`}
+            href="/auth/google"
             className="ant-btn big-button"
             icon={<GoogleOutlined />}
             type="primary"
@@ -36,7 +35,7 @@ export default function Landing() {
           </Button>
           <i>already have an account?</i>
           <Button
-            href={`${BACKEND_URL}/auth/google`}
+            href="/auth/google"
             className="ant-btn small-button"
             icon={<LoginOutlined />}
             ghost
