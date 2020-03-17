@@ -28,11 +28,6 @@ The goal is to string everything together using [Docker Compose](https://docs.do
 
 ```sh
 # --build rebuilds images in the event that the source has changed
-# You'll need to pass environemnt variables for the server
-GOOGLE_CLIENT_ID= \
-GOOGLE_CLIENT_SECRET= \
-API_DB_STRING= \
-COOKIE_SECRET_TOKEN = \
 docker-compose up --build
 ```
 
@@ -60,6 +55,9 @@ go build
 
 GOOGLE_CLIENT_ID= \
 GOOGLE_CLIENT_SECRET= \
+API_DB_STRING= \
+COOKIE_SECRET_TOKEN = \
+FRONTEND_URL = \
 ./server
 ```
 
