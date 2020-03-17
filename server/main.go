@@ -46,7 +46,7 @@ func main() {
 	r.Use(cors.New(config))
 
 	// First thing's first - serve up the client JS
-	r.Use(static.Serve("/", static.LocalFile("../deimos/build", true)))
+	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
 	r.NoRoute(func(c *gin.Context){
 		c.Redirect(http.StatusTemporaryRedirect, "/")
 	})

@@ -1,21 +1,7 @@
 ###########
 # PHASE 1 #
 ###########
-FROM node:latest as builder
 
-WORKDIR /usr/src/app
-COPY package.json yarn.lock ./
-RUN yarn
-COPY . ./
-
-# Build args, usually passed through the docker-compose
-ARG REACT_APP_API_URL
-
-# Set environment variables
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-
-# Finally, build the app! Production edition!
-RUN yarn build
 
 
 ###########
