@@ -17,7 +17,7 @@ import (
 )
 
 func init() {
-	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN"} {
+	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN", "FRONTEND_URL"} {
 		if os.Getenv(v) == "" {
 			panic(fmt.Sprintf("%v must be set in the environment!", v))
 		}
@@ -40,7 +40,7 @@ func main() {
 	// CORS to allow localhost in development
 	// Make sure to allow credentials so we can read the cookie
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowOrigins = []string{os.Getenv("FRONTEND_URL")}
 	config.AllowCredentials = true
 
 	r.Use(cors.New(config))
