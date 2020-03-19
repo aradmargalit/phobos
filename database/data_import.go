@@ -30,7 +30,7 @@ func main() {
 		"Volleyball": 37,
 	}
 
-	csvfile, err := os.Open("/Users/aradmargalit/Downloads/input.csv")
+	csvfile, err := os.Open("/Users/aradmargalit/Downloads/we.csv")
 	if err != nil {
 		log.Fatalln("Couldn't open the input", err)
 	}

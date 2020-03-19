@@ -17,7 +17,7 @@ import (
 )
 
 func init() {
-	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN", "FRONTEND_URL"} {
+	for _, v := range []string{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "COOKIE_SECRET_TOKEN", "FRONTEND_URL", "SERVER_URL"} {
 		if os.Getenv(v) == "" {
 			panic(fmt.Sprintf("%v must be set in the environment!", v))
 		}
@@ -47,7 +47,7 @@ func main() {
 
 	// First thing's first - serve up the client JS
 	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
-	r.NoRoute(func(c *gin.Context){
+	r.NoRoute(func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/")
 	})
 
