@@ -16,7 +16,7 @@ I wanted to keep a list of lessons I learned while building this projects, parti
 
   ```javascript
   const res = await fetch(`${BACKEND_URL}/what/ever`, {
-    credentials: 'include'
+    credentials: "include"
   });
   ```
 
@@ -59,3 +59,7 @@ I wanted to keep a list of lessons I learned while building this projects, parti
 - Any values in `.env` are automatically exported to the `docker-compose.yml` file, making it dead-simple to pass secrets.
 
 - The database doesn't require its own `Dockerfile` since the official image provides a way to create root and API users, run init scripts, and define your own volumes. :books:
+
+## Deployment
+
+- I wanted to go AWS with EKS, but it was just way too expensive. Google Cloud provided a completely free, fully managed solution, and works well since I lean entirely on Google Auth for this project.

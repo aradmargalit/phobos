@@ -58,6 +58,7 @@ GOOGLE_CLIENT_SECRET= \
 API_DB_STRING= \
 COOKIE_SECRET_TOKEN = \
 FRONTEND_URL = \
+SERVER_URL = \
 ./server
 ```
 
@@ -68,6 +69,39 @@ You should just use Docker for this. It's way easier.
 ```sh
 docker-compose up -d mysql
 ```
+
+## Deployment :rocket:
+
+This project is deployed on [Google Cloud Platform](https://cloud.google.com/), using [Cloud SQL](https://cloud.google.com/sql/) as a managed relational database solution and [Cloud Run](https://cloud.google.com/run) as a very simple managed container service.
+
+### Setting Up the GCloud CLI
+
+Follow [the instructions for your OS](https://cloud.google.com/sdk/docs/quickstart-macos) to get the `gcloud` CLI tool up and running.
+
+This assumes you've already created a "project" in the cloud console that you can hook into. On running `gcloud init`, you'll login with your Google Account.
+
+### Build and Deploy
+
+To build the application, `cd` into the `server` directory and run:
+
+```sh
+# Format for the tag: gcr.io/[PROJECT NAME]/[IMAGE NAME]
+docker build . --tag gcr.io/phobos-prod/phobos-server
+```
+
+Then, confirm you can push to gcr like so:
+
+```sh
+gcloud auth configure-docker gcr.io
+```
+
+Finally, push your built image to GCR.
+
+```sh
+docker push gcr.io/phobos-prod/phobos-server
+```
+
+To deploy, create a new revision in the Google Cloud Console and deploy. You can also do this from the CLI, if you'd prefer.
 
 ## More Documentation
 
