@@ -30,7 +30,7 @@ func init() {
 	conf = &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  "http://localhost:8080/callback",
+		RedirectURL:  os.Getenv("SERVER_URL") + "/callback",
 		Scopes: []string{
 			"email", "profile",
 		},
