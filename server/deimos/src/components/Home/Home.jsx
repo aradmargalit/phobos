@@ -1,6 +1,6 @@
 import './Home.scss';
 
-import { Button, Spin } from 'antd';
+import { Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import { fetchActivities, fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
 import ActivityTable from '../ActivityTable';
 import AddActivityForm from '../AddActivityForm';
+import QuickAdd from '../QuickAdd';
 import Statistics from '../Statistics';
 
 export default function Home() {
@@ -40,23 +41,7 @@ export default function Home() {
           </div>
           <div>
             <h3>Quick-Add</h3>
-            <div className="saved-workouts-list">
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-              <Button>Saved Workout 1</Button>
-            </div>
+            <QuickAdd />
           </div>
         </div>
       </div>

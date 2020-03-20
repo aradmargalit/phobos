@@ -38,19 +38,3 @@
   display: flex;
   justify-content: space-evenly;
 }
-
-.saved-workouts-list {
-  padding: 0px 10px;
-  margin-right: 10px;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-
-  & > .ant-btn {
-    margin-top: 10px;
-  }
-}
-.saved-workouts-list::-webkit-scrollbar {
-  display: none;
-}
