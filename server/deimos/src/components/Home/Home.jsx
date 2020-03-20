@@ -1,6 +1,6 @@
 import './Home.scss';
 
-import { Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -28,12 +28,37 @@ export default function Home() {
     <div className="app-content">
       <div className="container input-form">
         <h3 className="home-header">Add Activity</h3>
-        <AddActivityForm
-          refetch={() => {
-            fetchActivities(setActivities, setActivityLoading);
-            fetchStatistics(setStats, setStatsLoading);
-          }}
-        />
+        <div className="input-form--contents">
+          <div>
+            <h3>Manual Add</h3>
+            <AddActivityForm
+              refetch={() => {
+                fetchActivities(setActivities, setActivityLoading);
+                fetchStatistics(setStats, setStatsLoading);
+              }}
+            />
+          </div>
+          <div>
+            <h3>Quick-Add</h3>
+            <div className="saved-workouts-list">
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+              <Button>Saved Workout 1</Button>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="container statistics">
         <h3 className="home-header">Your Statistics</h3>

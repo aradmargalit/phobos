@@ -113,7 +113,7 @@ export default function AddActivityForm({
   };
 
   return (
-    <div>
+    <div className="outer-form-wrapper">
       <div className="form-flex">
         <Form
           {...layout}
@@ -203,8 +203,8 @@ export default function AddActivityForm({
             </Item>
           </Item>
         </Form>
-        <CalculatedActivityFields activity={activity} />
       </div>
+      <CalculatedActivityFields activity={activity} />
       <div className="button-row">
         <Button
           className="button-row-item"
