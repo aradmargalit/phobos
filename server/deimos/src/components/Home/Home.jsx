@@ -28,10 +28,10 @@ export default function Home() {
   return (
     <div className="app-content">
       <div className="container input-form">
-        <h3 className="home-header">Add Activity</h3>
+        <h3>Add Activity</h3>
         <div className="input-form--contents">
           <div>
-            <h3>Manual Add</h3>
+            <h4>Manual Add</h4>
             <AddActivityForm
               refetch={() => {
                 fetchActivities(setActivities, setActivityLoading);
@@ -40,17 +40,17 @@ export default function Home() {
             />
           </div>
           <div>
-            <h3>Quick-Add</h3>
+            <h4>Quick-Add</h4>
             <QuickAdd />
           </div>
         </div>
       </div>
       <div className="container statistics">
-        <h3 className="home-header">Your Statistics</h3>
+        <h3>Your Statistics</h3>
         <Statistics loading={statsLoading} setLoading={setStatsLoading} />
       </div>
       <div className="container data-table">
-        <h3 className="home-header">Your Activities</h3>
+        <h3>Your Activities</h3>
         <ActivityTable
           activities={activities}
           refetch={() => {
