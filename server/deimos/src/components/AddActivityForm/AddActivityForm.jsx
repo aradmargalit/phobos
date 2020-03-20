@@ -224,6 +224,9 @@ export default function AddActivityForm({
         >
           Reset
         </Button>
+        <Button className="button-row-item" onClick={onReset} type="dashed">
+          Save for Quick-Add
+        </Button>
       </div>
     </div>
   );

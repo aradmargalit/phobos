@@ -1,21 +1,16 @@
 import './QuickAdd.scss';
 
-import { Button } from 'antd';
+import { Button, Empty } from 'antd';
 import React from 'react';
 
 export default function QuickAdd() {
   return (
     <div className="quick-add">
-      <Button>Saved Workout</Button>
-      <Button>Saved Workou 2</Button>
-      <Button>Saved Workout 3</Button>
-      <Button>Saved Workout 4</Button>
-      <Button>Saved Workout 5</Button>
-      <Button>Saved Workout 6</Button>
-      <Button>Saved Workout 7</Button>
-      <Button>Saved Workout 8</Button>
-      <Button>Saved Workout 9</Button>
-      <Button>Saved Workout 10</Button>
+      <Empty description="Save a workout to quickly add it later!" />
+      <span>
+        <Button>Sample Workout</Button>
+        Trash Button TBD
+      </span>
     </div>
   );
 }
