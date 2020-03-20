@@ -1,14 +1,15 @@
 .graphs {
   display: grid;
-  grid-template: auto auto / 1fr 1fr;
+  grid-template: auto auto / 1fr 1fr 1fr 1fr;
   justify-items: center;
   align-items: center;
 }
 
 .activity-graph-wrapper {
-  grid-column: 1 / 4;
+  grid-column: 1 / 5;
 }
 
 .statistics--dow {
   width: 100%;
+  grid-column: 2 / 2;
 }
