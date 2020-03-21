@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { Form } from 'antd';
+import React, { useEffect, useState } from 'react';
 
 import { fetchActivityTypes } from '../../apis/phobos-api';
-import { UserContext } from '../../contexts';
 import AddActivityForm from '../AddActivityForm';
 import CalculatedActivityFields from '../CalculatedActivityFields';
 import FormButtons from '../FormButtons';
-import { onFinish, onReset, onSaveQuickAdd, onSubmit } from './createUtils';
+import { onFinish, onReset, onSubmit } from './editUtils';
 
-export default function CreateActivity({ form, refetch }) {
-  const { user } = useContext(UserContext);
+export default function EditActivity({ refetch, initialActivity, modalClose }) {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activityTypes, setActivityTypes] = useState([]);
+  const [form] = Form.useForm();
 
   const wrappedFinish = values =>
-    onFinish(values, setLoading, refetch, form, setActivity);
+    onFinish(values, setLoading, refetch, initialActivity.id, modalClose);
 
   useEffect(() => {
     fetchActivityTypes(setActivityTypes, setLoading);
@@ -25,30 +25,18 @@ export default function CreateActivity({ form, refetch }) {
       <AddActivityForm
         refetch={refetch}
         form={form}
-        user={user}
         setActivity={setActivity}
         activityTypes={activityTypes}
+        initialActivity={initialActivity}
         onFinish={wrappedFinish}
       />
       <CalculatedActivityFields activity={activity} />
       <FormButtons
+        editing
         loading={loading}
         onSubmit={() => onSubmit(form)}
         onReset={() => onReset(form, setActivity)}
-        onSaveQuickAdd={() => onSaveQuickAdd(form, refetch, setLoading)}
       />
     </div>
   );
 }
-
-/*
-  const defaultActivity = {
-    unit: 'miles',
-    duration: {
-      hours: null,
-      minutes: null,
-      seconds: null,
-      total: 0,
-    },
-  };
-*/

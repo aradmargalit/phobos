@@ -29,13 +29,16 @@ export default function FormButtons({
       >
         Reset
       </Button>
-      <Button
-        className="button-row-item"
-        onClick={onSaveQuickAdd}
-        type="dashed"
-      >
-        Save for Quick-Add
-      </Button>
+      {/* Only show QuickAdd if the function was passed in as a prop */}
+      {onSaveQuickAdd && (
+        <Button
+          className="button-row-item"
+          onClick={onSaveQuickAdd}
+          type="dashed"
+        >
+          Save for Quick-Add
+        </Button>
+      )}
     </div>
   );
 }

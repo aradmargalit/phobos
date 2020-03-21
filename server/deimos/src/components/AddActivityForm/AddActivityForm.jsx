@@ -54,7 +54,7 @@ export default function AddActivityForm({
           <Input
             data-lpignore="true"
             className="fullWidth"
-            placeholder={`${user.given_name}'s Favorite Run`}
+            placeholder={user && `${user.given_name}'s Favorite Run`}
           />
         </Item>
         {/* ============= DATEPICKER ============= */}
