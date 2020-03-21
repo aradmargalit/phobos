@@ -8,7 +8,7 @@ const hmsToMinutes = ({ hours, minutes, seconds }) =>
 
 // Value is an object of {hours, minutes, seconds, total}
 export default function DurationPicker({ value, onChange }) {
-  const hms = { hours: 0, minutes: 0, seconds: 0, ...value };
+  const hms = { hours: null, minutes: null, seconds: null, ...value };
   const { hours, minutes, seconds } = hms;
 
   const onHoursChange = newHours => {
