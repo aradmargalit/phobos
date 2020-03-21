@@ -1,6 +1,6 @@
 import './Home.scss';
 
-import { Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -25,15 +25,8 @@ export default function Home() {
   const [quickAdds, setQuickAdds] = useState(null);
   const [quickAddsLoading, setQuickAddsLoading] = useState(true);
 
-  const [activity, setActivity] = useState({
-    unit: 'miles',
-    duration: {
-      hours: null,
-      minutes: null,
-      seconds: null,
-      total: 0,
-    },
-  });
+  const [form] = Form.useForm();
+  const setFormValues = values => form.setFieldsValue(values);
 
   useEffect(() => {
     fetchActivities(setActivities, setActivityLoading);
@@ -56,8 +49,7 @@ export default function Home() {
                 fetchQuickAdds(setQuickAdds, setQuickAddsLoading);
               }}
               setQuickAdds={setQuickAdds}
-              activity={activity}
-              setActivity={setActivity}
+              form={form}
             />
           </div>
           <div>
@@ -67,7 +59,7 @@ export default function Home() {
               setQuickAdds={setQuickAdds}
               loading={quickAddsLoading}
               setLoading={setQuickAddsLoading}
-              setQuickAdd={setActivity}
+              setQuickAdd={setFormValues}
             />
           </div>
         </div>

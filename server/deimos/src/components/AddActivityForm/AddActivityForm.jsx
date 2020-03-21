@@ -31,27 +31,30 @@ const { Item } = Form;
 const { Option } = Select;
 
 export default function AddActivityForm({
+  form,
   refetch,
   initialActivity,
   modalClose,
-  activity,
-  setActivity,
 }) {
   const { user } = useContext(UserContext);
-
+  const defaultActivity = {
+    unit: 'miles',
+    duration: {
+      hours: null,
+      minutes: null,
+      seconds: null,
+      total: 0,
+    },
+  };
   const [activityTypes, setActivityTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form] = Form.useForm();
+  const [activity, setActivity] = useState(defaultActivity);
 
   useEffect(() => {
     fetchActivityTypes(setActivityTypes, setLoading);
   }, [setLoading]);
 
   const editing = !!initialActivity;
-
-  const mergedActivity = initialActivity || activity;
-
-  form.setFieldsValue(mergedActivity);
 
   // TODO:: This sucks
   const upsert = async (
@@ -154,7 +157,7 @@ export default function AddActivityForm({
               seconds: null,
               total: 0,
             },
-            ...mergedActivity,
+            ...initialActivity,
           }}
         >
           {/* ============= NAME ============= */}
