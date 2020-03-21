@@ -1,0 +1,27 @@
+.quick-add {
+  padding: 0px 10px;
+  margin-right: 10px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &--button {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.quick-add--list {
+  display: flex;
+
+  & > .ant-btn {
+    margin: 10px 5px;
+  }
+}

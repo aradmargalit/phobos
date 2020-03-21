@@ -91,10 +91,6 @@ func (db *DB) GetActivitiesByUser(uid int) (activities []Activity, err error) {
 // DeleteActivityByID deletes an activity by ID, verified with userID
 func (db *DB) DeleteActivityByID(uid int, activityID int) (err error) {
 	_, err = db.conn.Exec(`DELETE FROM activities WHERE id=? AND owner_id=?`, activityID, uid)
-	if err != nil {
-		return
-	}
-
 	return
 }
 

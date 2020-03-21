@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
 import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
-import AddActivityForm from '../AddActivityForm';
+import EditActivity from '../EditActivity';
 import { filterActivities, makeDurationBreakdown, toCol } from './tableUtils';
 
 const { Search } = Input;
@@ -119,7 +119,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
         footer={null}
         destroyOnClose
       >
-        <AddActivityForm
+        <EditActivity
           refetch={refetch}
           initialActivity={editingActivity}
           modalClose={closeModal}

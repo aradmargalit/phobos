@@ -33,3 +33,17 @@ CREATE TABLE `activities` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+# ======== QUICKADD ========
+CREATE TABLE `quick_adds` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `name` text,
+  `activity_type_id` int(11),
+  `owner_id` int(11),
+  `duration` DOUBLE,
+  `distance` DOUBLE,
+  `unit` text,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
