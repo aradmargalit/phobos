@@ -2,7 +2,7 @@ import { message, notification } from 'antd';
 
 import { postActivity, postQuickAdd } from '../../apis/phobos-api';
 
-const onSuccess = () => message.success(`Successfully created activity!`);
+const onSuccess = entity => message.success(`Successfully created ${entity}!`);
 const onError = err =>
   notification.error({
     message: 'Unexpected Error',
@@ -18,11 +18,11 @@ export const onReset = (form, setActivity) => {
   setActivity(form.getFieldsValue());
 };
 
-const commonPost = async (setLoading, apiCall, values, refetch) => {
+const commonPost = async (setLoading, apiCall, values, refetch, entity) => {
   setLoading(true);
   try {
     await apiCall(values);
-    onSuccess();
+    onSuccess(entity);
     refetch();
   } catch (err) {
     onError(err);
@@ -43,7 +43,7 @@ export const onFinish = async (
     duration: values.duration.total,
     activity_date: new Date(`${values.activity_date} UTC`),
   };
-  await commonPost(setLoading, postActivity, postValues, refetch);
+  await commonPost(setLoading, postActivity, postValues, refetch, 'activity');
   form.resetFields();
   setActivity(form.getFieldsValue());
 };
@@ -68,7 +68,7 @@ export const onSaveQuickAdd = async (form, refetch, setLoading) => {
     return;
   }
 
-  await commonPost(setLoading, postQuickAdd, postValues, refetch);
+  await commonPost(setLoading, postQuickAdd, postValues, refetch, 'quick add');
 };
 
 /*

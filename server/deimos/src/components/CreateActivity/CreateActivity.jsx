@@ -7,9 +7,13 @@ import CalculatedActivityFields from '../CalculatedActivityFields';
 import FormButtons from '../FormButtons';
 import { onFinish, onReset, onSaveQuickAdd, onSubmit } from './createUtils';
 
-export default function CreateActivity({ form, refetch }) {
+export default function CreateActivity({
+  form,
+  refetch,
+  activity,
+  setActivity,
+}) {
   const { user } = useContext(UserContext);
-  const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activityTypes, setActivityTypes] = useState([]);
 

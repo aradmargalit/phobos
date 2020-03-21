@@ -20,6 +20,8 @@ export default function Home() {
   const { user, loading } = useContext(UserContext);
   const { statsLoading, setStats, setStatsLoading } = useContext(StatsContext);
 
+  const [activity, setActivity] = useState(null);
+
   const [activities, setActivities] = useState(null);
   const [activityLoading, setActivityLoading] = useState(true);
 
@@ -33,8 +35,10 @@ export default function Home() {
   };
 
   const [form] = Form.useForm();
-  const setFormValues = values =>
+  const setFormValues = values => {
     form.setFieldsValue({ ...values, duration: totalToHMS(values.duration) });
+    setActivity(form.getFieldsValue());
+  };
 
   useEffect(() => {
     fetchActivities(setActivities, setActivityLoading);
@@ -50,7 +54,12 @@ export default function Home() {
         <div className="input-form--contents">
           <div>
             <h4>Manual Add</h4>
-            <CreateActivity form={form} refetch={refetch} />
+            <CreateActivity
+              form={form}
+              refetch={refetch}
+              activity={activity}
+              setActivity={setActivity}
+            />
           </div>
           <div>
             <h4>Quick-Add</h4>
