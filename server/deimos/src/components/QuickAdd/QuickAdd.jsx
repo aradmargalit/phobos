@@ -29,8 +29,10 @@ export default function QuickAdd({
   return (
     <div className="quick-add">
       {quickAdds.map(qa => (
-        <div className="quick-add--button" key={qa.id}>
-          <Button onClick={() => setQuickAdd(qa)}>{qa.name}</Button>
+        <div className="quick-add--list" key={qa.id}>
+          <Button className="quick-add--button" onClick={() => setQuickAdd(qa)}>
+            {qa.name}
+          </Button>
           <Button ghost type="danger" onClick={() => onDelete(qa.id)}>
             <DeleteOutlined />
           </Button>

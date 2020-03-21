@@ -11,7 +11,7 @@ import {
 } from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
 import ActivityTable from '../ActivityTable';
-import AddActivityForm from '../AddActivityForm';
+import CreateActivity from '../CreateActivity';
 import QuickAdd from '../QuickAdd';
 import Statistics from '../Statistics';
 
@@ -24,6 +24,12 @@ export default function Home() {
 
   const [quickAdds, setQuickAdds] = useState(null);
   const [quickAddsLoading, setQuickAddsLoading] = useState(true);
+
+  const refetch = () => {
+    fetchActivities(setActivities, setActivityLoading);
+    fetchStatistics(setStats, setStatsLoading);
+    fetchQuickAdds(setQuickAdds, setQuickAddsLoading);
+  };
 
   const [form] = Form.useForm();
   const setFormValues = values => form.setFieldsValue(values);
@@ -42,15 +48,7 @@ export default function Home() {
         <div className="input-form--contents">
           <div>
             <h4>Manual Add</h4>
-            <AddActivityForm
-              refetch={() => {
-                fetchActivities(setActivities, setActivityLoading);
-                fetchStatistics(setStats, setStatsLoading);
-                fetchQuickAdds(setQuickAdds, setQuickAddsLoading);
-              }}
-              setQuickAdds={setQuickAdds}
-              form={form}
-            />
+            <CreateActivity form={form} refetch={refetch} />
           </div>
           <div>
             <h4>Quick-Add</h4>

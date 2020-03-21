@@ -6,19 +6,22 @@
   flex-direction: column;
   overflow-y: scroll;
 
-  & > .ant-btn {
-    margin-top: 10px;
-  }
-
   &::-webkit-scrollbar {
     display: none;
   }
+
+  &--button {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
-.quick-add--button {
+.quick-add--list {
   display: flex;
 
   & > .ant-btn {
-    margin: 0px 5px;
+    margin: 10px 5px;
   }
 }
