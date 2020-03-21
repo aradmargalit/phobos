@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
+// Common Options
 const options = {
-  method: 'POST',
   mode: 'cors',
   credentials: 'include',
   headers: {
@@ -32,6 +32,18 @@ const protectedUpsert = async (endpoint, method, body) => {
   }
 };
 
+export const protectedDelete = async endpoint => {
+  const res = await fetch(endpoint, {
+    ...options,
+    method: 'DELETE',
+  });
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
+};
+
+// Activity Types
 export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
   await protectedGet(
     setActivityTypes,
@@ -41,6 +53,7 @@ export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
   );
 };
 
+// Activities
 export const fetchActivities = async (setActivities, setLoading) => {
   await protectedGet(
     setActivities,
@@ -59,16 +72,10 @@ export const putActivity = async activity => {
 };
 
 export const deleteActivity = async id => {
-  const res = await fetch(`/private/activities/${id}`, {
-    ...options,
-    method: 'DELETE',
-  });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
-  }
+  await protectedDelete(`/private/activities/${id}`);
 };
 
+// Statistics
 export const fetchMonthlySums = async (setMonthlySums, setLoading) => {
   await protectedGet(setMonthlySums, setLoading, '/private/activities/monthly');
 };
@@ -77,6 +84,7 @@ export const fetchStatistics = async (setStats, setLoading) => {
   await protectedGet(setStats, setLoading, '/private/statistics');
 };
 
+// Quick Adds
 export const postQuickAdd = async values => {
   await protectedUpsert('/private/quick_adds', 'POST', values);
 };
@@ -86,12 +94,5 @@ export const fetchQuickAdds = async (setQuickAdds, setLoading) => {
 };
 
 export const deleteQuickAdd = async id => {
-  const res = await fetch(`/private/quick_adds/${id}`, {
-    ...options,
-    method: 'DELETE',
-  });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
-  }
+  await protectedDelete(`/private/quick_adds/${id}`);
 };
