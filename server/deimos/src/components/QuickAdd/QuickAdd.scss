@@ -14,3 +14,11 @@
     display: none;
   }
 }
+
+.quick-add--button {
+  display: flex;
+
+  & > .ant-btn {
+    margin: 0px 5px;
+  }
+}

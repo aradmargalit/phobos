@@ -17,6 +17,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   fetchActivityTypes,
   postActivity,
+  postQuickAdd,
   putActivity,
 } from '../../apis/phobos-api';
 import { UserContext } from '../../contexts';
@@ -55,7 +56,13 @@ export default function AddActivityForm({
 
   const editing = !!initialActivity;
 
-  const upsert = async (values, apiCall) => {
+  // TODO:: This sucks
+  const upsert = async (
+    values,
+    apiCall,
+    needsDate = true,
+    objName = 'activity'
+  ) => {
     setLoading(true);
     // First, we need to grab the total for duration
     const postValues = {
@@ -63,10 +70,13 @@ export default function AddActivityForm({
       duration: values.duration.total,
       activity_date: new Date(`${values.activity_date} UTC`),
     };
+    // TODO:: Clean this up
+    if (!needsDate) delete postValues.activity_date;
+
     try {
       await apiCall(postValues);
       message.success(
-        `Successfully ${editing ? 'updated' : 'created'} activity!`
+        `Successfully ${editing ? 'updated' : 'created'} ${objName}!`
       );
       refetch();
     } catch (err) {
@@ -87,6 +97,17 @@ export default function AddActivityForm({
       modalClose();
     } else {
       await upsert(values, postActivity);
+    }
+  };
+
+  const onSaveQuickAdd = async () => {
+    try {
+      const values = form.getFieldsValue();
+      if (values.duration && values.duration.total <= 1) return;
+      if (!values.name) return;
+      await upsert(values, postQuickAdd, false, 'Quick Add');
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -224,7 +245,11 @@ export default function AddActivityForm({
         >
           Reset
         </Button>
-        <Button className="button-row-item" onClick={onReset} type="dashed">
+        <Button
+          className="button-row-item"
+          onClick={onSaveQuickAdd}
+          type="dashed"
+        >
           Save for Quick-Add
         </Button>
       </div>

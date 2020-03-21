@@ -76,3 +76,11 @@ export const fetchMonthlySums = async (setMonthlySums, setLoading) => {
 export const fetchStatistics = async (setStats, setLoading) => {
   await protectedGet(setStats, setLoading, '/private/statistics');
 };
+
+export const postQuickAdd = async values => {
+  await protectedUpsert('/private/quick_adds', 'POST', values);
+};
+
+export const fetchQuickAdds = async (setQuickAdds, setLoading) => {
+  await protectedGet(setQuickAdds, setLoading, '/private/quick_adds');
+};

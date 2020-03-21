@@ -23,7 +23,7 @@ const (
 
 // InsertQuickAdd adds a new activity to the database
 func (db *DB) InsertQuickAdd(a QuickAdd) (qa QuickAdd, err error) {
-	res, err := db.conn.NamedExec(quickAddInsertSQL, qa)
+	res, err := db.conn.NamedExec(quickAddInsertSQL, a)
 	if err != nil {
 		return
 	}

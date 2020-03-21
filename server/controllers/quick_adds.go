@@ -22,7 +22,6 @@ func (e *Env) AddQuickAddHandler(c *gin.Context) {
 		panic("Could not get user from cookie")
 	}
 	quickAdd.OwnerID = uid.(int)
-
 	record, err := e.DB.InsertQuickAdd(quickAdd)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
