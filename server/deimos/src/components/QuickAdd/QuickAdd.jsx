@@ -2,16 +2,25 @@ import './QuickAdd.scss';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Empty, Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import { fetchQuickAdds } from '../../apis/phobos-api';
+import { deleteQuickAdd, fetchQuickAdds } from '../../apis/phobos-api';
 
-export default function QuickAdd() {
-  const [quickAdds, setQuickAdds] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function QuickAdd({
+  quickAdds,
+  setQuickAdds,
+  loading,
+  setLoading,
+  setQuickAdd,
+}) {
   useEffect(() => {
     fetchQuickAdds(setQuickAdds, setLoading);
   }, [setQuickAdds, setLoading]);
+
+  const onDelete = async id => {
+    await deleteQuickAdd(id);
+    await fetchQuickAdds(setQuickAdds, setLoading);
+  };
 
   if (loading) return <Spin />;
   if (!quickAdds || !quickAdds.length)
@@ -21,8 +30,8 @@ export default function QuickAdd() {
     <div className="quick-add">
       {quickAdds.map(qa => (
         <div className="quick-add--button" key={qa.id}>
-          <Button>{qa.name}</Button>
-          <Button ghost type="danger">
+          <Button onClick={() => setQuickAdd(qa)}>{qa.name}</Button>
+          <Button ghost type="danger" onClick={() => onDelete(qa.id)}>
             <DeleteOutlined />
           </Button>
         </div>

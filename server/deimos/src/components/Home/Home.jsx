@@ -4,7 +4,11 @@ import { Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { fetchActivities, fetchStatistics } from '../../apis/phobos-api';
+import {
+  fetchActivities,
+  fetchQuickAdds,
+  fetchStatistics,
+} from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
 import ActivityTable from '../ActivityTable';
 import AddActivityForm from '../AddActivityForm';
@@ -17,6 +21,19 @@ export default function Home() {
 
   const [activities, setActivities] = useState(null);
   const [activityLoading, setActivityLoading] = useState(true);
+
+  const [quickAdds, setQuickAdds] = useState(null);
+  const [quickAddsLoading, setQuickAddsLoading] = useState(true);
+
+  const [activity, setActivity] = useState({
+    unit: 'miles',
+    duration: {
+      hours: null,
+      minutes: null,
+      seconds: null,
+      total: 0,
+    },
+  });
 
   useEffect(() => {
     fetchActivities(setActivities, setActivityLoading);
@@ -36,12 +53,22 @@ export default function Home() {
               refetch={() => {
                 fetchActivities(setActivities, setActivityLoading);
                 fetchStatistics(setStats, setStatsLoading);
+                fetchQuickAdds(setQuickAdds, setQuickAddsLoading);
               }}
+              setQuickAdds={setQuickAdds}
+              activity={activity}
+              setActivity={setActivity}
             />
           </div>
           <div>
             <h4>Quick-Add</h4>
-            <QuickAdd />
+            <QuickAdd
+              quickAdds={quickAdds}
+              setQuickAdds={setQuickAdds}
+              loading={quickAddsLoading}
+              setLoading={setQuickAddsLoading}
+              setQuickAdd={setActivity}
+            />
           </div>
         </div>
       </div>

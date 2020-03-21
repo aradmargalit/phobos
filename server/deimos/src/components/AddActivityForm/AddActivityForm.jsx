@@ -34,18 +34,11 @@ export default function AddActivityForm({
   refetch,
   initialActivity,
   modalClose,
+  activity,
+  setActivity,
 }) {
   const { user } = useContext(UserContext);
-  const [activity, setActivity] = useState({
-    unit: 'miles',
-    duration: {
-      hours: null,
-      minutes: null,
-      seconds: null,
-      total: 0,
-    },
-    ...initialActivity,
-  });
+
   const [activityTypes, setActivityTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
@@ -55,6 +48,10 @@ export default function AddActivityForm({
   }, [setLoading]);
 
   const editing = !!initialActivity;
+
+  const mergedActivity = initialActivity || activity;
+
+  form.setFieldsValue(mergedActivity);
 
   // TODO:: This sucks
   const upsert = async (
@@ -98,14 +95,19 @@ export default function AddActivityForm({
     } else {
       await upsert(values, postActivity);
     }
+    form.resetFields();
+    setActivity(form.getFieldsValue());
   };
 
   const onSaveQuickAdd = async () => {
     try {
       const values = form.getFieldsValue();
-      if (values.duration && values.duration.total <= 1) return;
-      if (!values.name) return;
+      if ((values.duration && values.duration.total <= 1) || !values.name) {
+        message.error('Duration and Name are required for saving a quick add.');
+        return;
+      }
       await upsert(values, postQuickAdd, false, 'Quick Add');
+      refetch();
     } catch (e) {
       console.log(e);
     }
@@ -152,7 +154,7 @@ export default function AddActivityForm({
               seconds: null,
               total: 0,
             },
-            ...initialActivity,
+            ...mergedActivity,
           }}
         >
           {/* ============= NAME ============= */}

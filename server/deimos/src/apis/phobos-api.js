@@ -84,3 +84,14 @@ export const postQuickAdd = async values => {
 export const fetchQuickAdds = async (setQuickAdds, setLoading) => {
   await protectedGet(setQuickAdds, setLoading, '/private/quick_adds');
 };
+
+export const deleteQuickAdd = async id => {
+  const res = await fetch(`/private/quick_adds/${id}`, {
+    ...options,
+    method: 'DELETE',
+  });
+  const { error } = await res.json();
+  if (error) {
+    throw error;
+  }
+};
