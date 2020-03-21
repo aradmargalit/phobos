@@ -10,6 +10,7 @@ import {
   fetchStatistics,
 } from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
+import { totalToHMS } from '../../utils/durationUtils';
 import ActivityTable from '../ActivityTable';
 import CreateActivity from '../CreateActivity';
 import QuickAdd from '../QuickAdd';
@@ -32,7 +33,8 @@ export default function Home() {
   };
 
   const [form] = Form.useForm();
-  const setFormValues = values => form.setFieldsValue(values);
+  const setFormValues = values =>
+    form.setFieldsValue({ ...values, duration: totalToHMS(values.duration) });
 
   useEffect(() => {
     fetchActivities(setActivities, setActivityLoading);
