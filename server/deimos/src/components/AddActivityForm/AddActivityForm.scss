@@ -12,12 +12,14 @@
 }
 
 .ant-form {
-  width: 80%;
+  // width: 80%;
   text-align: left;
 }
 
 .form-statistic {
-  width: 15%;
+  display: table;
+  text-align: center;
+  margin: auto !important;
 }
 
 .form-flex {
@@ -31,7 +33,7 @@
 
   &-item {
     margin-left: 3px;
-    width: 100px;
+    min-width: 100px;
   }
 }
 

@@ -69,6 +69,11 @@ func main() {
 		private.PUT("/activities/:id", env.UpdateActivityHandler)
 		private.GET("/activities/monthly", env.GetMonthlyDurationSums)
 		private.GET("/statistics", env.GetUserStatistics)
+
+		// Quick Adds
+		private.GET("/quick_adds", env.GetQuickAddsHandler)
+		private.POST("/quick_adds", env.AddQuickAddHandler)
+		private.DELETE("/quick_adds/:id", env.DeleteQuickAddHandler)
 	}
 
 	metadata := r.Group("/metadata")
