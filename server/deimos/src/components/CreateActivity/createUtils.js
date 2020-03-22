@@ -18,11 +18,10 @@ export const onReset = (form, setActivity) => {
   setActivity(form.getFieldsValue());
 };
 
-const commonPost = async (setLoading, apiCall, values, refetch, entity) => {
+const commonPost = async (setLoading, apiCall, values, refetch) => {
   setLoading(true);
   try {
     await apiCall(values);
-    onSuccess(entity);
     refetch();
   } catch (err) {
     onError(err);
@@ -43,7 +42,8 @@ export const onFinish = async (
     duration: values.duration.total,
     activity_date: new Date(`${values.activity_date} UTC`),
   };
-  await commonPost(setLoading, postActivity, postValues, refetch, 'activity');
+  await commonPost(setLoading, postActivity, postValues, refetch);
+  onSuccess('activity');
   form.resetFields();
   setActivity(form.getFieldsValue());
 };
@@ -68,5 +68,5 @@ export const onSaveQuickAdd = async (form, refetch, setLoading) => {
     return;
   }
 
-  await commonPost(setLoading, postQuickAdd, postValues, refetch, 'quick add');
+  await commonPost(setLoading, postQuickAdd, postValues, refetch);
 };
