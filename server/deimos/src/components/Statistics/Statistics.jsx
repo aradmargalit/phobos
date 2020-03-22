@@ -16,17 +16,16 @@ import { fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
 
 const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
+const iconTitle = (text, icon) => (
+  <span>
+    {text}
+    {icon}
+  </span>
+);
 
 export default function Statistics({ loading, setLoading }) {
   const { stats, setStats } = useContext(StatsContext);
-  const {
-    workouts,
-    hours,
-    miles,
-    last_ten: lastTen,
-    // type_breakdown: typeBreakdown,
-    // day_breakdown: dayBreakdown,
-  } = stats;
+  const { workouts, hours, miles, last_ten: lastTen } = stats;
 
   useEffect(() => {
     fetchStatistics(setStats, setLoading);
@@ -39,27 +38,15 @@ export default function Statistics({ loading, setLoading }) {
       <div className="stats">
         <div className="statistics-grid">
           <Statistic
-            title={
-              <span>
-                Total Workouts <CheckOutlined />
-              </span>
-            }
+            title={iconTitle('Total Workouts', <CheckOutlined />)}
             value={workouts}
           />
           <Statistic
-            title={
-              <span>
-                Total Hours Active <ClockCircleOutlined />
-              </span>
-            }
+            title={iconTitle('Total Hours Active', <ClockCircleOutlined />)}
             value={hours.toFixed(2)}
           />
           <Statistic
-            title={
-              <span>
-                Total Miles <LineChartOutlined />
-              </span>
-            }
+            title={iconTitle('Total Mileage', <LineChartOutlined />)}
             value={miles.toFixed(2)}
           />
           <div className="statistics--trendline">
