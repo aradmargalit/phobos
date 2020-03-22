@@ -32,9 +32,8 @@ const calculateCurrentMonth = data =>
   moment(new Date()).date();
 
 export default function ActivityGraph({ loading, monthlyData }) {
-  const data = transform(monthlyData);
-
   if (loading) return <Spin />;
+  const data = transform(monthlyData);
 
   return (
     <div className="activity-graph-wrapper">
@@ -70,12 +69,19 @@ export default function ActivityGraph({ loading, monthlyData }) {
           y={calculateAverage(data)}
           stroke="red"
           strokeDasharray="3 3"
+          label={{
+            position: 'top',
+            value: 'Monthly Average',
+          }}
         />
         <ReferenceLine
           y={calculateCurrentMonth(data)}
           stroke="blue"
           strokeDasharray="3 3"
-          label="Current Month Projection"
+          label={{
+            position: 'top',
+            value: "Current Month's Projection",
+          }}
         />
         <Tooltip
           separator={null}

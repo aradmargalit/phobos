@@ -44,15 +44,3 @@ export default function CreateActivity({
     </div>
   );
 }
-
-/*
-  const defaultActivity = {
-    unit: 'miles',
-    duration: {
-      hours: null,
-      minutes: null,
-      seconds: null,
-      total: 0,
-    },
-  };
-*/
