@@ -16,7 +16,7 @@ export default function DOWBarChart({ colors, dayBreakdown }) {
   return (
     <div className="statistics--dow">
       <h3>Daily Breakdown</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width={500} height={300}>
         <BarChart
           data={dayBreakdown}
           margin={{

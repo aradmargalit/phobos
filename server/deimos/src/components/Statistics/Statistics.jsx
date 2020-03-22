@@ -19,14 +19,7 @@ const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
 
 export default function Statistics({ loading, setLoading }) {
   const { stats, setStats } = useContext(StatsContext);
-  const {
-    workouts,
-    hours,
-    miles,
-    last_ten: lastTen,
-    // type_breakdown: typeBreakdown,
-    // day_breakdown: dayBreakdown,
-  } = stats;
+  const { workouts, hours, miles, last_ten: lastTen } = stats;
 
   useEffect(() => {
     fetchStatistics(setStats, setLoading);
