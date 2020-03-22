@@ -13,8 +13,8 @@ export const onSubmit = form => {
   form.submit();
 };
 
-export const onReset = (form, setActivity) => {
-  form.resetFields();
+export const onReset = async (form, setActivity) => {
+  await form.resetFields();
   setActivity(form.getFieldsValue());
 };
 
@@ -48,7 +48,6 @@ export const onFinish = async (
   setActivity(form.getFieldsValue());
 };
 
-// TODO Round 2 fefactor
 export const onSaveQuickAdd = async (form, refetch, setLoading) => {
   const values = form.getFieldsValue();
   // Try to leverage inbuilt validation
@@ -57,6 +56,8 @@ export const onSaveQuickAdd = async (form, refetch, setLoading) => {
   } catch (e) {
     return;
   }
+
+  // We can use the values as-is, expect for the duration
   const postValues = {
     ...values,
     duration: values.duration.total,

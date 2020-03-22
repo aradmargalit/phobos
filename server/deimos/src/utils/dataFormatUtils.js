@@ -13,8 +13,3 @@ export const minutesToHMS = minutes => {
 };
 
 export const formatDate = date => moment(date).format(dateFormat);
-
-export const toLocalDate = date => {
-  const localDate = new Date(`${date} UTC`);
-  return moment(localDate).format(dateFormat);
-};
