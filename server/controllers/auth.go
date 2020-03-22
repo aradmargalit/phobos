@@ -107,7 +107,6 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.
-	// TODO::Make this dynamic based on the environment.
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL") + "/home")
 }
 
