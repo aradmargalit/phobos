@@ -8,8 +8,9 @@ import React, { useState } from 'react';
 
 import { deleteActivity } from '../../apis/phobos-api';
 import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
+import { makeDurationBreakdown } from '../../utils/durationUtils';
 import EditActivity from '../EditActivity';
-import { filterActivities, makeDurationBreakdown, toCol } from './tableUtils';
+import { filterActivities, toCol } from './tableUtils';
 
 const { Search } = Input;
 
@@ -21,8 +22,10 @@ export default function ActivityTable({ loading, activities, refetch }) {
   if (loading) return <Spin />;
   if (!activities) return <Empty description="No activities...yet!" />;
 
+  // Debounce the search term to avoid pointless, expensive re-renders
   const bouncedSetSearchTerm = _debounce(setSearchTerm, 500);
 
+  // If there's no search term, we want to set null in order to do the right thing later
   const onChangeHandler = e => {
     if (!e.target.value || !e.target.value.length) {
       setSearchTerm(null);
@@ -36,7 +39,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
       onClick={() => {
         const toEdit = { ...activity };
         toEdit.activity_date = moment(activity.activity_date);
-        // This is dumb, but we need to set the full duration object until I get smarter
+        // We need to re-create the duration breakdown from the total in order to properly display in the form
         toEdit.duration = makeDurationBreakdown(activity.duration);
         setEditingActivity(toEdit);
         setEditModalVisible(true);
