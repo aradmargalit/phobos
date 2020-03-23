@@ -13,8 +13,8 @@ export const onSubmit = form => {
   form.submit();
 };
 
-export const onReset = (form, setActivity) => {
-  form.resetFields();
+export const onReset = async (form, setActivity) => {
+  await form.resetFields();
   setActivity(form.getFieldsValue());
 };
 

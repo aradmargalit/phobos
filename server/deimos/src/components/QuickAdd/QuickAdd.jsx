@@ -3,6 +3,7 @@ import './QuickAdd.scss';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Empty, Spin } from 'antd';
 import React, { useEffect } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { deleteQuickAdd, fetchQuickAdds } from '../../apis/phobos-api';
 
@@ -27,17 +28,22 @@ export default function QuickAdd({
     return <Empty description="Save a workout to quickly add it later!" />;
 
   return (
-    <div className="quick-add">
+    <TransitionGroup className="quick-add">
       {quickAdds.map(qa => (
-        <div className="quick-add--list" key={qa.id}>
-          <Button className="quick-add--button" onClick={() => setQuickAdd(qa)}>
-            {qa.name}
-          </Button>
-          <Button ghost type="danger" onClick={() => onDelete(qa.id)}>
-            <DeleteOutlined />
-          </Button>
-        </div>
+        <CSSTransition key={qa.id} timeout={250} classNames="move">
+          <div className="quick-add--list">
+            <Button
+              className="quick-add--button"
+              onClick={() => setQuickAdd(qa)}
+            >
+              {qa.name}
+            </Button>
+            <Button ghost type="danger" onClick={() => onDelete(qa.id)}>
+              <DeleteOutlined />
+            </Button>
+          </div>
+        </CSSTransition>
       ))}
-    </div>
+    </TransitionGroup>
   );
 }

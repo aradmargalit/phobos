@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-curly-newline */
 import { Form } from 'antd';
 import React, { useEffect, useState } from 'react';
 
@@ -13,9 +14,6 @@ export default function EditActivity({ refetch, initialActivity, modalClose }) {
   const [activityTypes, setActivityTypes] = useState([]);
   const [form] = Form.useForm();
 
-  const wrappedFinish = values =>
-    onFinish(values, setLoading, refetch, initialActivity.id, modalClose);
-
   useEffect(() => {
     fetchActivityTypes(setActivityTypes, setLoading);
   }, [setLoading]);
@@ -28,7 +26,9 @@ export default function EditActivity({ refetch, initialActivity, modalClose }) {
         setActivity={setActivity}
         activityTypes={activityTypes}
         initialActivity={initialActivity}
-        onFinish={wrappedFinish}
+        onFinish={values =>
+          onFinish(values, setLoading, refetch, initialActivity.id, modalClose)
+        }
       />
       <CalculatedActivityFields activity={activity} />
       <FormButtons

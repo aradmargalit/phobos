@@ -67,7 +67,6 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	resp, err := client.Get(googleUserInfoEndpoint)
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	// Make sure to close the response body once this function exits
@@ -75,7 +74,6 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	// Unmarshal our shiny new user from Google
@@ -109,7 +107,6 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.
-	// TODO::Make this dynamic based on the environment.
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL") + "/home")
 }
 
