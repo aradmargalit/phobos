@@ -1,4 +1,5 @@
 /* eslint-disable react/no-array-index-key */
+import { sortBy as _sortBy } from 'lodash';
 import React from 'react';
 import {
   Bar,
@@ -12,12 +13,21 @@ import {
 
 import AngledGraphTick from '../AngledGraphTick';
 
-export default function DOWBarChart({ colors, dayBreakdown }) {
-  const total = dayBreakdown.reduce((acc, current) => acc + current.count, 0);
+const COLORS = [
+  '#f7bdbc',
+  '#f49d9a',
+  '#f07c79',
+  '#ec5b57',
+  '#d4524e',
+  '#bd4946',
+  '#8e3734',
+];
+
+export default function DOWBarChart({ dayBreakdown }) {
+  const sortedDays = _sortBy(dayBreakdown, 'count');
 
   // Find the proportion of each day, and give it a darker color if it's higher
-  const calculateColor = day =>
-    colors[Math.floor(((day.count / total) * 100) / (100 / colors.length))];
+  const calculateColor = day => COLORS[sortedDays.indexOf(day)];
 
   return (
     <div className="statistics--dow">

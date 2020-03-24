@@ -9,9 +9,6 @@ import ActivityGraph from '../ActivityGraph';
 import DOWBarChart from '../DOWBarChart';
 import RadialActivityTypesGraph from '../RadialActivityTypesGraph';
 
-const RED_COLORS = ['#f49d9a', '#f07c79', '#ec5b57', '#d4524e', '#bd4946'];
-const BLUE_COLORS = ['#29bdd6', '#11b6d1', '#0fa4bc', '#0e92a7', '#0c7f92'];
-
 export default function Graphs() {
   const { stats, setStats, statsLoading, setStatsLoading } = useContext(
     StatsContext
@@ -38,11 +35,8 @@ export default function Graphs() {
   return (
     <div className="graphs">
       <ActivityGraph loading={monthlyLoading} monthlyData={monthlyData} />
-      <DOWBarChart colors={RED_COLORS} dayBreakdown={dayBreakdown} />
-      <RadialActivityTypesGraph
-        colors={BLUE_COLORS}
-        typeBreakdown={typeBreakdown}
-      />
+      <DOWBarChart dayBreakdown={dayBreakdown} />
+      <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
     </div>
   );
 }
