@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	controllers "server/controllers"
 	middleware "server/middleware"
 	models "server/models"
@@ -48,7 +47,7 @@ func main() {
 	// First thing's first - serve up the client JS
 	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
 	r.NoRoute(func(c *gin.Context) {
-		c.Redirect(http.StatusTemporaryRedirect, "/")
+		c.File("./deimos/build")
 	})
 
 	// Called by the UI when the user clicks the "Login with Google Button"

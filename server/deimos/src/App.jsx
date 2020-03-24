@@ -43,7 +43,7 @@ export default function App() {
                 <Header showBack />
                 <Graphs />
               </Route>
-              <Route exact path="/">
+              <Route>
                 <Header />
                 <Landing />
               </Route>
