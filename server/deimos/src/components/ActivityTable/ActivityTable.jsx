@@ -70,9 +70,10 @@ export default function ActivityTable({ loading, activities, refetch }) {
     {
       title: 'No.',
       dataIndex: 'idx',
+      width: 70,
       render: (text, record, idx) => activities.length - idx,
     },
-    { ...toCol('Name'), width: 170 },
+    { ...toCol('Name'), width: 250 },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
     toCol('Activity Date', formatDate),
