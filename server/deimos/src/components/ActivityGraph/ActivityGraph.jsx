@@ -8,6 +8,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -27,13 +28,13 @@ const transform = data =>
     }));
 
 const calculateAverage = data => _meanBy(data, 'rawDuration') / 60;
-const calculateCurrentMonth = data =>
-  (moment().daysInMonth() * data[data.length - 1].duration) /
-  moment(new Date()).date();
+const calculateCurrentMonth = currentMonth =>
+  (moment().daysInMonth() * currentMonth.duration) / moment(new Date()).date();
 
 export default function ActivityGraph({ loading, monthlyData }) {
   if (loading) return <Spin />;
   const data = transform(monthlyData);
+  const currentMonth = data[data.length - 1];
 
   return (
     <div className="activity-graph-wrapper">
@@ -72,13 +73,14 @@ export default function ActivityGraph({ loading, monthlyData }) {
               value: 'Monthly Average',
             }}
           />
-          <ReferenceLine
-            y={calculateCurrentMonth(data)}
+          <ReferenceDot
+            x={currentMonth.month}
+            y={calculateCurrentMonth(currentMonth)}
             stroke="blue"
             strokeDasharray="3 3"
             label={{
-              position: 'top',
-              value: "Current Month's Projection",
+              position: 'left',
+              value: "This Month's Projection",
             }}
           />
           <Tooltip
@@ -92,19 +94,6 @@ export default function ActivityGraph({ loading, monthlyData }) {
             stroke="#0e5a6d"
             fillOpacity={1}
             fill="url(#durationColor)"
-            label={({ x, y, stroke, value }) => (
-              <text
-                x={x}
-                y={y}
-                dy={-15}
-                stroke={stroke}
-                fontSize={12}
-                textAnchor="middle"
-                fill="gray"
-              >
-                {value}
-              </text>
-            )}
           />
         </AreaChart>
       </ResponsiveContainer>
