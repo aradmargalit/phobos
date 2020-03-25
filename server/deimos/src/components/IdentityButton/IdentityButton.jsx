@@ -15,9 +15,7 @@ export default function IdentityButton() {
     const fetchData = async () => {
       // Make sure to include the cookie with the request!
       try {
-        const res = await fetch(`/private/users/current`, {
-          credentials: 'include',
-        });
+        const res = await fetch(`/private/users/current`);
 
         res.json().then(({ user: respUser }) => {
           setUser(respUser);

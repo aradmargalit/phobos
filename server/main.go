@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-contrib/static"
@@ -35,14 +34,6 @@ func main() {
 	// Because this token is random sessions are invalidated when the server restarts
 	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))
 	r.Use(sessions.Sessions("phobos-auth", store))
-
-	// CORS to allow localhost in development
-	// Make sure to allow credentials so we can read the cookie
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{os.Getenv("FRONTEND_URL")}
-	config.AllowCredentials = true
-
-	r.Use(cors.New(config))
 
 	// First thing's first - serve up the client JS
 	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))

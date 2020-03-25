@@ -2,8 +2,6 @@
 
 // Common Options
 const options = {
-  mode: 'cors',
-  credentials: 'include',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,9 +9,7 @@ const options = {
 
 const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
   // Make sure to include the cookie with the request!
-  const res = await fetch(endpoint, {
-    credentials: 'include',
-  });
+  const res = await fetch(endpoint);
 
   const response = await res.json();
   setValue(dataKey ? response[dataKey] : response);
