@@ -32,8 +32,11 @@ export default function DOWBarChart({ dayBreakdown }) {
   return (
     <div className="statistics--dow">
       <h3>Daily Breakdown</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={dayBreakdown}>
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart
+          data={dayBreakdown}
+          margin={{ top: 20, right: 20, left: 20, bottom: 5 }}
+        >
           <XAxis
             dataKey="day_of_week"
             height={120}
