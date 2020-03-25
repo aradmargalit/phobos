@@ -10,7 +10,7 @@ const Header = ({ history, showBack }) => {
   return (
     <PageHeader
       className="header"
-      onBack={showBack ? () => history.goBack() : null}
+      onBack={showBack ? () => history.push('/home') : null}
       title="PHOBOS"
       subTitle="A Fitness Tracker"
       extra={[<IdentityButton key="idb" />]}
