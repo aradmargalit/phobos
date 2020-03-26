@@ -70,6 +70,7 @@ export default function ActivityGraph({ loading, monthlyData }) {
             strokeDasharray="3 3"
             label={{
               position: 'top',
+              fontWeight: 600,
               value: 'Monthly Average',
             }}
           />
@@ -80,6 +81,7 @@ export default function ActivityGraph({ loading, monthlyData }) {
             strokeDasharray="3 3"
             label={{
               position: 'left',
+              fontWeight: 600,
               value: "This Month's Projection",
             }}
           />
