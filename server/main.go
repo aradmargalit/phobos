@@ -79,7 +79,11 @@ func main() {
 	}
 
 	// Strava-related routes
-	r.GET("/auth/strava", env.StravaLoginHandler)
+	auth := r.Group("/auth")
+	auth.Use(middleware.AuthRequired)
+	{
+		auth.GET("/strava", env.StravaLoginHandler)
+	}
 	r.GET("/strava/callback", env.StravaCallbackHandler)
 
 	fmt.Println("🚀 🌑 Phobos is ready!")

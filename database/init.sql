@@ -47,3 +47,13 @@ CREATE TABLE `quick_adds` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+
+# ======== STRAVA MAPPINGS ========
+CREATE TABLE `strava_tokens` (
+  `user_id` int(11),
+  `access_token` text,
+  `refresh_token` text,
+  `expiry` DATETIME,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
