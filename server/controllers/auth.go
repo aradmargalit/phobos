@@ -107,7 +107,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	session.Save()
 
 	// Lastly, redirect the user to the front-end app.
-	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL") + "/home")
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
 }
 
 // Logout will clear the current users cookie

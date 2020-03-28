@@ -78,6 +78,10 @@ func main() {
 		admin.GET("/seed", env.SeedHandler)
 	}
 
+	// Strava-related routes
+	r.GET("/auth/strava", env.StravaLoginHandler)
+	r.GET("/strava/callback", env.StravaCallbackHandler)
+
 	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")
 }
