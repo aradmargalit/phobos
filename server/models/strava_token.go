@@ -12,7 +12,6 @@ type StravaToken struct {
 	Expiry       string `json:"expiry" db:"expiry"`
 	CreatedAt    string `json:"created_at" db:"created_at"`
 	UpdatedAt    string `json:"updated_at" db:"updated_at"`
-
 }
 
 const (
