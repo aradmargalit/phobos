@@ -29,7 +29,7 @@ func init() {
 	stravaConf = &oauth2.Config{
 		ClientID:     os.Getenv("STRAVA_CLIENT_ID"),
 		ClientSecret: os.Getenv("STRAVA_CLIENT_SECRET"),
-		RedirectURL:  os.Getenv("SERVER_URL") + "/strava/callback",
+		RedirectURL:  os.Getenv("SERVER_URL") + "/public/strava/callback",
 		Scopes: []string{
 			// Need activity:read_all to get private activities
 			"activity:read_all",
@@ -84,24 +84,13 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 
 	// Now, we want to persist these tokens to the database so that our poor, sweet user doesn't need to reauthenticate
 	// 1. We need to figure out which of our users authenticated against Strava
-	uid := stateParts[1]
-
-	// convert uid to an int and convert expiry to a MySQL datetime string
-	userID, _ := strconv.Atoi(uid)
-	formattedExpiry := token.Expiry.UTC().Format(expiryFormat)
-
-	stravaToken := models.StravaToken{
-		UserID:       userID,
-		AccessToken:  token.AccessToken,
-		RefreshToken: token.RefreshToken,
-		Expiry:       formattedExpiry,
-	}
+	uid, _ := strconv.Atoi(stateParts[1])
 
 	// In the event that the user already has a token in the database, we'll want to update it
-	upsertToken(stravaToken, e.DB)
+	upsertToken(toDatabaseTokens(token, uid), e.DB)
 
 	// Now that we have a token for the user, send them back to the UI
-	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/dashboard/strava")
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
 }
 
 // StravaStatisticsHandler fetches the user's statistics from Strava in real-time
@@ -164,15 +153,7 @@ func getHTTPClient(c *gin.Context, db *models.DB) *http.Client {
 	}
 
 	// 3. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
-	expiresAt, _ := time.Parse(expiryFormat, dbToken.Expiry)
-	tk := &oauth2.Token{
-		AccessToken:  dbToken.AccessToken,
-		RefreshToken: dbToken.RefreshToken,
-		TokenType: "Bearer",
-		Expiry:       expiresAt,
-	}
-
-	tokenSource := conf.TokenSource(oauth2.NoContext, tk)
+	tokenSource := conf.TokenSource(oauth2.NoContext, toOAuthToken(dbToken))
 	newToken, err := tokenSource.Token()
 	if err != nil {
 		panic(err)
@@ -181,16 +162,64 @@ func getHTTPClient(c *gin.Context, db *models.DB) *http.Client {
 	// 4. Check if the new token is different, and if so, persist that sucker
 	if newToken.AccessToken != dbToken.AccessToken {
 		fmt.Println("Refresh successful! Updating the user's token!")
-		formattedExpiry := newToken.Expiry.UTC().Format(expiryFormat)
-
-		stravaToken := models.StravaToken{
-			UserID:       uid.(int),
-			AccessToken:  newToken.AccessToken,
-			RefreshToken: newToken.RefreshToken,
-			Expiry:       formattedExpiry,
-		}
-		db.UpdateStravaToken(stravaToken)
+		db.UpdateStravaToken(toDatabaseTokens(newToken, uid.(int)))
 	}
 
 	return oauth2.NewClient(oauth2.NoContext, tokenSource)
+}
+
+func toDatabaseTokens(oauthToken *oauth2.Token, uid int) models.StravaToken {
+	formattedExpiry := oauthToken.Expiry.UTC().Format(expiryFormat)
+
+	return models.StravaToken{
+		UserID:       uid,
+		AccessToken:  oauthToken.AccessToken,
+		RefreshToken: oauthToken.RefreshToken,
+		Expiry:       formattedExpiry,
+	}
+}
+
+func toOAuthToken(dbToken models.StravaToken) *oauth2.Token {
+	expiresAt, _ := time.Parse(expiryFormat, dbToken.Expiry)
+	return &oauth2.Token{
+		AccessToken:  dbToken.AccessToken,
+		RefreshToken: dbToken.RefreshToken,
+		Expiry:       expiresAt,
+	}
+}
+
+// StravaWebookVerificationHandler responds with an OK so Strava knows we have a real server
+func (e *Env) StravaWebookVerificationHandler(c *gin.Context) {
+	// https://developers.strava.com/docs/webhooks/
+	/* 	Your callback address must respond within two seconds to the GET request from Strava’s subscription service.
+	The response should indicate status code 200 and should echo the hub.challenge field in the response body as application/json content type:
+	{ “hub.challenge”:”15f7d1a91c1f40f8a748fd134752feb3” }
+	*/
+
+	// We should only need to run this once in production, and we should remember what our ID is
+	challenge := c.Query("hub.challenge")
+	c.JSON(http.StatusOK, gin.H{
+		"hub.challenge": challenge,
+	})
+}
+
+type stravaWebhookEvent struct {
+	ObjectType string `json:"object_type"`
+	ObjectID   int    `json:"object_id"`
+	AspectType string `json:"aspect_type"`
+	OwnerID    int    `json:"owner_id"`
+	EventTime  int    `json:"event_time"`
+}
+
+// StravaWebHookCatcher will listen for webhook events and act accordingly
+func (e *Env) StravaWebHookCatcher(c *gin.Context) {
+	var event stravaWebhookEvent
+
+	if err := c.ShouldBindJSON(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(event)
+	c.JSON(http.StatusOK, gin.H{})
 }

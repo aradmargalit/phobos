@@ -94,11 +94,14 @@ func registerAdminHandlers(r *gin.Engine, env *controllers.Env) {
 }
 
 func registerStravaHandlers(r *gin.Engine, env *controllers.Env) {
+	r.GET("/public/strava/callback", env.StravaCallbackHandler)
+	r.GET("/public/strava/webhook", env.StravaWebookVerificationHandler)
+	r.POST("/public/strava/webhook", env.StravaWebHookCatcher)
+
 	strava := r.Group("/strava")
 	strava.Use(middleware.AuthRequired)
 	{
 		strava.GET("/auth", env.StravaLoginHandler)
 		strava.GET("/statistics", env.StravaStatisticsHandler)
 	}
-	r.GET("/strava/callback", env.StravaCallbackHandler)
 }
