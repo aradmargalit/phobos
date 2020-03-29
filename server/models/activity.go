@@ -56,7 +56,7 @@ func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
 	return
 }
 
-// UpdateActivity adds a new activity to the database
+// UpdateActivity updates an existing activity in the database
 func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
 	res, err := db.conn.NamedExec(activityUpdateSQL, a)
 	if err != nil {

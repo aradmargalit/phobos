@@ -93,7 +93,7 @@ func registerAdminHandlers(r *gin.Engine, env *controllers.Env) {
 	}
 }
 
-func registerStravaHandlers(r *gin.Engine, env *controllers.Env)  {
+func registerStravaHandlers(r *gin.Engine, env *controllers.Env) {
 	auth := r.Group("/auth")
 	auth.Use(middleware.AuthRequired)
 	{

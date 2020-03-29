@@ -90,7 +90,29 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 		Expiry:       formattedExpiry,
 	}
 
-	e.DB.InsertStravaToken(stravaToken)
+	// In the event that the user already has a token in the database, we'll want to update it
+	upsertToken(stravaToken, e.DB)
 
 	c.JSON(200, token)
+}
+
+func upsertToken(stravaToken models.StravaToken, db *models.DB) {
+	// 1. Check if a token already exists
+	_, err := db.GetStravaTokenByUserID(stravaToken.UserID)
+	if err != nil {
+		// This means there isn't one in the database, so insert one
+		_, err = db.InsertStravaToken(stravaToken)
+		if err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	// 2. If we got here, there's an existing token
+	// Refresh it with the retrieved token
+	_, err = db.UpdateStravaToken(stravaToken)
+	if err != nil {
+		panic(err)
+	}
+	return
 }

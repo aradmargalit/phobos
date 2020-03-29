@@ -1,7 +1,8 @@
 package models
 
 import (
-	"fmt"
+	"errors"
+	"strconv"
 )
 
 // StravaToken represents a ready-to-add workout session
@@ -20,13 +21,21 @@ const (
 		(user_id, access_token, refresh_token, expiry)
 		VALUES (:user_id, :access_token, :refresh_token, :expiry)
 	`
+
+	updateStravaTokenSQL = `
+		UPDATE strava_tokens 
+		SET 
+			access_token=:access_token,
+			refresh_token=:refresh_token,
+			expiry=:expiry
+		WHERE user_id=:user_id
+		`
 )
 
 // InsertStravaToken registers a new set of tokens for a user's Strava access
 func (db *DB) InsertStravaToken(tok StravaToken) (dbToken StravaToken, err error) {
 	res, err := db.conn.NamedExec(insertStravaToken, tok)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 
@@ -43,5 +52,25 @@ func (db *DB) InsertStravaToken(tok StravaToken) (dbToken StravaToken, err error
 // GetStravaTokenByUserID returns all activies from auser
 func (db *DB) GetStravaTokenByUserID(uid int) (token StravaToken, err error) {
 	err = db.conn.Get(&token, `SELECT * FROM strava_tokens WHERE user_id=?`, uid)
+	return
+}
+
+// UpdateStravaToken refreshes the user's strava token
+func (db *DB) UpdateStravaToken(tok StravaToken) (dbToken StravaToken, err error) {
+	res, err := db.conn.NamedExec(updateStravaTokenSQL, tok)
+	if err != nil {
+		return
+	}
+
+	updatedCount, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if updatedCount != 1 {
+		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
+	}
+
+	// Return the recently inserted record back to the user
+	dbToken, err = db.GetStravaTokenByUserID(tok.UserID)
 	return
 }
