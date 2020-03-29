@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	models "server/models"
 	"server/utils"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -37,6 +39,11 @@ func init() {
 
 	stravaRandomState = utils.RandomToken()
 }
+
+const (
+	expiryFormat = "2006-01-02 15:04:05"
+	baseURL      = "https://www.strava.com/api/v3"
+)
 
 // StravaLoginHandler sends the user to Google for authentication
 func (e *Env) StravaLoginHandler(c *gin.Context) {
@@ -81,7 +88,7 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 
 	// convert uid to an int and convert expiry to a MySQL datetime string
 	userID, _ := strconv.Atoi(uid)
-	formattedExpiry := token.Expiry.UTC().Format("2006-01-02 15:05:05.000")
+	formattedExpiry := token.Expiry.UTC().Format(expiryFormat)
 
 	stravaToken := models.StravaToken{
 		UserID:       userID,
@@ -93,7 +100,33 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 	// In the event that the user already has a token in the database, we'll want to update it
 	upsertToken(stravaToken, e.DB)
 
-	c.JSON(200, token)
+	// Now that we have a token for the user, send them back to the UI
+	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/dashboard/strava")
+}
+
+// StravaStatisticsHandler fetches the user's statistics from Strava in real-time
+// Todo: deprecate this eventually so I don't exhaust my daily rate limit
+func (e *Env) StravaStatisticsHandler(c *gin.Context) {
+	// Get a valid client
+	client := getHTTPClient(c, e.DB)
+	resp, err := client.Get(baseURL + "/athlete")
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		bodyString := string(bodyBytes)
+		c.PureJSON(http.StatusOK, bodyString)
+		return
+	}
+
+	c.AbortWithError(resp.StatusCode, fmt.Errorf("Error fetching Strava: %v", "but who knows what.."))
 }
 
 func upsertToken(stravaToken models.StravaToken, db *models.DB) {
@@ -115,4 +148,49 @@ func upsertToken(stravaToken models.StravaToken, db *models.DB) {
 		panic(err)
 	}
 	return
+}
+
+func getHTTPClient(c *gin.Context, db *models.DB) *http.Client {
+	// 1. Pull the user out of the context
+	uid, ok := c.Get("user")
+	if !ok {
+		panic("No user id in cookie!")
+	}
+
+	// 2. Get the current access and refresh tokens from the DB
+	dbToken, err := db.GetStravaTokenByUserID(uid.(int))
+	if err != nil {
+		panic(err)
+	}
+
+	// 3. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
+	expiresAt, _ := time.Parse(expiryFormat, dbToken.Expiry)
+	tk := &oauth2.Token{
+		AccessToken:  dbToken.AccessToken,
+		RefreshToken: dbToken.RefreshToken,
+		TokenType: "Bearer",
+		Expiry:       expiresAt,
+	}
+
+	tokenSource := conf.TokenSource(oauth2.NoContext, tk)
+	newToken, err := tokenSource.Token()
+	if err != nil {
+		panic(err)
+	}
+
+	// 4. Check if the new token is different, and if so, persist that sucker
+	if newToken.AccessToken != dbToken.AccessToken {
+		fmt.Println("Refresh successful! Updating the user's token!")
+		formattedExpiry := newToken.Expiry.UTC().Format(expiryFormat)
+
+		stravaToken := models.StravaToken{
+			UserID:       uid.(int),
+			AccessToken:  newToken.AccessToken,
+			RefreshToken: newToken.RefreshToken,
+			Expiry:       formattedExpiry,
+		}
+		db.UpdateStravaToken(stravaToken)
+	}
+
+	return oauth2.NewClient(oauth2.NoContext, tokenSource)
 }

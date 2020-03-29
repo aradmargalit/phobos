@@ -7,4 +7,5 @@ module.exports = app => {
   app.use(proxy('/private/', { target: BACKEND_URL }));
   app.use(proxy('/metadata/', { target: BACKEND_URL }));
   app.use(proxy('/users/', { target: BACKEND_URL }));
+  app.use(proxy('/strava', { target: BACKEND_URL }));
 };

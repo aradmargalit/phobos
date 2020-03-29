@@ -8,7 +8,7 @@ import IdentityButton from '../IdentityButton';
 
 const extra = () => (
   <div className="header__extra">
-    <Button className="header__strava-button" href="/auth/strava">
+    <Button className="header__strava-button" href="/strava/auth">
       Connect with Strava
     </Button>
     <IdentityButton />
