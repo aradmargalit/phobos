@@ -106,7 +106,12 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 // Todo: deprecate this eventually so I don't exhaust my daily rate limit
 func (e *Env) StravaStatisticsHandler(c *gin.Context) {
 	// Get a valid client
-	client := getHTTPClient(c, e.DB)
+	uid, ok := c.Get("user")
+	if !ok {
+		panic("No user id in cookie!")
+	}
+
+	client := getHTTPClient(uid.(int), e.DB)
 	resp, err := client.Get(baseURL + "/athlete")
 	if err != nil {
 		panic(err)
@@ -148,30 +153,24 @@ func upsertToken(stravaToken models.StravaToken, db *models.DB) {
 	return
 }
 
-func getHTTPClient(c *gin.Context, db *models.DB) *http.Client {
-	// 1. Pull the user out of the context
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
-
-	// 2. Get the current access and refresh tokens from the DB
-	dbToken, err := db.GetStravaTokenByUserID(uid.(int))
+func getHTTPClient(uid int, db *models.DB) *http.Client {
+	// 1. Get the current access and refresh tokens from the DB
+	dbToken, err := db.GetStravaTokenByUserID(uid)
 	if err != nil {
 		panic(err)
 	}
 
-	// 3. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
+	// 2. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
 	tokenSource := conf.TokenSource(oauth2.NoContext, toOAuthToken(dbToken))
 	newToken, err := tokenSource.Token()
 	if err != nil {
 		panic(err)
 	}
 
-	// 4. Check if the new token is different, and if so, persist that sucker
+	// 3. Check if the new token is different, and if so, persist that sucker
 	if newToken.AccessToken != dbToken.AccessToken {
 		fmt.Println("Refresh successful! Updating the user's token!")
-		db.UpdateStravaToken(toDatabaseTokens(newToken, uid.(int), dbToken.StravaID))
+		db.UpdateStravaToken(toDatabaseTokens(newToken, uid, dbToken.StravaID))
 	}
 
 	return oauth2.NewClient(oauth2.NoContext, tokenSource)
