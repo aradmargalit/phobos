@@ -71,6 +71,7 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 	}
 
 	// Next, confirm they've accepted access to the activity scope
+	// TODO This should return to the UI with some sort of error
 	if scope := c.Query("scope"); !strings.Contains(scope, "activity:read_all") {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("you must accept! You must"))
 		return
@@ -82,12 +83,20 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 		panic(err)
 	}
 
+	// The returned token tells us the athlete's ID in the "extra" portion of the response
+	athleteInfo := token.Extra("athlete")
+	athleteMap, ok := athleteInfo.(map[string]interface{})
+	if !ok {
+		panic("could not convert athlete information to a map")
+	}
+	stravaID := int(athleteMap["id"].(float64))
+
 	// Now, we want to persist these tokens to the database so that our poor, sweet user doesn't need to reauthenticate
-	// 1. We need to figure out which of our users authenticated against Strava
+	// We need to figure out which of our users authenticated against Strava
 	uid, _ := strconv.Atoi(stateParts[1])
 
 	// In the event that the user already has a token in the database, we'll want to update it
-	upsertToken(toDatabaseTokens(token, uid), e.DB)
+	upsertToken(toDatabaseTokens(token, uid, stravaID), e.DB)
 
 	// Now that we have a token for the user, send them back to the UI
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
@@ -162,17 +171,18 @@ func getHTTPClient(c *gin.Context, db *models.DB) *http.Client {
 	// 4. Check if the new token is different, and if so, persist that sucker
 	if newToken.AccessToken != dbToken.AccessToken {
 		fmt.Println("Refresh successful! Updating the user's token!")
-		db.UpdateStravaToken(toDatabaseTokens(newToken, uid.(int)))
+		db.UpdateStravaToken(toDatabaseTokens(newToken, uid.(int), dbToken.StravaID))
 	}
 
 	return oauth2.NewClient(oauth2.NoContext, tokenSource)
 }
 
-func toDatabaseTokens(oauthToken *oauth2.Token, uid int) models.StravaToken {
+func toDatabaseTokens(oauthToken *oauth2.Token, uid int, stravaID int) models.StravaToken {
 	formattedExpiry := oauthToken.Expiry.UTC().Format(expiryFormat)
 
 	return models.StravaToken{
 		UserID:       uid,
+		StravaID:     stravaID,
 		AccessToken:  oauthToken.AccessToken,
 		RefreshToken: oauthToken.RefreshToken,
 		Expiry:       formattedExpiry,

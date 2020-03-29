@@ -51,6 +51,7 @@ CREATE TABLE `quick_adds` (
 # ======== STRAVA MAPPINGS ========
 CREATE TABLE `strava_tokens` (
   `user_id` int(11),
+  `strava_id` int(11),
   `access_token` text,
   `refresh_token` text,
   `expiry` DATETIME,

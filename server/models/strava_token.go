@@ -8,6 +8,7 @@ import (
 // StravaToken represents a ready-to-add workout session
 type StravaToken struct {
 	UserID       int    `json:"user_id" db:"user_id"`
+	StravaID     int    `json:"strava_id" db:"strava_id"`
 	AccessToken  string `json:"access_token" db:"access_token"`
 	RefreshToken string `json:"refresh_token" db:"refresh_token"`
 	Expiry       string `json:"expiry" db:"expiry"`
@@ -18,8 +19,8 @@ type StravaToken struct {
 const (
 	insertStravaToken = `
 		INSERT INTO strava_tokens 
-		(user_id, access_token, refresh_token, expiry)
-		VALUES (:user_id, :access_token, :refresh_token, :expiry)
+		(user_id, strava_id, access_token, refresh_token, expiry)
+		VALUES (:user_id, :strava_id, :access_token, :refresh_token, :expiry)
 	`
 
 	updateStravaTokenSQL = `
