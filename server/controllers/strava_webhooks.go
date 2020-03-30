@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"server/models"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -120,7 +122,7 @@ func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, 
 	}
 
 	defer resp.Body.Close()
-	fmt.Printf("%v\n", resp)
+
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -143,9 +145,15 @@ func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *model
 		panic(err)
 	}
 
+	// Convert time to the correct format, using the provided timezone
+	// Timezone is provided as (GMT-08:00) America/Los_Angeles, so split on the space to get the portion we need
+	fmt.Println(fetchedActivity.Timezone)
+	location, err := time.LoadLocation(strings.Split(fetchedActivity.Timezone, " ")[1])
+	t, err := time.Parse("2006-01-02T15:04:05Z", fetchedActivity.StartDate)
+
 	return models.Activity{
 		Name:           fetchedActivity.Name,
-		ActivityDate:   fetchedActivity.StartDate,
+		ActivityDate:   t.In(location).Format("2006-01-02"),
 		ActivityTypeID: typeID,
 		OwnerID:        userID,
 		Duration:       (float64(fetchedActivity.ElapsedTime) / 60),
