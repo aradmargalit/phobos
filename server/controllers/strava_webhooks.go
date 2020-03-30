@@ -57,42 +57,55 @@ func (e *Env) StravaWebHookCatcher(c *gin.Context) {
 func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
 	switch e.AspectType {
 	case "create":
-		fmt.Println(e.ObjectID)
 		fetchAndCreate(e.OwnerID, e.ObjectID, db)
 	case "update":
-		fmt.Println("Caught an update")
+		fetchAndUpdate(e.OwnerID, e.ObjectID, db)
 	case "delete":
 		fmt.Println("Caught a delete!")
 	}
 }
 
 func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
-	fetchedActivity, err := fetchActivity(ownerID, activityID, db)
+	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
 		panic(err)
 	}
 
-	// Convert the activity to our version of that activity
-	// TODO pickup here
-	// activity := models.Activity{
-	// 	Name: fetchedActivity.Name,
-	// 	ActivityDate: fetchedActivity.StartDate,
-	// }
+	activity := convertStravaActivity(fetchedActivity, userID, db)
+
+	_, err = db.InsertActivity(activity)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
+	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
+	if err != nil {
+		panic(err)
+	}
+
+	activity := convertStravaActivity(fetchedActivity, userID, db)
+
+	_, err = db.UpdateActivity(activity)
+	if err != nil {
+		panic(err)
+	}
 }
 
 type stravaActivity struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Distance    float64    `json:"distance"`
-	ElapsedTime int    `json:"elapsed_time"`
-	Type        string `json:"type"`
-	StartDate   string `json:"start_date"`
-	Timezone    string `json:"timezone"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Distance    float64 `json:"distance"`
+	ElapsedTime int     `json:"elapsed_time"`
+	Type        string  `json:"type"`
+	StartDate   string  `json:"start_date"`
+	Timezone    string  `json:"timezone"`
 }
 
-func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, error) {
+func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, int, error) {
 	var fetchedActivity stravaActivity
-	
+
 	// We need to swap the ownerID for our user ID
 	userID, err := db.GetUserIDByStravaID(ownerID)
 	if err != nil {
@@ -111,14 +124,31 @@ func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, 
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return fetchedActivity, err
+			return fetchedActivity, userID, err
 		}
 		err = json.Unmarshal(bodyBytes, &fetchedActivity)
 		if err != nil {
 			panic(err)
 		}
-		return fetchedActivity, nil
+		return fetchedActivity, userID, nil
 	}
 
-	return fetchedActivity, errors.New("Could not fetch the activity from Strava")
+	return fetchedActivity, userID, errors.New("Could not fetch the activity from Strava")
+}
+
+func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *models.DB) models.Activity {
+	// Convert the activity to our version of that activity
+	typeID, err := db.GetActivityTypeIDByStravaType(fetchedActivity.Type)
+	if err != nil {
+		panic(err)
+	}
+
+	return models.Activity{
+		Name:           fetchedActivity.Name,
+		ActivityDate:   fetchedActivity.StartDate,
+		ActivityTypeID: typeID,
+		OwnerID:        userID,
+		Duration:       (float64(fetchedActivity.ElapsedTime) / 60),
+		Unit:           "miles", // Todo: don't hardcode
+	}
 }
