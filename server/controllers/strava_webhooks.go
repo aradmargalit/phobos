@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -13,6 +14,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+const metersToMiles = 0.000621371
+const metersToYards = 1.09361
 
 type stravaWebhookEvent struct {
 	ObjectType string `json:"object_type"`
@@ -89,6 +93,7 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 
 	activity := convertStravaActivity(fetchedActivity, userID, db)
 
+	// This won't work until we get an ID working. That's next!
 	_, err = db.UpdateActivity(activity)
 	if err != nil {
 		panic(err)
@@ -147,9 +152,16 @@ func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *model
 
 	// Convert time to the correct format, using the provided timezone
 	// Timezone is provided as (GMT-08:00) America/Los_Angeles, so split on the space to get the portion we need
-	fmt.Println(fetchedActivity.Timezone)
 	location, err := time.LoadLocation(strings.Split(fetchedActivity.Timezone, " ")[1])
 	t, err := time.Parse("2006-01-02T15:04:05Z", fetchedActivity.StartDate)
+
+	unit := "miles"
+	// Convert Meters to Miles
+	convertedDistance := fetchedActivity.Distance * metersToMiles
+	if fetchedActivity.Type == "Swim" {
+		unit = "yards"
+		convertedDistance = fetchedActivity.Distance * metersToYards
+	}
 
 	return models.Activity{
 		Name:           fetchedActivity.Name,
@@ -157,6 +169,7 @@ func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *model
 		ActivityTypeID: typeID,
 		OwnerID:        userID,
 		Duration:       (float64(fetchedActivity.ElapsedTime) / 60),
-		Unit:           "miles", // Todo: don't hardcode
+		Distance:       math.Floor(convertedDistance*100) / 100,
+		Unit:           unit,
 	}
 }
