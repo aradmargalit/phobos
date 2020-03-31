@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -24,6 +25,16 @@ type stravaWebhookEvent struct {
 	AspectType string `json:"aspect_type"`
 	OwnerID    int    `json:"owner_id"`
 	EventTime  int    `json:"event_time"`
+}
+
+type stravaActivity struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Distance    float64 `json:"distance"`
+	ElapsedTime int     `json:"elapsed_time"`
+	Type        string  `json:"type"`
+	StartDate   string  `json:"start_date"`
+	Timezone    string  `json:"timezone"`
 }
 
 // StravaWebookVerificationHandler responds with an OK so Strava knows we have a real server
@@ -78,7 +89,6 @@ func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
 	}
 
 	activity := convertStravaActivity(fetchedActivity, userID, db)
-
 	_, err = db.InsertActivity(activity)
 	if err != nil {
 		panic(err)
@@ -93,21 +103,14 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 
 	activity := convertStravaActivity(fetchedActivity, userID, db)
 
-	// This won't work until we get an ID working. That's next!
+	// Get the ID from our application
+	id, err := db.GetActivityIDByStravaID(activity.StravaID)
+	activity.ID = id
+
 	_, err = db.UpdateActivity(activity)
 	if err != nil {
 		panic(err)
 	}
-}
-
-type stravaActivity struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Distance    float64 `json:"distance"`
-	ElapsedTime int     `json:"elapsed_time"`
-	Type        string  `json:"type"`
-	StartDate   string  `json:"start_date"`
-	Timezone    string  `json:"timezone"`
 }
 
 func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, int, error) {
@@ -171,5 +174,6 @@ func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *model
 		Duration:       (float64(fetchedActivity.ElapsedTime) / 60),
 		Distance:       math.Floor(convertedDistance*100) / 100,
 		Unit:           unit,
+		StravaID:       sql.NullInt64{Int64: int64(fetchedActivity.ID), Valid: true},
 	}
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	responsetypes "server/response_types"
 	"strconv"
@@ -8,23 +9,24 @@ import (
 
 // Activity represents a workout session
 type Activity struct {
-	ID             int     `json:"id" db:"id"`
-	Name           string  `json:"name" db:"name"`
-	ActivityDate   string  `json:"activity_date" db:"activity_date"`
-	ActivityTypeID int     `json:"activity_type_id" db:"activity_type_id"`
-	OwnerID        int     `json:"owner_id" db:"owner_id"`
-	Duration       float64 `json:"duration" db:"duration"`
-	Distance       float64 `json:"distance" db:"distance"`
-	Unit           string  `json:"unit" db:"unit"`
-	CreatedAt      string  `json:"created_at" db:"created_at"`
-	UpdatedAt      string  `json:"updated_at" db:"updated_at"`
+	ID             int           `json:"id" db:"id"`
+	Name           string        `json:"name" db:"name"`
+	ActivityDate   string        `json:"activity_date" db:"activity_date"`
+	ActivityTypeID int           `json:"activity_type_id" db:"activity_type_id"`
+	OwnerID        int           `json:"owner_id" db:"owner_id"`
+	Duration       float64       `json:"duration" db:"duration"`
+	Distance       float64       `json:"distance" db:"distance"`
+	Unit           string        `json:"unit" db:"unit"`
+	StravaID       sql.NullInt64 `json:"strava_id" db:"strava_id"`
+	CreatedAt      string        `json:"created_at" db:"created_at"`
+	UpdatedAt      string        `json:"updated_at" db:"updated_at"`
 }
 
 const (
 	activityInsertSQL = `
 		INSERT INTO activities 
-		(name, activity_date, activity_type_id, owner_id, duration, distance, unit)
-		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit)
+		(name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id)
+		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit, :strava_id)
 	`
 	activityUpdateSQL = `
 		UPDATE activities 
@@ -73,6 +75,12 @@ func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
 
 	// Return the recently inserted record back to the user
 	activity, err = db.GetActivityByID(a.ID)
+	return
+}
+
+// GetActivityIDByStravaID will trade a strava activity ID for an application ID
+func (db *DB) GetActivityIDByStravaID(stravaID sql.NullInt64) (id int, err error) {
+	err = db.conn.Get(&id, "SELECT id FROM activities WHERE strava_id = ?", stravaID)
 	return
 }
 

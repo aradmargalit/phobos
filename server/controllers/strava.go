@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	models "server/models"
@@ -100,36 +99,6 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 
 	// Now that we have a token for the user, send them back to the UI
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
-}
-
-// StravaStatisticsHandler fetches the user's statistics from Strava in real-time
-// Todo: deprecate this eventually so I don't exhaust my daily rate limit
-func (e *Env) StravaStatisticsHandler(c *gin.Context) {
-	// Get a valid client
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
-
-	client := getHTTPClient(uid.(int), e.DB)
-	resp, err := client.Get(baseURL + "/athlete")
-	if err != nil {
-		panic(err)
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			panic(err)
-		}
-		bodyString := string(bodyBytes)
-		c.PureJSON(http.StatusOK, bodyString)
-		return
-	}
-
-	c.AbortWithError(resp.StatusCode, fmt.Errorf("Error fetching Strava: %v", "but who knows what.."))
 }
 
 func upsertToken(stravaToken models.StravaToken, db *models.DB) {
