@@ -78,7 +78,7 @@ func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
 	case "update":
 		fetchAndUpdate(e.OwnerID, e.ObjectID, db)
 	case "delete":
-		fmt.Println("Caught a delete!")
+		eventDelete(e.OwnerID, e.ObjectID, db)
 	}
 }
 
@@ -108,6 +108,19 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 	activity.ID = id
 
 	_, err = db.UpdateActivity(activity)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func eventDelete(ownerID int, activityID int, db *models.DB) {
+	// Get the ID from our application
+	id, err := db.GetActivityIDByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.DeleteActivityByID(ownerID, id)
 	if err != nil {
 		panic(err)
 	}
