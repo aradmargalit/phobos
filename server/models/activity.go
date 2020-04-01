@@ -78,9 +78,9 @@ func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
 	return
 }
 
-// GetActivityIDByStravaID will trade a strava activity ID for an application ID
-func (db *DB) GetActivityIDByStravaID(stravaID sql.NullInt64) (id int, err error) {
-	err = db.conn.Get(&id, "SELECT id FROM activities WHERE strava_id = ?", stravaID)
+// GetActivityByStravaID will trade a strava activity ID for an application ID
+func (db *DB) GetActivityByStravaID(stravaID sql.NullInt64) (activity Activity, err error) {
+	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", stravaID)
 	return
 }
 

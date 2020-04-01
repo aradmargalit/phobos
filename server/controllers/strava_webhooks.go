@@ -72,6 +72,13 @@ func (e *Env) StravaWebHookCatcher(c *gin.Context) {
 }
 
 func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
+	// Handle any panics in the webhook handler
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Recovering from panic in handleWebhookEvent error is: %v \n", r)
+		}
+	}()
+
 	switch e.AspectType {
 	case "create":
 		fetchAndCreate(e.OwnerID, e.ObjectID, db)
@@ -89,10 +96,11 @@ func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
 	}
 
 	activity := convertStravaActivity(fetchedActivity, userID, db)
-	_, err = db.InsertActivity(activity)
+	inserted, err := db.InsertActivity(activity)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("Successfully created activity! Strava ID: %v | Phobos ID: %v\n", activityID, inserted.ID)
 }
 
 func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
@@ -104,27 +112,29 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 	activity := convertStravaActivity(fetchedActivity, userID, db)
 
 	// Get the ID from our application
-	id, err := db.GetActivityIDByStravaID(activity.StravaID)
-	activity.ID = id
+	dbActivity, err := db.GetActivityByStravaID(activity.StravaID)
+	activity.ID = dbActivity.ID
 
 	_, err = db.UpdateActivity(activity)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("Successfully updated activity! Strava ID: %v | Phobos ID: %v\n", activityID, activity.ID)
 }
 
 func eventDelete(ownerID int, activityID int, db *models.DB) {
 	// Get the ID from our application
-	// TODO, there's no reason this shouldn't be a single DB call 
-	id, err := db.GetActivityIDByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
+	// TODO, there's no reason this shouldn't be a single DB call
+	activity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
 	if err != nil {
 		panic(err)
 	}
 
-	err = db.DeleteActivityByID(ownerID, id)
+	err = db.DeleteActivityByID(activity.OwnerID, activity.ID)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("Successfully deleted activity! Strava ID: %v | Phobos ID: %v\n", activityID, activity.ID)
 }
 
 func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, int, error) {
@@ -138,7 +148,7 @@ func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, 
 
 	client := getHTTPClient(userID, db)
 	fmt.Println("Fetching: " + (baseURL + "/activities/" + strconv.Itoa(activityID)) + " from Strava...")
-	
+
 	resp, err := client.Get(baseURL + "/activities/" + strconv.Itoa(activityID))
 	if err != nil {
 		panic(err)

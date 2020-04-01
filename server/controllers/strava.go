@@ -130,7 +130,8 @@ func getHTTPClient(uid int, db *models.DB) *http.Client {
 	}
 
 	// 2. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
-	tokenSource := conf.TokenSource(oauth2.NoContext, toOAuthToken(dbToken))
+	tokenSource := stravaConf.TokenSource(oauth2.NoContext, toOAuthToken(dbToken))
+	client := oauth2.NewClient(oauth2.NoContext, tokenSource)
 	newToken, err := tokenSource.Token()
 	if err != nil {
 		panic(err)
@@ -142,7 +143,7 @@ func getHTTPClient(uid int, db *models.DB) *http.Client {
 		db.UpdateStravaToken(toDatabaseTokens(newToken, uid, dbToken.StravaID))
 	}
 
-	return oauth2.NewClient(oauth2.NoContext, tokenSource)
+	return client
 }
 
 func toDatabaseTokens(oauthToken *oauth2.Token, uid int, stravaID int) models.StravaToken {
@@ -159,6 +160,7 @@ func toDatabaseTokens(oauthToken *oauth2.Token, uid int, stravaID int) models.St
 
 func toOAuthToken(dbToken models.StravaToken) *oauth2.Token {
 	expiresAt, _ := time.Parse(expiryFormat, dbToken.Expiry)
+
 	return &oauth2.Token{
 		AccessToken:  dbToken.AccessToken,
 		RefreshToken: dbToken.RefreshToken,
