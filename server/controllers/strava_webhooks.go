@@ -115,6 +115,7 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 
 func eventDelete(ownerID int, activityID int, db *models.DB) {
 	// Get the ID from our application
+	// TODO, there's no reason this shouldn't be a single DB call 
 	id, err := db.GetActivityIDByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
 	if err != nil {
 		panic(err)
@@ -137,6 +138,7 @@ func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, 
 
 	client := getHTTPClient(userID, db)
 	fmt.Println("Fetching: " + (baseURL + "/activities/" + strconv.Itoa(activityID)) + " from Strava...")
+	
 	resp, err := client.Get(baseURL + "/activities/" + strconv.Itoa(activityID))
 	if err != nil {
 		panic(err)
