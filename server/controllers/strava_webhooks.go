@@ -61,24 +61,16 @@ func (e *Env) StravaWebHookCatcher(c *gin.Context) {
 		return
 	}
 
-	// We're going to respond immediately with an OK so the webhook doesn't retry
-	c.JSON(http.StatusOK, gin.H{})
-
 	// Now we're off to actually process the event!
-	// Do this as a gorountine to free up the main webserver, and ignore non-activity updates for now
+	// I tried doing this as a go routine, but it's useful to have Strava retry if we fail
 	if event.ObjectType == "activity" {
-		go handleWebhookEvent(event, e.DB)
+		handleWebhookEvent(event, e.DB)
 	}
+	// We're going to respond with an OK so the webhook doesn't retry if this succeeds
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
-	// Handle any panics in the webhook handler
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("Recovering from panic in handleWebhookEvent error is: %v \n", r)
-		}
-	}()
-
 	switch e.AspectType {
 	case "create":
 		fetchAndCreate(e.OwnerID, e.ObjectID, db)
@@ -90,11 +82,21 @@ func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
 }
 
 func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
+	// 1. Fetch the activity from our application to check if we already have it
+	dbActivity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
+	if err == nil {
+		// If we had no problems fetching this ID, we must already have it. No need to re-insert
+		fmt.Printf("We already have this activity! Strava ID: %v | Phobos ID: %v\n", activityID, dbActivity.ID)
+		return
+	}
+
+	// 2. If we -do- need to insert it, I need the verbose payload
 	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
 		panic(err)
 	}
 
+	// 3. Convert the Strava Activity to a Phobos one and insert
 	activity := convertStravaActivity(fetchedActivity, userID, db)
 	inserted, err := db.InsertActivity(activity)
 	if err != nil {
@@ -104,6 +106,7 @@ func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
 }
 
 func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
+	// 1. We -always- need to fetch the full activity from Strava, since we always upsert
 	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
 		panic(err)
@@ -113,8 +116,18 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 
 	// Get the ID from our application
 	dbActivity, err := db.GetActivityByStravaID(activity.StravaID)
-	activity.ID = dbActivity.ID
+	if err != nil {
+		// We were unable to get this activity, so just insert it instead
+		inserted, err := db.InsertActivity(activity)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("Successfully created activity (from Strava Update)! Strava ID: %v | Phobos ID: %v\n", activityID, inserted.ID)
+		return
+	}
 
+	// If we don't need to insert it, we'll just update it
+	activity.ID = dbActivity.ID
 	_, err = db.UpdateActivity(activity)
 	if err != nil {
 		panic(err)
