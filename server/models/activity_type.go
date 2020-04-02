@@ -36,3 +36,9 @@ func (db *DB) DeleteAllActivityTypes() (err error) {
 
 	return
 }
+
+// GetActivityTypeIDByStravaType swaps a Strava activity string to an ID
+func (db *DB) GetActivityTypeIDByStravaType(stravaType string) (typeID int, err error) {
+	err = db.conn.Get(&typeID, `SELECT id FROM activity_types WHERE name=?`, stravaType)
+	return
+}

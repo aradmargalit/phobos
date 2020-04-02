@@ -1,10 +1,19 @@
 import './Header.scss';
 
-import { PageHeader } from 'antd';
+import { Button, PageHeader } from 'antd';
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 
 import IdentityButton from '../IdentityButton';
+
+const extra = () => (
+  <div className="header__extra">
+    <Button className="header__strava-button" href="/strava/auth">
+      Connect with Strava
+    </Button>
+    <IdentityButton />
+  </div>
+);
 
 const Header = ({ history, showBack }) => {
   return (
@@ -13,7 +22,7 @@ const Header = ({ history, showBack }) => {
       onBack={showBack ? () => history.push('/home') : null}
       title="PHOBOS"
       subTitle="A Fitness Tracker"
-      extra={[<IdentityButton key="idb" />]}
+      extra={extra()}
     />
   );
 };
