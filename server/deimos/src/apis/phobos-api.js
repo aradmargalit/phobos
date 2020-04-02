@@ -8,7 +8,6 @@ const options = {
 };
 
 const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
-  // Make sure to include the cookie with the request!
   const res = await fetch(endpoint);
 
   const response = await res.json();
@@ -91,4 +90,9 @@ export const fetchQuickAdds = async (setQuickAdds, setLoading) => {
 
 export const deleteQuickAdd = async id => {
   await protectedDelete(`/private/quick_adds/${id}`);
+};
+
+// Strava Calls
+export const fetchStravaStats = async (setStravaStatistics, setLoading) => {
+  await protectedGet(setStravaStatistics, setLoading, '/strava/statistics');
 };

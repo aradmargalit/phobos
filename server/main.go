@@ -35,12 +35,22 @@ func main() {
 	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))
 	r.Use(sessions.Sessions("phobos-auth", store))
 
-	// First thing's first - serve up the client JS
+	registerGoogleAuthHandlers(r, env)
+	registerActivityHandlers(r, env)
+	registerAdminHandlers(r, env)
+	registerStravaHandlers(r, env)
+
+	// If none of registered routes match, serve the client JS
 	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
 	r.NoRoute(func(c *gin.Context) {
 		c.File("./deimos/build")
 	})
 
+	fmt.Println("🚀 🌑 Phobos is ready!")
+	r.Run(":8080")
+}
+
+func registerGoogleAuthHandlers(r *gin.Engine, env *controllers.Env) {
 	// Called by the UI when the user clicks the "Login with Google Button"
 	r.GET("/auth/google", env.HandleLogin)
 
@@ -48,7 +58,9 @@ func main() {
 	r.GET("/callback", env.HandleCallback)
 
 	r.GET("/users/logout", env.Logout)
+}
 
+func registerActivityHandlers(r *gin.Engine, env *controllers.Env) {
 	private := r.Group("/private")
 	private.Use(middleware.AuthRequired)
 	{
@@ -70,14 +82,25 @@ func main() {
 	{
 		metadata.GET("/activity_types", env.ActivityTypesHandler)
 	}
+}
 
+func registerAdminHandlers(r *gin.Engine, env *controllers.Env) {
 	admin := r.Group("/admin")
 	// Eventually, I'll want to restrict what happens in production, but not yet.
 	// admin.Use(middleware.NonProd)
 	{
 		admin.GET("/seed", env.SeedHandler)
 	}
+}
 
-	fmt.Println("🚀 🌑 Phobos is ready!")
-	r.Run(":8080")
+func registerStravaHandlers(r *gin.Engine, env *controllers.Env) {
+	r.GET("/public/strava/callback", env.StravaCallbackHandler)
+	r.GET("/public/strava/webhook", env.StravaWebookVerificationHandler)
+	r.POST("/public/strava/webhook", env.StravaWebHookCatcher)
+
+	strava := r.Group("/strava")
+	strava.Use(middleware.AuthRequired)
+	{
+		strava.GET("/auth", env.StravaLoginHandler)
+	}
 }
