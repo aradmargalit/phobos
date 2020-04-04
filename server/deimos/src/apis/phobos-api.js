@@ -7,12 +7,19 @@ const options = {
   },
 };
 
-const protectedGet = async (setValue, setLoading, endpoint, dataKey = null) => {
+const protectedGet = async (value, setValue, endpoint, dataKey = null) => {
   const res = await fetch(endpoint);
+  if (!res || !res.ok) {
+    setValue({ ...value, loading: false, errors: res.statusText });
+    return;
+  }
 
   const response = await res.json();
-  setValue(dataKey ? response[dataKey] : response);
-  setLoading(false);
+  setValue({
+    payload: dataKey ? response[dataKey] : response,
+    loading: false,
+    errors: null,
+  });
 };
 
 const protectedUpsert = async (endpoint, method, body) => {
@@ -49,10 +56,10 @@ export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
 };
 
 // Activities
-export const fetchActivities = async (setActivities, setLoading) => {
+export const fetchActivities = async (activities, setActivities) => {
   await protectedGet(
+    activities,
     setActivities,
-    setLoading,
     '/private/activities',
     'activities'
   );
@@ -95,4 +102,9 @@ export const deleteQuickAdd = async id => {
 // Strava Calls
 export const fetchStravaStats = async (setStravaStatistics, setLoading) => {
   await protectedGet(setStravaStatistics, setLoading, '/strava/statistics');
+};
+
+// User
+export const fetchUser = async (user, setUser) => {
+  await protectedGet(user, setUser, '/private/users/current', 'user');
 };

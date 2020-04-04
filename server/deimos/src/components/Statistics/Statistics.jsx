@@ -23,18 +23,18 @@ const iconTitle = (text, icon) => (
   </span>
 );
 
-export default function Statistics({ loading, setLoading }) {
+export default function Statistics() {
   const { stats, setStats } = useContext(StatsContext);
-  const { workouts, hours, miles, last_ten: lastTen } = stats;
+  const { workouts, hours, miles, last_ten: lastTen } = stats.payload;
 
   useEffect(() => {
-    fetchStatistics(setStats, setLoading);
-  }, [setStats, setLoading]);
+    fetchStatistics(stats, setStats);
+  }, []);
 
-  if (loading) return <Spin />;
+  if (stats.loading) return <Spin />;
 
   return (
-    <Spin spinning={loading}>
+    <Spin spinning={stats.loading}>
       <div className="stats">
         <div className="statistics-grid">
           <Statistic

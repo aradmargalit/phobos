@@ -1,47 +1,26 @@
 import './IdentityButton.scss';
 
 import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Button, notification, Spin } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import { Button, Spin } from 'antd';
+import React, { useContext, useEffect } from 'react';
 
+import { fetchUser } from '../../apis/phobos-api';
 import { UserContext } from '../../contexts';
 
 export default function IdentityButton() {
-  const { user, setUser, loading, setLoading } = useContext(UserContext);
-
-  const [errors, setErrors] = useState(false);
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchData = async () => {
-      // Make sure to include the cookie with the request!
-      try {
-        const res = await fetch(`/private/users/current`);
+    fetchUser(user, setUser);
+  }, []);
 
-        res.json().then(({ user: respUser }) => {
-          setUser(respUser);
-          setLoading(false);
-        });
-      } catch (err) {
-        notification.error({
-          message: 'Unexpected Error',
-          description: `Error: ${err}`,
-        });
-        setErrors('API Dead?');
-        setLoading(false);
-      }
-    };
+  if (user.loading) return <Spin />;
 
-    fetchData();
-  }, [setUser, setLoading]);
-
-  if (errors) return <p>{errors}</p>;
-  if (loading) return <Spin />;
-
-  return user ? (
+  return user.payload ? (
     <div>
       <h1 className="ant-page-header-heading-title welcome">Welcome back,</h1>
       <h1 className="ant-page-header-heading-title primary">
-        {user.given_name}
+        {user.payload.given_name}
       </h1>
       <Button
         icon={<LogoutOutlined />}

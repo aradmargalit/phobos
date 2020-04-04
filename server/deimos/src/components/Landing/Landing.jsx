@@ -10,9 +10,9 @@ import { Redirect } from 'react-router-dom';
 import { UserContext } from '../../contexts';
 
 export default function Landing() {
-  const { user, loading } = useContext(UserContext);
-  if (loading) return <Spin />;
-  if (user) return <Redirect to="/home" />;
+  const { user } = useContext(UserContext);
+  if (user.loading) return <Spin />;
+  if (user.payload) return <Redirect to="/home" />;
 
   return (
     <div className="landing-container">

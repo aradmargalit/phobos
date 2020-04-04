@@ -2,7 +2,7 @@ import './Home.scss';
 
 import { Form, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 
 import {
   fetchActivities,
@@ -11,27 +11,25 @@ import {
 } from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
 import { makeDurationBreakdown } from '../../utils/durationUtils';
+import { defaultState } from '../../utils/stateUtils';
 import ActivityTable from '../ActivityTable';
 import CreateActivity from '../CreateActivity';
 import QuickAdd from '../QuickAdd';
 import Statistics from '../Statistics';
 
-export default function Home() {
-  const { user, loading } = useContext(UserContext);
-  const { statsLoading, setStats, setStatsLoading } = useContext(StatsContext);
+function Home({ history }) {
+  const { user } = useContext(UserContext);
+  const { stats, setStats } = useContext(StatsContext);
 
   const [activity, setActivity] = useState(null);
 
-  const [activities, setActivities] = useState(null);
-  const [activityLoading, setActivityLoading] = useState(true);
-
-  const [quickAdds, setQuickAdds] = useState(null);
-  const [quickAddsLoading, setQuickAddsLoading] = useState(true);
+  const [activities, setActivities] = useState(defaultState());
+  const [quickAdds, setQuickAdds] = useState(defaultState());
 
   const refetch = () => {
-    fetchActivities(setActivities, setActivityLoading);
-    fetchStatistics(setStats, setStatsLoading);
-    fetchQuickAdds(setQuickAdds, setQuickAddsLoading);
+    fetchActivities(activities, setActivities);
+    fetchStatistics(stats, setStats);
+    fetchQuickAdds(quickAdds, setQuickAdds);
   };
 
   const [form] = Form.useForm();
@@ -44,11 +42,16 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchActivities(setActivities, setActivityLoading);
-  }, [setActivityLoading]);
+    fetchActivities(activities, setActivities);
+    fetchQuickAdds(quickAdds, setQuickAdds);
+  }, []);
 
-  if (loading) return <Spin />;
-  if (!user) return <Redirect to="/" />;
+  // If there are hard errors, our server is probably down, so render an error page
+  if (user.errors) {
+    history.push('/error');
+  }
+  if (user.loading || activities.loading) return <Spin />;
+  if (!user.payload) return <Redirect to="/" />;
 
   return (
     <div className="app-content">
@@ -69,8 +72,6 @@ export default function Home() {
             <QuickAdd
               quickAdds={quickAdds}
               setQuickAdds={setQuickAdds}
-              loading={quickAddsLoading}
-              setLoading={setQuickAddsLoading}
               setQuickAdd={setFormValues}
             />
           </div>
@@ -78,19 +79,21 @@ export default function Home() {
       </div>
       <div className="container statistics">
         <h3>Your Statistics</h3>
-        <Statistics loading={statsLoading} setLoading={setStatsLoading} />
+        <Statistics />
       </div>
       <div className="container data-table">
         <h3>Your Activities</h3>
         <ActivityTable
-          activities={activities}
+          activities={activities.payload}
           refetch={() => {
-            fetchActivities(setActivities, setActivityLoading);
-            fetchStatistics(setStats, setStatsLoading);
+            fetchActivities(activities, setActivities);
+            fetchStatistics(stats, setStats);
           }}
-          loading={activityLoading}
+          loading={activities.loading}
         />
       </div>
     </div>
   );
 }
+
+export default withRouter(Home);
