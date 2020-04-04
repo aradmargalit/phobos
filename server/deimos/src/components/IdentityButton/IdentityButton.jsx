@@ -36,6 +36,7 @@ export default function IdentityButton() {
       className="login-button"
       icon={<GoogleOutlined />}
       href="/auth/google"
+      disabled={user.errors}
     >
       Login with Google
     </Button>

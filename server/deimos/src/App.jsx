@@ -3,6 +3,7 @@ import './App.scss';
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import ErrorPage from './components/ErrorPage';
 import Graphs from './components/Graphs';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -45,6 +46,10 @@ export default function App() {
               <Route exact path="/dashboard/strava">
                 <Header showBack />
                 <Strava />
+              </Route>
+              <Route path="/error">
+                <Header showBack />
+                <ErrorPage />
               </Route>
               <Route>
                 <Header />
