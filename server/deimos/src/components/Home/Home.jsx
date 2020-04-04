@@ -26,9 +26,6 @@ function Home({ history }) {
   const [activities, setActivities] = useState(defaultState());
   const [quickAdds, setQuickAdds] = useState(defaultState());
 
-  console.log('Home re-rendered!');
-  console.log(activities);
-  console.log(quickAdds);
   const refetch = () => {
     fetchActivities(setActivities);
     fetchStatistics(setStats);
