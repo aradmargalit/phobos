@@ -19,17 +19,20 @@ import Statistics from '../Statistics';
 
 function Home({ history }) {
   const { user } = useContext(UserContext);
-  const { stats, setStats } = useContext(StatsContext);
+  const { setStats } = useContext(StatsContext);
 
   const [activity, setActivity] = useState(null);
 
   const [activities, setActivities] = useState(defaultState());
   const [quickAdds, setQuickAdds] = useState(defaultState());
 
+  console.log('Home re-rendered!');
+  console.log(activities);
+  console.log(quickAdds);
   const refetch = () => {
-    fetchActivities(activities, setActivities);
-    fetchStatistics(stats, setStats);
-    fetchQuickAdds(quickAdds, setQuickAdds);
+    fetchActivities(setActivities);
+    fetchStatistics(setStats);
+    fetchQuickAdds(setQuickAdds);
   };
 
   const [form] = Form.useForm();
@@ -42,15 +45,17 @@ function Home({ history }) {
   };
 
   useEffect(() => {
-    fetchActivities(activities, setActivities);
-    fetchQuickAdds(quickAdds, setQuickAdds);
+    fetchActivities(setActivities);
+    fetchQuickAdds(setQuickAdds);
   }, []);
 
   // If there are hard errors, our server is probably down, so render an error page
-  if (user.errors) {
-    history.push('/error');
-  }
+  if (user.errors) history.push('/error');
+
+  // If either item is loading, show a spinner
   if (user.loading || activities.loading) return <Spin />;
+
+  // If there's no user, but no errors, they're just not logged in
   if (!user.payload) return <Redirect to="/" />;
 
   return (
@@ -86,8 +91,8 @@ function Home({ history }) {
         <ActivityTable
           activities={activities.payload}
           refetch={() => {
-            fetchActivities(activities, setActivities);
-            fetchStatistics(stats, setStats);
+            fetchActivities(setActivities);
+            fetchStatistics(setStats);
           }}
           loading={activities.loading}
         />

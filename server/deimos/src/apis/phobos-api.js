@@ -1,5 +1,7 @@
 /* eslint-disable camelcase */
 
+import { message, notification } from 'antd';
+
 // Common Options
 const options = {
   headers: {
@@ -7,10 +9,10 @@ const options = {
   },
 };
 
-const protectedGet = async (value, setValue, endpoint, dataKey = null) => {
+const protectedGet = async (setValue, endpoint, dataKey = null) => {
   const res = await fetch(endpoint);
   if (!res || !res.ok) {
-    setValue({ ...value, loading: false, errors: res.statusText });
+    setValue(curr => ({ ...curr, loading: false, errors: res.statusText }));
     return;
   }
 
@@ -28,10 +30,17 @@ const protectedUpsert = async (endpoint, method, body) => {
     method,
     body: JSON.stringify(body),
   });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
+
+  if (!res || !res.ok) {
+    notification.error({
+      message: `Could not ${method} to ${endpoint}...`,
+      description: res.statusText,
+      duration: 2,
+    });
+    return;
   }
+
+  message.success(`Successfully ${method === 'POST' ? 'created' : 'updated'}!`);
 };
 
 export const protectedDelete = async endpoint => {
@@ -39,30 +48,31 @@ export const protectedDelete = async endpoint => {
     ...options,
     method: 'DELETE',
   });
-  const { error } = await res.json();
-  if (error) {
-    throw error;
+
+  if (!res || !res.ok) {
+    notification.error({
+      message: `Could not DELETE ${endpoint}...`,
+      description: res.statusText,
+      duration: 2,
+    });
+    return;
   }
+
+  message.success(`Successfully deleted!`);
 };
 
 // Activity Types
-export const fetchActivityTypes = async (setActivityTypes, setLoading) => {
+export const fetchActivityTypes = async setActivityTypes => {
   await protectedGet(
     setActivityTypes,
-    setLoading,
     '/metadata/activity_types',
     'activity_types'
   );
 };
 
 // Activities
-export const fetchActivities = async (activities, setActivities) => {
-  await protectedGet(
-    activities,
-    setActivities,
-    '/private/activities',
-    'activities'
-  );
+export const fetchActivities = async setActivities => {
+  await protectedGet(setActivities, '/private/activities', 'activities');
 };
 
 export const postActivity = async activity => {
@@ -78,12 +88,12 @@ export const deleteActivity = async id => {
 };
 
 // Statistics
-export const fetchMonthlySums = async (setMonthlySums, setLoading) => {
-  await protectedGet(setMonthlySums, setLoading, '/private/activities/monthly');
+export const fetchMonthlySums = async setMonthlySums => {
+  await protectedGet(setMonthlySums, '/private/activities/monthly');
 };
 
-export const fetchStatistics = async (setStats, setLoading) => {
-  await protectedGet(setStats, setLoading, '/private/statistics');
+export const fetchStatistics = async setStats => {
+  await protectedGet(setStats, '/private/statistics');
 };
 
 // Quick Adds
@@ -91,8 +101,8 @@ export const postQuickAdd = async values => {
   await protectedUpsert('/private/quick_adds', 'POST', values);
 };
 
-export const fetchQuickAdds = async (setQuickAdds, setLoading) => {
-  await protectedGet(setQuickAdds, setLoading, '/private/quick_adds');
+export const fetchQuickAdds = async setQuickAdds => {
+  await protectedGet(setQuickAdds, '/private/quick_adds');
 };
 
 export const deleteQuickAdd = async id => {
@@ -100,11 +110,11 @@ export const deleteQuickAdd = async id => {
 };
 
 // Strava Calls
-export const fetchStravaStats = async (setStravaStatistics, setLoading) => {
-  await protectedGet(setStravaStatistics, setLoading, '/strava/statistics');
+export const fetchStravaStats = async setStravaStatistics => {
+  await protectedGet(setStravaStatistics, '/strava/statistics');
 };
 
 // User
-export const fetchUser = async (user, setUser) => {
-  await protectedGet(user, setUser, '/private/users/current', 'user');
+export const fetchUser = async setUser => {
+  await protectedGet(setUser, '/private/users/current', 'user');
 };

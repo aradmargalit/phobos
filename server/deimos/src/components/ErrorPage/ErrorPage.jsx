@@ -1,7 +1,10 @@
 import { RedoOutlined } from '@ant-design/icons';
 import { Alert, Button, notification } from 'antd';
-import React from 'react';
+import React, { useContext } from 'react';
 import { withRouter } from 'react-router-dom';
+
+import { fetchUser } from '../../apis/phobos-api';
+import { UserContext } from '../../contexts';
 
 const phoberror = require('./phoberror.png');
 
@@ -15,6 +18,8 @@ const messageMap = {
 };
 
 function ErrorPage({ history }) {
+  const { setUser } = useContext(UserContext);
+
   // Every time we land on the error page, we need to check if the specific error is included in the URL
   const errorType = window.location.href.split('/').slice(-1);
   const errorMessage = `It looks like something went wrong. Sorry about that! ${messageMap[
@@ -38,11 +43,12 @@ function ErrorPage({ history }) {
       <Button
         icon={<RedoOutlined />}
         type="primary"
-        onClick={() => {
+        onClick={async () => {
           notification.info({
             message: 'Checking if things are fixed!',
             duration: 2,
           });
+          await fetchUser(setUser);
           history.push('/home');
         }}
       >

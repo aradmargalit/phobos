@@ -25,8 +25,8 @@ export default function CreateActivity({
     onFinish(values, setLoading, refetch, form, setActivity);
 
   useEffect(() => {
-    fetchActivityTypes(activityTypes, setActivityTypes);
-  }, []);
+    fetchActivityTypes(setActivityTypes);
+  }, [activityTypes]);
 
   return (
     <div className="outer-form-wrapper">

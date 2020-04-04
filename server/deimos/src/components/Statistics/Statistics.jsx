@@ -28,8 +28,8 @@ export default function Statistics() {
   const { workouts, hours, miles, last_ten: lastTen } = stats.payload;
 
   useEffect(() => {
-    fetchStatistics(stats, setStats);
-  }, []);
+    fetchStatistics(setStats);
+  }, [setStats]);
 
   if (stats.loading) return <Spin />;
 

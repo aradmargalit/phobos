@@ -19,8 +19,8 @@ export default function EditActivity({ refetch, initialActivity, modalClose }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchActivityTypes(activityTypes, setActivityTypes);
-  }, [activityTypes]);
+    fetchActivityTypes(setActivityTypes);
+  }, []);
 
   return (
     <div className="outer-form-wrapper">

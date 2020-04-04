@@ -19,9 +19,9 @@ export default function Graphs() {
   });
 
   useEffect(() => {
-    fetchStatistics(stats, setStats);
-    fetchMonthlySums(monthlyData, setMonthlyData);
-  }, []);
+    fetchStatistics(setStats);
+    fetchMonthlySums(setMonthlyData);
+  }, [setStats]);
 
   if (stats.loading || monthlyData.loading) return <Spin />;
   if (!monthlyData.payload || !monthlyData.payload.length || !stats.payload)

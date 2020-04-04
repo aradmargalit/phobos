@@ -11,8 +11,8 @@ export default function IdentityButton() {
   const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    fetchUser(user, setUser);
-  }, []);
+    fetchUser(setUser);
+  }, [setUser]);
 
   if (user.loading) return <Spin />;
 
