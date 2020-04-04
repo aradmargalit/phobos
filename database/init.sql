@@ -29,6 +29,7 @@ CREATE TABLE `activities` (
   `duration` DOUBLE,
   `distance` DOUBLE,
   `unit` text,
+  `strava_id` BIGINT,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
