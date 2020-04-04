@@ -10,7 +10,7 @@ import { deleteQuickAdd, fetchQuickAdds } from '../../apis/phobos-api';
 export default function QuickAdd({ quickAdds, setQuickAdds, setQuickAdd }) {
   const onDelete = async id => {
     await deleteQuickAdd(id);
-    await fetchQuickAdds(quickAdds, setQuickAdds);
+    await fetchQuickAdds(setQuickAdds);
   };
 
   if (quickAdds.loading) return <Spin />;
