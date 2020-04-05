@@ -14,6 +14,7 @@ type ActivityResponse struct {
 	Distance       float64              `json:"distance" db:"distance"`
 	Unit           string               `json:"unit" db:"unit"`
 	StravaID       sql.NullInt64        `json:"strava_id" db:"strava_id"`
+	LogicalIndex   int                  `json:"logical_index"`
 	CreatedAt      string               `json:"created_at" db:"created_at"`
 	UpdatedAt      string               `json:"updated_at" db:"updated_at"`
 }

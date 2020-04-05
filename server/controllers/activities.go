@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	models "server/models"
+	responsetypes "server/response_types"
 	"strconv"
 	"time"
 
@@ -73,7 +74,14 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"activities": a})
+	withIndices := make([]responsetypes.ActivityResponse, len(a))
+	// No smart way to do this, add an increasing logical index to each for the frontend's benefit
+	for idx, activity := range a {
+		activity.LogicalIndex = idx + 1
+		withIndices = append(withIndices, activity)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"activities": withIndices})
 }
 
 // DeleteActivityHandler returns all the user's activities
