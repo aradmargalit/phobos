@@ -1,6 +1,6 @@
 .graphs {
   display: grid;
-  grid-template: auto auto / repeat(2, 1fr);
+  grid-template: repeat(3 auto) / repeat(2, 1fr);
   justify-items: center;
   align-items: center;
   width: 80%;

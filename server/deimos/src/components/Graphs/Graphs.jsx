@@ -7,6 +7,7 @@ import { fetchMonthlySums, fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
 import ActivityGraph from '../ActivityGraph';
 import DOWBarChart from '../DOWBarChart';
+import MileageGraph from '../MileageGraph';
 import RadialActivityTypesGraph from '../RadialActivityTypesGraph';
 
 export default function Graphs() {
@@ -45,6 +46,10 @@ export default function Graphs() {
       />
       <DOWBarChart dayBreakdown={dayBreakdown} />
       <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
+      <MileageGraph
+        loading={monthlyData.loading}
+        monthlyData={monthlyData.payload}
+      />
     </div>
   );
 }

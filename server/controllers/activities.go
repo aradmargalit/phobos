@@ -98,8 +98,8 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 	return
 }
 
-// GetMonthlyDurationSums returns the user's monthly sum of workout hours
-func (e *Env) GetMonthlyDurationSums(c *gin.Context) {
+// GetMonthlySums returns the user's monthly sum of workout hours and miles
+func (e *Env) GetMonthlySums(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
 	uid, ok := c.Get("user")
 	if !ok {
@@ -111,26 +111,28 @@ func (e *Env) GetMonthlyDurationSums(c *gin.Context) {
 		panic(err)
 	}
 
-	monthMap := map[string]float64{}
+	monthMap := map[string]map[string]float64{}
 
 	for _, activity := range a {
 		m, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
 		month := fmt.Sprintf("%v %v", m.Month(), m.Year())
 		_, ok := monthMap[month]
 		if !ok {
-			monthMap[month] = 0
+			monthMap[month] = map[string]float64{"duration": 0, "miles": 0}
 		}
-		monthMap[month] += activity.Duration
+		monthMap[month]["duration"] += activity.Duration
+		monthMap[month]["miles"] += activity.Distance
 	}
 
 	type monthlySum struct {
 		Month    string  `json:"month"`
 		Duration float64 `json:"duration"`
+		Miles    float64 `json:"miles"`
 	}
 
 	response := []monthlySum{}
 	for k, v := range monthMap {
-		response = append(response, monthlySum{k, v})
+		response = append(response, monthlySum{Month: k, Duration: v["duration"], Miles: v["miles"]})
 	}
 	c.JSON(http.StatusOK, response)
 }
