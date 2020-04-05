@@ -10,13 +10,17 @@ import { onFinish, onReset, onSubmit } from './editUtils';
 
 export default function EditActivity({ refetch, initialActivity, modalClose }) {
   const [activity, setActivity] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activityTypes, setActivityTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [activityTypes, setActivityTypes] = useState({
+    payload: [],
+    loading: true,
+    errors: null,
+  });
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchActivityTypes(setActivityTypes, setLoading);
-  }, [setLoading]);
+    fetchActivityTypes(setActivityTypes);
+  }, []);
 
   return (
     <div className="outer-form-wrapper">
@@ -24,7 +28,7 @@ export default function EditActivity({ refetch, initialActivity, modalClose }) {
         refetch={refetch}
         form={form}
         setActivity={setActivity}
-        activityTypes={activityTypes}
+        activityTypes={activityTypes.payload}
         initialActivity={initialActivity}
         onFinish={values =>
           onFinish(values, setLoading, refetch, initialActivity.id, modalClose)

@@ -10,19 +10,21 @@ import DOWBarChart from '../DOWBarChart';
 import RadialActivityTypesGraph from '../RadialActivityTypesGraph';
 
 export default function Graphs() {
-  const { stats, setStats, statsLoading, setStatsLoading } = useContext(
-    StatsContext
-  );
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [monthlyLoading, setMonthlyLoading] = useState(true);
+  const { stats, setStats } = useContext(StatsContext);
+
+  const [monthlyData, setMonthlyData] = useState({
+    payload: [],
+    loading: true,
+    errors: null,
+  });
 
   useEffect(() => {
-    fetchStatistics(setStats, setStatsLoading);
-    fetchMonthlySums(setMonthlyData, setMonthlyLoading);
-  }, [setStats, setStatsLoading]);
+    fetchStatistics(setStats);
+    fetchMonthlySums(setMonthlyData);
+  }, [setStats]);
 
-  if (statsLoading || monthlyLoading) return <Spin />;
-  if (!monthlyData || !monthlyData.length || !stats)
+  if (stats.loading || monthlyData.loading) return <Spin />;
+  if (!monthlyData.payload || !monthlyData.payload.length || !stats.payload)
     return (
       <Empty
         style={{ marginTop: '50px' }}
@@ -30,11 +32,17 @@ export default function Graphs() {
       />
     );
 
-  const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats;
+  const {
+    day_breakdown: dayBreakdown,
+    type_breakdown: typeBreakdown,
+  } = stats.payload;
 
   return (
     <div className="graphs">
-      <ActivityGraph loading={monthlyLoading} monthlyData={monthlyData} />
+      <ActivityGraph
+        loading={monthlyData.loading}
+        monthlyData={monthlyData.payload}
+      />
       <DOWBarChart dayBreakdown={dayBreakdown} />
       <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
     </div>
