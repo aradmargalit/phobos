@@ -25,15 +25,19 @@ export default function ActivityTable({ loading, activities, refetch }) {
   if (!activities) return <Empty description="No activities...yet!" />;
 
   // Debounce the search term to avoid pointless, expensive re-renders
-  const bouncedSetSearchTerm = _debounce(setSearchTerm, 500);
+  const bouncedSetSearchTerm = _debounce(setSearchTerm, 350);
 
-  // If there's no search term, we want to set null in order to do the right thing later
-  const onChangeHandler = e => {
-    if (!e.target.value || !e.target.value.length) {
+  const onSearchHandler = term => {
+    // If there's no search term, we want to set null in order to do the right thing later
+    if (!term || !term.length) {
       setSearchTerm(null);
       return;
     }
-    bouncedSetSearchTerm(e.target.value);
+    bouncedSetSearchTerm(term);
+  };
+
+  const onChangeHandler = e => {
+    onSearchHandler(e.target.value);
   };
 
   const renderEditButtons = activity => (
@@ -81,7 +85,6 @@ export default function ActivityTable({ loading, activities, refetch }) {
     );
   };
 
-  const closeModal = () => setEditModalVisible(false);
   const columns = [
     {
       title: '',
@@ -120,13 +123,16 @@ export default function ActivityTable({ loading, activities, refetch }) {
       render: confirmDelete,
     },
   ];
+
+  const closeModal = () => setEditModalVisible(false);
+
   return (
     <div>
       <Search
         className="search-bar"
         allowClear
         placeholder="Search by name, type, or date..."
-        onSearch={onChangeHandler}
+        onSearch={onSearchHandler}
         onChange={onChangeHandler}
         width="50%"
       />
