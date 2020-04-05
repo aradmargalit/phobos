@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	models "server/models"
+	responsetypes "server/response_types"
 	"strconv"
 	"time"
 
@@ -73,7 +74,22 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"activities": a})
+	count := len(a)
+	fmt.Printf("Found %v activities for user ID: %v...\n", count, uid)
+
+	withIndices := make([]responsetypes.ActivityResponse, count)
+	// No smart way to do this, add an increasing logical index to each for the frontend's benefit
+	// I also want to represent the date in an easy-to-sort way, so doing that here
+	for idx, activity := range a {
+		activity.LogicalIndex = count - idx
+
+		// Parse time
+		t, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+		activity.Epoch = t.Unix()
+		withIndices[idx] = activity
+	}
+
+	c.JSON(http.StatusOK, gin.H{"activities": withIndices})
 }
 
 // DeleteActivityHandler returns all the user's activities
