@@ -14,24 +14,28 @@ export default function CreateActivity({
   setActivity,
 }) {
   const { user } = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
-  const [activityTypes, setActivityTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [activityTypes, setActivityTypes] = useState({
+    payload: [],
+    loading: false,
+    errors: null,
+  });
 
   const wrappedFinish = values =>
     onFinish(values, setLoading, refetch, form, setActivity);
 
   useEffect(() => {
-    fetchActivityTypes(setActivityTypes, setLoading);
-  }, [setLoading]);
+    fetchActivityTypes(setActivityTypes);
+  }, []);
 
   return (
     <div className="outer-form-wrapper">
       <AddActivityForm
         refetch={refetch}
         form={form}
-        user={user}
+        user={user.payload}
         setActivity={setActivity}
-        activityTypes={activityTypes}
+        activityTypes={activityTypes.payload}
         onFinish={wrappedFinish}
       />
       <CalculatedActivityFields activity={activity} />

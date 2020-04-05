@@ -72,7 +72,7 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 	// Next, confirm they've accepted access to the activity scope
 	// TODO This should return to the UI with some sort of error
 	if scope := c.Query("scope"); !strings.Contains(scope, "activity:read_all") {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("you must accept! You must"))
+		c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/error/strava")
 		return
 	}
 

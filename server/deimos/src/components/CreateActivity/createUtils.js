@@ -1,13 +1,6 @@
-import { message, notification } from 'antd';
+import { message } from 'antd';
 
 import { postActivity, postQuickAdd } from '../../apis/phobos-api';
-
-const onSuccess = entity => message.success(`Successfully created ${entity}!`);
-const onError = err =>
-  notification.error({
-    message: 'Unexpected Error',
-    description: `Error: ${err}`,
-  });
 
 export const onSubmit = form => {
   form.submit();
@@ -25,7 +18,6 @@ const commonPost = async (setLoading, apiCall, values, refetch) => {
     refetch();
     return true;
   } catch (err) {
-    onError(err);
     return false;
   } finally {
     setLoading(false);
@@ -51,7 +43,6 @@ export const onFinish = async (
     refetch
   );
   if (!success) return;
-  onSuccess('activity');
   form.resetFields();
   setActivity(form.getFieldsValue());
 };

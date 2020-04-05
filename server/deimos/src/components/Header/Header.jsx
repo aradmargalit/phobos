@@ -15,14 +15,14 @@ const extra = () => (
   </div>
 );
 
-const Header = ({ history, showBack }) => {
+const Header = ({ history, showBack, showStrava }) => {
   return (
     <PageHeader
       className="header"
       onBack={showBack ? () => history.push('/home') : null}
       title="PHOBOS"
       subTitle="A Fitness Tracker"
-      extra={extra()}
+      extra={showStrava ? extra() : <IdentityButton />}
     />
   );
 };
