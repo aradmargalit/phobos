@@ -1,56 +1,57 @@
 # Phobos
 
-![Phobos](./docs/phobos.png)
+<img src="./docs/phobos.png" alt="phoebe" width="200" />
 
-Phobos is a work-in-progress fitness tracker app meant to replace a long-running spreadsheet. The idea is to track the following on a daily basis:
+Phobos is a fitness tracker app which functions like a fitness diary. The idea is to track the following on a daily basis:
 
 - Workout Type
 - Workout Duration
-- Miles Traveled
+- Distance Covered
 
-and to calculate a series of derived fields:
+and to provide insights to the end-user:
 
-- Relative Effort
 - Pace
-- Calories Burned
+- Workout statistics
+- Mileage over time
+- Duration over time
 
-The end-goal is allow for automated data import from [Strava](http://strava.com).
+Users can also enable automatic updates from [Strava](http://strava.com).
 
 ## Getting Started :rocket:
 
 ### Cloning the Repository
 
-Given that this project uses [Go](https://golang.org/), I recommend cloning this project into your `$GOPATH/src/`. [You can learn more about the `GOPATH` if you don't understand why](https://github.com/golang/go/wiki/GOPATH).
-
 ### Docker :whale:
 
-The goal is to string everything together using [Docker Compose](https://docs.docker.com/compose/). You should just need to:
+Everything works using [Docker Compose](https://docs.docker.com/compose/), though it's not the best developer experience. However, if you want to see what the app looks like, you can follow these instructions.
+
+You can set up a `.env` file to store these secrets at the project root. Docker compose will automatically pick up the `.env` file's variables.
+
+Check out [the sample file](./.env.sample) to see the layout and format for this file and ask a contributor to share the Google and Strava credentials for you (or make your own!)
 
 ```sh
 # --build rebuilds images in the event that the source has changed
 docker-compose up --build
 ```
 
-You can set up a `.env` file to store these secrets at the project root. Docker compose will automatically pick up the `.env` file's variables.
-
-Check out [the sample file](./.env.sample) to see the layout and format for this file.
-
 ### Run Locally :computer:
 
-#### Client :moon:
+I find it's best to run these in order!
 
-To start deimos:
+#### MySQL DB :inbox_tray:
+
+You should just use Docker for this. It's way easier.
 
 ```sh
-yarn install
-yarn start
+docker-compose up -d mysql
 ```
 
 #### Go Server :mailbox_with_no_mail:
 
-You'll need Go Version 1.13
+You'll need Go Version 1.14
 
 ```sh
+cd server
 go build
 
 GOOGLE_CLIENT_ID= \
@@ -64,12 +65,20 @@ STRAVA_CLIENT_SECRET= \
 ./server
 ```
 
-#### MySQL DB :inbox_tray:
-
-You should just use Docker for this. It's way easier.
+Once the server is stood up, seed the database!
 
 ```sh
-docker-compose up -d mysql
+curl http://localhost:8080/admin/seed
+```
+
+#### Client :moon:
+
+To start deimos:
+
+```sh
+cd deimos
+yarn install
+yarn start
 ```
 
 ## Deployment :rocket:
