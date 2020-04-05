@@ -101,6 +101,32 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
 }
 
+// StravaDeauthorizationHandler is responsible for disconnecting the user from Strava updates
+func (e *Env) StravaDeauthorizationHandler(c *gin.Context) {
+	uid, ok := c.Get("user")
+	if !ok {
+		panic("No user id in cookie!")
+	}
+
+	client := getHTTPClient(uid.(int), e.DB)
+	fmt.Println("Deauthorizing user id: " + strconv.Itoa(uid.(int)) + " from Strava access...")
+
+	resp, err := client.Post("https://www.strava.com/oauth/deauthorize", "application/json", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+
+	// Now that we've done that, we need to delete that token from the DB
+	err = e.DB.DeleteStravaTokenByUserID(uid.(int))
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"deleted": true})
+}
+
 func upsertToken(stravaToken models.StravaToken, db *models.DB) {
 	// 1. Check if a token already exists
 	_, err := db.GetStravaTokenByUserID(stravaToken.UserID)

@@ -1,25 +1,16 @@
 import './Header.scss';
 
-import { CheckCircleOutlined } from '@ant-design/icons';
-import { Button, PageHeader } from 'antd';
+import { PageHeader } from 'antd';
 import React, { useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import { UserContext } from '../../contexts';
 import IdentityButton from '../IdentityButton';
+import StravaButton from '../StravaButton';
 
 const extra = (registeredWithStrava, loading) => (
   <div className="header__extra">
-    <Button
-      disabled={loading || registeredWithStrava}
-      className={`header__strava-button${
-        registeredWithStrava ? '--registered' : ''
-      }`}
-      href="/strava/auth"
-    >
-      {registeredWithStrava ? 'Connected with Strava' : 'Connect with Strava'}
-      {registeredWithStrava && <CheckCircleOutlined />}
-    </Button>
+    <StravaButton registered={registeredWithStrava} loading={loading} />
     <IdentityButton />
   </div>
 );

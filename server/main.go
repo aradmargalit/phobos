@@ -102,5 +102,6 @@ func registerStravaHandlers(r *gin.Engine, env *controllers.Env) {
 	strava.Use(middleware.AuthRequired)
 	{
 		strava.GET("/auth", env.StravaLoginHandler)
+		strava.GET("/deauth", env.StravaDeauthorizationHandler)
 	}
 }
