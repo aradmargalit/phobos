@@ -10,24 +10,24 @@ import (
 	"time"
 )
 
-func main() {
+func smain() {
 	activityTypeMap := map[string]int{
-		"Bike": 1,
+		"Bike":          1,
 		"Mountain Bike": 1,
-		"Run": 2,
-		"Swim": 3,
-		"Walk": 4,
-		"Hike": 5,
-		"Climbing": 18,
-		"Snowboard": 21,
-		"Surf": 25,
-		"Lift": 28,
-		"Yoga": 32,
-		"Basketball": 33,
-		"Soccer": 34,
-		"Ultimate": 35,		
-		"Tennis": 36,
-		"Volleyball": 37,
+		"Run":           2,
+		"Swim":          3,
+		"Walk":          4,
+		"Hike":          5,
+		"Climbing":      18,
+		"Snowboard":     21,
+		"Surf":          25,
+		"Lift":          28,
+		"Yoga":          32,
+		"Basketball":    33,
+		"Soccer":        34,
+		"Ultimate":      35,
+		"Tennis":        36,
+		"Volleyball":    37,
 	}
 
 	csvfile, err := os.Open("/Users/aradmargalit/Downloads/we.csv")
@@ -65,16 +65,16 @@ func main() {
 			if activityType == "Run - FS" {
 				activityType = "Run"
 			}
-	
+
 			activityTypeID, ok := activityTypeMap[activityType]
 			if !ok {
 				panic(activityType)
 			}
-	
+
 			if distance == "" {
 				distance = "0"
 			}
-	
+
 			// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 			d, err := time.Parse("1/2/06", activityDate)
 			if err != nil {
