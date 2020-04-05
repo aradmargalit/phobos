@@ -17,6 +17,7 @@ export const filterActivities = (term, activities) => {
   const filteredByName = activities.filter(ta =>
     ta.name.toLowerCase().includes(term)
   );
+
   const filteredByType = activities.filter(ta =>
     ta.activity_type.name.toLowerCase().includes(term)
   );
