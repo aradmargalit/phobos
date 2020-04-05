@@ -1,0 +1,40 @@
+.strava-button {
+  margin-right: 20px;
+  color: white;
+  background-color: #fc4c02;
+  border-color: white;
+
+  &--registered {
+    margin-right: 20px;
+    color: #135200 !important;
+    border-color: #135200 !important;
+
+    &:hover {
+      color: white !important;
+      background-color: #135200;
+      border-color: #135200;
+    }
+
+    &:focus {
+      color: #135200;
+      background-color: transparent;
+      border-color: #135200;
+    }
+  }
+
+  &:hover {
+    color: #fc4c02;
+    background-color: transparent;
+    border-color: #fc4c02;
+  }
+
+  &:focus {
+    color: #fc4c02;
+    background-color: transparent;
+    border-color: #fc4c02;
+  }
+}
+
+.strava-unregistered-content > p > span {
+  margin-right: 10px;
+}

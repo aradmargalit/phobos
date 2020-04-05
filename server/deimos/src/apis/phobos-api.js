@@ -118,3 +118,14 @@ export const fetchStravaStats = async setStravaStatistics => {
 export const fetchUser = async setUser => {
   await protectedGet(setUser, '/private/users/current', 'user');
 };
+
+export const deauthStrava = async () => {
+  const res = await fetch('/strava/deauth');
+  if (!res || !res.ok) {
+    notification.error({
+      message: 'Could not deauthorize Strava.',
+      description: 'Please try again!',
+      duration: 2,
+    });
+  }
+};
