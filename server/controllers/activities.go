@@ -74,11 +74,14 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 		panic(err)
 	}
 
-	withIndices := make([]responsetypes.ActivityResponse, len(a))
+	count := len(a)
+	fmt.Printf("Found %v activities for user ID: %v...\n", count, uid)
+
+	withIndices := make([]responsetypes.ActivityResponse, count)
 	// No smart way to do this, add an increasing logical index to each for the frontend's benefit
 	for idx, activity := range a {
-		activity.LogicalIndex = idx + 1
-		withIndices = append(withIndices, activity)
+		activity.LogicalIndex = count - idx
+		withIndices[idx] = activity
 	}
 
 	c.JSON(http.StatusOK, gin.H{"activities": withIndices})
