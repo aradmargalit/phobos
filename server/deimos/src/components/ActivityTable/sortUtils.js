@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 export const numberSorter = (a, b) => {
   return a.logical_index - b.logical_index;
 };
@@ -9,7 +7,7 @@ export const nameSorter = (a, b) => {
 };
 
 export const dateSorter = (a, b) => {
-  return moment(a.activity_date).diff(moment(b.activity_date));
+  return a.epoch - b.epoch;
 };
 
 export const activityTypeSorter = (a, b) => {
