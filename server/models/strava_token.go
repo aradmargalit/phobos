@@ -81,3 +81,9 @@ func (db *DB) GetUserIDByStravaID(stravaID int) (userID int, err error) {
 	err = db.conn.Get(&userID, `SELECT user_id FROM strava_tokens WHERE strava_id=?`, stravaID)
 	return
 }
+
+// DeleteStravaTokenByUserID clears out a user's token
+func (db *DB) DeleteStravaTokenByUserID(uid int) (err error) {
+	_, err = db.conn.Exec("DELETE FROM strava_tokens WHERE user_id=?", uid)
+	return
+}
