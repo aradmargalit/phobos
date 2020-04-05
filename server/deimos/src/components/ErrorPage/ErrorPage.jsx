@@ -1,6 +1,6 @@
 import { RedoOutlined } from '@ant-design/icons';
-import { Alert, Button, notification } from 'antd';
-import React, { useContext } from 'react';
+import { Alert, Button, Spin } from 'antd';
+import React, { useContext, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import { fetchUser } from '../../apis/phobos-api';
@@ -12,13 +12,17 @@ const messageMap = {
   500: 'Our system is having trouble. You can retry, or come back later',
   502: 'Our system is having trouble. You can retry, or come back later',
   504: 'Our system is having trouble. You can retry, or come back later',
-  404: "we weren't able to find that page",
+  404: "We weren't able to find that page.",
   strava:
     'Please make sure you allow Phobos to read your activities and try again.',
 };
 
 function ErrorPage({ history }) {
   const { setUser } = useContext(UserContext);
+
+  const [loading, setLoading] = useState(false);
+
+  if (loading) return <Spin />;
 
   // Every time we land on the error page, we need to check if the specific error is included in the URL
   const errorType = window.location.href.split('/').slice(-1);
@@ -44,10 +48,10 @@ function ErrorPage({ history }) {
         icon={<RedoOutlined />}
         type="primary"
         onClick={async () => {
-          notification.info({
-            message: 'Checking if things are fixed!',
-            duration: 2,
-          });
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
           await fetchUser(setUser);
           history.push('/home');
         }}
