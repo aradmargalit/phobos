@@ -53,6 +53,10 @@ func (db *DB) GetUserByEmail(email string) (u User, err error) {
 
 // GetUserByID gets a database user by their ID
 func (db *DB) GetUserByID(id int) (u responsetypes.UserResponse, err error) {
+	// This warrants an explanation!
+	// I want to deserialize this query response to a responsetypes.UserResponse object
+	// which expects "strava_token" to be a boolean, so I check for existance and convert
+	// to a boolean in the SQL itself.
 	err = db.conn.Get(&u, `
 	SELECT users.*, 
 		IF(strava_tokens.expiry IS NULL, FALSE, TRUE) as strava_token
