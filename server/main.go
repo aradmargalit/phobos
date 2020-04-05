@@ -69,7 +69,7 @@ func registerActivityHandlers(r *gin.Engine, env *controllers.Env) {
 		private.GET("/activities", env.GetActivitiesHandler)
 		private.DELETE("/activities/:id", env.DeleteActivityHandler)
 		private.PUT("/activities/:id", env.UpdateActivityHandler)
-		private.GET("/activities/monthly", env.GetMonthlyDurationSums)
+		private.GET("/activities/monthly", env.GetMonthlySums)
 		private.GET("/statistics", env.GetUserStatistics)
 
 		// Quick Adds
