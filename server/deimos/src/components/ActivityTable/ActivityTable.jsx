@@ -10,6 +10,14 @@ import { deleteActivity } from '../../apis/phobos-api';
 import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
 import { makeDurationBreakdown } from '../../utils/durationUtils';
 import EditActivity from '../EditActivity';
+import {
+  activityTypeSorter,
+  dateSorter,
+  distanceSorter,
+  durationSorter,
+  nameSorter,
+  numberSorter,
+} from './sortUtils';
 import { filterActivities, toCol } from './tableUtils';
 
 const stravaIcon = require('./strava.png');
@@ -96,19 +104,24 @@ export default function ActivityTable({ loading, activities, refetch }) {
       title: 'No.',
       dataIndex: 'logical_index',
       width: 70,
+      sorter: numberSorter,
     },
-    { ...toCol('Name'), width: 250 },
+    { ...toCol('Name'), width: 250, sorter: nameSorter },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
-    toCol('Activity Date', formatDate),
+    { ...toCol('Activity Date', formatDate), sorter: dateSorter },
     {
       title: 'Activity Type',
       dataIndex: ['activity_type', 'name'],
+      sorter: activityTypeSorter,
     },
-    toCol('Duration', minutesToHMS),
-    toCol('Distance', (distance, record) =>
-      distance > 0 ? `${distance} ${record.unit}` : '-'
-    ),
+    { ...toCol('Duration', minutesToHMS), sorter: durationSorter },
+    {
+      ...toCol('Distance', (distance, record) =>
+        distance > 0 ? `${distance} ${record.unit}` : '-'
+      ),
+      sorter: distanceSorter,
+    },
     {
       title: <EditOutlined />,
       key: 'edit',
