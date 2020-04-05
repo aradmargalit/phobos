@@ -43,7 +43,7 @@ export default function DOWBarChart({ dayBreakdown }) {
             tick={<AngledGraphTick />}
           />
           <YAxis />
-          <Bar dataKey="count" fill="#0e5a6d">
+          <Bar isAnimationActive={false} dataKey="count" fill="#0e5a6d">
             <LabelList dataKey="count" position="top" />
             {/* This is exclusively for alternating colors in the graph */}
             {dayBreakdown.map(day => (

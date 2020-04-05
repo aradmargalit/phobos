@@ -17,6 +17,7 @@ export default function RadialActivityTypesGraph({ typeBreakdown }) {
       <h3>Activity Type Split</h3>
       <PieChart width={500} height={300}>
         <Pie
+          isAnimationActive={false}
           data={typeBreakdown}
           innerRadius={40}
           outerRadius={60}
