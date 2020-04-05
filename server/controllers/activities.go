@@ -121,7 +121,9 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 			monthMap[month] = map[string]float64{"duration": 0, "miles": 0}
 		}
 		monthMap[month]["duration"] += activity.Duration
-		monthMap[month]["miles"] += activity.Distance
+		if activity.Unit == "miles" {
+			monthMap[month]["miles"] += activity.Distance
+		}
 	}
 
 	type monthlySum struct {
