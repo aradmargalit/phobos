@@ -12,6 +12,8 @@ import { makeDurationBreakdown } from '../../utils/durationUtils';
 import EditActivity from '../EditActivity';
 import { filterActivities, toCol } from './tableUtils';
 
+const stravaIcon = require('./strava.png');
+
 const { Search } = Input;
 
 export default function ActivityTable({ loading, activities, refetch }) {
@@ -65,8 +67,28 @@ export default function ActivityTable({ loading, activities, refetch }) {
     </Popconfirm>
   );
 
+  const toStravaIcon = token => {
+    if (!token || token.Int64 < 1) return null;
+
+    return (
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`https://www.strava.com/activities/${token.Int64}`}
+      >
+        <img width={40} alt="strava icon" src={stravaIcon} />
+      </a>
+    );
+  };
+
   const closeModal = () => setEditModalVisible(false);
   const columns = [
+    {
+      title: '',
+      dataIndex: 'strava_id',
+      width: 50,
+      render: token => toStravaIcon(token),
+    },
     {
       title: 'No.',
       dataIndex: 'idx',
@@ -98,7 +120,6 @@ export default function ActivityTable({ loading, activities, refetch }) {
       render: confirmDelete,
     },
   ];
-
   return (
     <div>
       <Search
