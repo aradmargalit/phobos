@@ -31,7 +31,7 @@ The goal is to string everything together using [Docker Compose](https://docs.do
 docker-compose up --build
 ```
 
-Alternatively, you can set up a `.env` file to store these secrets at the project root. Docker compose will automatically pick up the `.env` file's variables.
+You can set up a `.env` file to store these secrets at the project root. Docker compose will automatically pick up the `.env` file's variables.
 
 Check out [the sample file](./.env.sample) to see the layout and format for this file.
 
@@ -56,9 +56,11 @@ go build
 GOOGLE_CLIENT_ID= \
 GOOGLE_CLIENT_SECRET= \
 API_DB_STRING= \
-COOKIE_SECRET_TOKEN = \
-FRONTEND_URL = \
-SERVER_URL = \
+COOKIE_SECRET_TOKEN= \
+FRONTEND_URL=http://localhost:3000 \
+SERVER_URL=http://localhost:8080 \
+STRAVA_CLIENT_ID= \
+STRAVA_CLIENT_SECRET= \
 ./server
 ```
 
