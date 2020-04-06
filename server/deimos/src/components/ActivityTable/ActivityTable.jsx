@@ -38,7 +38,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
   const onSearchHandler = term => {
     // If there's no search term, we want to set null in order to do the right thing later
     if (!term || !term.length) {
-      setSearchTerm(null);
+      bouncedSetSearchTerm(null);
       return;
     }
     bouncedSetSearchTerm(term);
