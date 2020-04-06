@@ -7,7 +7,7 @@ import {
   ClockCircleOutlined,
   LineChartOutlined,
 } from '@ant-design/icons';
-import { Spin, Statistic } from 'antd';
+import { Spin, Statistic, Tooltip } from 'antd';
 import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Line, LineChart, ResponsiveContainer } from 'recharts';
@@ -50,7 +50,9 @@ export default function Statistics() {
             value={miles.toFixed(2)}
           />
           <div className="statistics--trendline">
-            <h3>Last 10 Days</h3>
+            <Tooltip title="Each day's workout total minutes for the past 10 days.">
+              <h3>Last 10 Days</h3>
+            </Tooltip>
             <ResponsiveContainer id="trendline-wrapper" width="100%">
               <LineChart data={makeGraphData(lastTen)}>
                 <Line
@@ -63,7 +65,7 @@ export default function Statistics() {
               </LineChart>
             </ResponsiveContainer>
             <Link style={{ marginTop: '20px' }} className="ant-btn" to="/graph">
-              More Graph <LineChartOutlined style={{ marginLeft: '10px' }} />
+              More Graphs <LineChartOutlined style={{ marginLeft: '10px' }} />
             </Link>
           </div>
         </div>
