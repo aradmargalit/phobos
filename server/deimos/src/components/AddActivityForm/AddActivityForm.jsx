@@ -107,7 +107,7 @@ export default function AddActivityForm({
         {/* ============= DISTANCE ============= */}
         <Item label="Distance" className="distance-wrapper">
           <Item name="distance" className="inline-item">
-            <InputNumber precision={2} min={0.1} step={0.1} placeholder={5} />
+            <InputNumber precision={2} min={0.0} step={0.1} placeholder={5} />
           </Item>
           <Item name="unit" className="unit inline-item">
             <Select>
