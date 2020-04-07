@@ -26,7 +26,8 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	// Add the owner ID to the activituy
 	uid, ok := c.Get("user")
 	if !ok {
-		panic("Could not get user from cookie")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not retrieve user from cookie"})
+		return
 	}
 
 	activity.OwnerID = uid.(int)
@@ -37,6 +38,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 		return
 	}
 
+	// Currently not consumed by the UI, but echo back the record
 	c.JSON(http.StatusOK, record)
 }
 
@@ -66,10 +68,11 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
 	uid, ok := c.Get("user")
 	if !ok {
-		panic("No user id in cookie!")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not retrieve user from cookie"})
+		return
 	}
 
-	a, err := e.DB.ExperimentalGetActivitiesByUser(uid.(int))
+	a, err := e.DB.GetActivitiesByUser(uid.(int))
 	if err != nil {
 		panic(err)
 	}

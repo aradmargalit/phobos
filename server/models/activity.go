@@ -90,20 +90,14 @@ func (db *DB) GetActivityByID(id int) (activity Activity, err error) {
 	return
 }
 
-// GetActivitiesByUser returns all activies from auser
-func (db *DB) GetActivitiesByUser(uid int) (activities []Activity, err error) {
-	err = db.conn.Select(&activities, `SELECT * FROM activities WHERE owner_id=? ORDER BY id DESC`, uid)
-	return
-}
-
 // DeleteActivityByID deletes an activity by ID, verified with userID
 func (db *DB) DeleteActivityByID(uid int, activityID int) (err error) {
 	_, err = db.conn.Exec(`DELETE FROM activities WHERE id=? AND owner_id=?`, activityID, uid)
 	return
 }
 
-// ExperimentalGetActivitiesByUser returns all activies from auser
-func (db *DB) ExperimentalGetActivitiesByUser(uid int) (activities []responsetypes.ActivityResponse, err error) {
+// GetActivitiesByUser returns all activies from auser
+func (db *DB) GetActivitiesByUser(uid int) (activities []responsetypes.ActivityResponse, err error) {
 	err = db.conn.Select(&activities, `SELECT a.*, at.id "activity_type.id", at.name "activity_type.name" FROM activities a JOIN activity_types at ON at.id = a.activity_type_id WHERE owner_id=? ORDER BY a.id DESC`, uid)
 	return
 }

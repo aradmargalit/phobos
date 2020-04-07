@@ -114,7 +114,7 @@ func main() {
 
 		activityDate = d.Format("2006-01-02")
 
-		sql := fmt.Sprintf("INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id) VALUES (\"%v\", \"%v\", \"%v\", 4, \"%v\",  \"%v\",  \"%v\",  \"%v\" );", cleanName, activityDate, activityTypeID, scaledDur, convertedDistance, unit, stravaID)
+		sql := fmt.Sprintf("INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id) VALUES (\"%v\", \"%v\", \"%v\", 1, \"%v\",  \"%v\",  \"%v\",  \"%v\" );", cleanName, activityDate, activityTypeID, scaledDur, convertedDistance, unit, stravaID)
 		fmt.Println(sql)
 	}
 

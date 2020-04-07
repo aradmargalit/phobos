@@ -3,7 +3,7 @@ package controllers
 import (
 	"math"
 	"net/http"
-	"server/models"
+	responsetypes "server/response_types"
 	"strconv"
 
 	"time"
@@ -40,17 +40,12 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 		panic(err)
 	}
 
-	at, err := e.DB.GetActivityTypes()
-	if err != nil {
-		panic(err)
-	}
-
 	// Now that we have activities, let's cronch the numbies
 	totalWorkouts := len(a)
 	totalHours := calculateTotalHours(a)
 	totalMiles := calculateMileage(a)
 	lastTen := calculateLastTenDays(a, utcOffset)
-	typeBreakdown := calculateTypeBreakdown(a, at)
+	typeBreakdown := calculateTypeBreakdown(a)
 	dayBreakdowns := calculateDayBreakdown(a)
 
 	response := struct {
@@ -67,7 +62,7 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func calculateTotalHours(activities []models.Activity) float64 {
+func calculateTotalHours(activities []responsetypes.ActivityResponse) float64 {
 	var running float64 = 0
 
 	for _, activity := range activities {
@@ -77,7 +72,7 @@ func calculateTotalHours(activities []models.Activity) float64 {
 	return running / 60
 }
 
-func calculateMileage(activities []models.Activity) float64 {
+func calculateMileage(activities []responsetypes.ActivityResponse) float64 {
 	var running float64 = 0
 
 	for _, activity := range activities {
@@ -89,7 +84,7 @@ func calculateMileage(activities []models.Activity) float64 {
 	return running
 }
 
-func calculateLastTenDays(activities []models.Activity, utcOffset int) (lastTen []float64) {
+func calculateLastTenDays(activities []responsetypes.ActivityResponse, utcOffset int) (lastTen []float64) {
 	// For each of the past 10 days, we need to sum up the durations from those days
 	for i := 9; i >= 0; i-- {
 		// Get the date for "i" days ago)
@@ -115,40 +110,35 @@ func calculateLastTenDays(activities []models.Activity, utcOffset int) (lastTen 
 	return
 }
 
-func calculateTypeBreakdown(activities []models.Activity, activityTypes []models.ActivityType) (typePortions []typePortion) {
+func calculateTypeBreakdown(activities []responsetypes.ActivityResponse) (typePortions []typePortion) {
 	total := float64(len(activities))
-	typeMap := make(map[int]int)
+	typeMap := make(map[string]int)
 	for _, activity := range activities {
-		running, ok := typeMap[activity.ActivityTypeID]
+		running, ok := typeMap[activity.ActivityType.Name]
 		if !ok {
 			running = 0
 		}
 
 		running++
-		typeMap[activity.ActivityTypeID] = running
-	}
-
-	// Build a quick map of activity type ids to names
-	activityTypeMap := map[int]string{}
-	for _, aT := range activityTypes {
-		activityTypeMap[aT.ID] = aT.Name
+		typeMap[activity.ActivityType.Name] = running
 	}
 
 	var insignificantTally int
 	// Now, calculate proportions
-	for typeID, count := range typeMap {
+	for typeName, count := range typeMap {
 		// Check to make sure it's significant enough to show
 		if (float64(count) / total) < .05 {
 			insignificantTally += count
 			continue
 		}
-		typePortions = append(typePortions, typePortion{activityTypeMap[typeID], count})
+
+		typePortions = append(typePortions, typePortion{typeName, count})
 	}
 	typePortions = append(typePortions, typePortion{"Other", insignificantTally})
 	return
 }
 
-func calculateDayBreakdown(activities []models.Activity) (dayBreakdowns []dayBreakdown) {
+func calculateDayBreakdown(activities []responsetypes.ActivityResponse) (dayBreakdowns []dayBreakdown) {
 	dayMap := make(map[string]int)
 	for _, activity := range activities {
 		// Parse date from activity
