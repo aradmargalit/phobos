@@ -24,10 +24,7 @@ type dayBreakdown struct {
 // GetUserStatistics returns some fun user statistics for the frontend
 func (e *Env) GetUserStatistics(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
 	// Pull the user's timezone out of the request
 	utcOffset, err := strconv.Atoi(c.Query("utc_offset"))
@@ -35,7 +32,7 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 		panic(err)
 	}
 
-	a, err := e.DB.GetActivitiesByUser(uid.(int))
+	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
 		panic(err)
 	}
