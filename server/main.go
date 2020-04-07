@@ -86,8 +86,7 @@ func registerActivityHandlers(r *gin.Engine, env *controllers.Env) {
 
 func registerAdminHandlers(r *gin.Engine, env *controllers.Env) {
 	admin := r.Group("/admin")
-	// Eventually, I'll want to restrict what happens in production, but not yet.
-	// admin.Use(middleware.NonProd)
+	admin.Use(middleware.NonProd)
 	{
 		admin.GET("/seed", env.SeedHandler)
 	}
