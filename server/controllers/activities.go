@@ -15,8 +15,7 @@ import (
 func (e *Env) AddActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
@@ -30,8 +29,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 
 	record, err := e.DB.InsertActivity(activity)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	// Currently not consumed by the UI, but echo back the record
@@ -42,8 +40,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 func (e *Env) UpdateActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
@@ -52,8 +49,7 @@ func (e *Env) UpdateActivityHandler(c *gin.Context) {
 
 	record, err := e.DB.UpdateActivity(activity)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	c.JSON(http.StatusOK, record)
@@ -66,7 +62,7 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
 	count := len(a)
@@ -94,14 +90,12 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 
 	activityID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
 	err = e.DB.DeleteActivityByID(uid, activityID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
@@ -115,18 +109,31 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
+	/* This is in the format:
+	{
+		"January 2019": {
+			"duration": 12.123,
+			"distance": 12.231256
+		}
+	}
+	*/
 	monthMap := map[string]map[string]float64{}
 
 	for _, activity := range a {
 		m, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+		// Format is "January 2020"
 		month := fmt.Sprintf("%v %v", m.Month(), m.Year())
 		_, ok := monthMap[month]
+
+		// If !ok, we've never seen this month before, so initialize it to 0s
 		if !ok {
 			monthMap[month] = map[string]float64{"duration": 0, "miles": 0}
 		}
+
+		// Otherwise, add duration, and distance (if mileage)
 		monthMap[month]["duration"] += activity.Duration
 		if activity.Unit == "miles" {
 			monthMap[month]["miles"] += activity.Distance
