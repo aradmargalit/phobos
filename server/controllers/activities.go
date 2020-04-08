@@ -16,6 +16,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
@@ -30,6 +31,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	record, err := e.DB.InsertActivity(activity)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	// Currently not consumed by the UI, but echo back the record
@@ -41,6 +43,7 @@ func (e *Env) UpdateActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
@@ -50,6 +53,7 @@ func (e *Env) UpdateActivityHandler(c *gin.Context) {
 	record, err := e.DB.UpdateActivity(activity)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, record)
@@ -63,6 +67,7 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	count := len(a)
@@ -91,11 +96,13 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 	activityID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	err = e.DB.DeleteActivityByID(uid, activityID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
@@ -110,6 +117,7 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	/* This is in the format:

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -13,4 +14,9 @@ func Retry(fn func() error, tries int, duration time.Duration) (err error) {
 		time.Sleep(duration)
 	}
 	return
+}
+
+// MakeI64 converts an int to a nullable Int64
+func MakeI64(i int) sql.NullInt64 {
+	return sql.NullInt64{Int64: int64(i), Valid: true}
 }

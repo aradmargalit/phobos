@@ -94,6 +94,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 		_, err = e.DB.InsertUser(u)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 	}
 
@@ -101,6 +102,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	dbUser, err := e.DB.GetUserByEmail(u.Email)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	// Now that we have some information about the user, let's store it to a session

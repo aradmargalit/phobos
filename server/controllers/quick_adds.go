@@ -14,6 +14,7 @@ func (e *Env) AddQuickAddHandler(c *gin.Context) {
 	var quickAdd models.QuickAdd
 	if err := c.ShouldBindJSON(&quickAdd); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	// Add the owner ID to the activituy
@@ -23,6 +24,7 @@ func (e *Env) AddQuickAddHandler(c *gin.Context) {
 	record, err := e.DB.InsertQuickAdd(quickAdd)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, record)
@@ -36,6 +38,7 @@ func (e *Env) GetQuickAddsHandler(c *gin.Context) {
 	qa, err := e.DB.GetQuickAddsByUser(uid)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, qa)
@@ -49,11 +52,13 @@ func (e *Env) DeleteQuickAddHandler(c *gin.Context) {
 	quickAddID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("Quick Add ID must be an int"))
+		return
 	}
 
 	err = e.DB.DeleteQuickAddByID(uid, quickAddID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted quick-add: "+c.Param("id"))

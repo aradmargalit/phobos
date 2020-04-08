@@ -9,6 +9,7 @@ import (
 	"math"
 	"net/http"
 	"server/models"
+	"server/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -19,6 +20,7 @@ import (
 const metersToMiles = 0.000621371
 const metersToYards = 1.09361
 
+// Technically, they send more than this, but as of today, we don't care
 type stravaWebhookEvent struct {
 	ObjectType string `json:"object_type"`
 	ObjectID   int    `json:"object_id"`
@@ -64,49 +66,56 @@ func (e *Env) StravaWebHookCatcher(c *gin.Context) {
 
 	// Now we're off to actually process the event!
 	// I tried doing this as a go routine, but it's useful to have Strava retry if we fail
+	// Strava retries up to 3 times or until it gets a 200 in under 2s
 	if event.ObjectType == "activity" {
-		handleWebhookEvent(event, e.DB)
+		err := handleWebhookEvent(event, e.DB)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 	}
 	// We're going to respond with an OK so the webhook doesn't retry if this succeeds
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) {
+func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) (err error) {
 	switch e.AspectType {
 	case "create":
-		fetchAndCreate(e.OwnerID, e.ObjectID, db)
+		err = fetchAndCreate(e.OwnerID, e.ObjectID, db)
 	case "update":
-		fetchAndUpdate(e.OwnerID, e.ObjectID, db)
+		err = fetchAndUpdate(e.OwnerID, e.ObjectID, db)
 	case "delete":
-		eventDelete(e.OwnerID, e.ObjectID, db)
+		err = eventDelete(e.OwnerID, e.ObjectID, db)
 	}
+	return
 }
 
-func fetchAndCreate(ownerID int, activityID int, db *models.DB) {
+func fetchAndCreate(ownerID int, activityID int, db *models.DB) error {
 	// 1. Fetch the activity from our application to check if we already have it
-	dbActivity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
+	dbActivity, err := db.GetActivityByStravaID(utils.MakeI64(activityID))
 	if err == nil {
 		// If we had no problems fetching this ID, we must already have it. No need to re-insert
 		fmt.Printf("We already have this activity! Strava ID: %v | Phobos ID: %v\n", activityID, dbActivity.ID)
-		return
+		return nil
 	}
 
 	// 2. If we -do- need to insert it, I need the verbose payload
 	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to fetch activity ID %v from Strava: %v", activityID, err)
 	}
 
 	// 3. Convert the Strava Activity to a Phobos one and insert
 	activity := convertStravaActivity(fetchedActivity, userID, db)
 	inserted, err := db.InsertActivity(activity)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to insert activity ID %v from Strava: %v", activityID, err)
 	}
 	fmt.Printf("Successfully created activity! Strava ID: %v | Phobos ID: %v\n", activityID, inserted.ID)
+	return nil
 }
 
-func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
+func fetchAndUpdate(ownerID int, activityID int, db *models.DB) error {
 	// 1. We -always- need to fetch the full activity from Strava, since we always upsert
 	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
@@ -121,34 +130,36 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) {
 		// We were unable to get this activity, so just insert it instead
 		inserted, err := db.InsertActivity(activity)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("unable to insert activity from update action: %v", err)
 		}
 		fmt.Printf("Successfully created activity (from Strava Update)! Strava ID: %v | Phobos ID: %v\n", activityID, inserted.ID)
-		return
+		return nil
 	}
 
 	// If we don't need to insert it, we'll just update it
 	activity.ID = dbActivity.ID
 	_, err = db.UpdateActivity(activity)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("unable to update activity: %v", err)
 	}
 	fmt.Printf("Successfully updated activity! Strava ID: %v | Phobos ID: %v\n", activityID, activity.ID)
+	return nil
 }
 
-func eventDelete(ownerID int, activityID int, db *models.DB) {
+func eventDelete(ownerID int, activityID int, db *models.DB) error {
 	// Get the ID from our application
 	// TODO, there's no reason this shouldn't be a single DB call
 	activity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to fetch activity ID %v from Strava: %v", activityID, err)
 	}
 
 	err = db.DeleteActivityByID(activity.OwnerID, activity.ID)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to delete activity ID %v from Strava: %v", activityID, err)
 	}
 	fmt.Printf("Successfully deleted activity! Strava ID: %v | Phobos ID: %v\n", activityID, activity.ID)
+	return nil
 }
 
 func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, int, error) {
