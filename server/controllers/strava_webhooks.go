@@ -32,6 +32,7 @@ type stravaActivity struct {
 	Name        string  `json:"name"`
 	Distance    float64 `json:"distance"`
 	ElapsedTime int     `json:"elapsed_time"`
+	MovingTime  int     `json:"moving_time"`
 	Type        string  `json:"type"`
 	StartDate   string  `json:"start_date"`
 	Timezone    string  `json:"timezone"`
@@ -209,7 +210,7 @@ func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *model
 		ActivityDate:   t.In(location).Format("2006-01-02"),
 		ActivityTypeID: typeID,
 		OwnerID:        userID,
-		Duration:       (float64(fetchedActivity.ElapsedTime) / 60),
+		Duration:       (float64(fetchedActivity.MovingTime) / 60),
 		Distance:       math.Floor(convertedDistance*100) / 100,
 		Unit:           unit,
 		StravaID:       sql.NullInt64{Int64: int64(fetchedActivity.ID), Valid: true},

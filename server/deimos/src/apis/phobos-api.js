@@ -93,7 +93,8 @@ export const fetchMonthlySums = async setMonthlySums => {
 };
 
 export const fetchStatistics = async setStats => {
-  await protectedGet(setStats, '/private/statistics');
+  const utcOffset = new Date().getTimezoneOffset() / 60;
+  await protectedGet(setStats, `/private/statistics?utc_offset=${utcOffset}`);
 };
 
 // Quick Adds
