@@ -19,6 +19,11 @@ func AuthRequired(c *gin.Context) {
 		return
 	}
 
+	_, ok := uid.(int)
+	if !ok {
+		panic("Something is very wrong, uid is not an integer...")
+	}
+
 	// Store the user
 	// You can get this in any protected route with c.Get("user")
 	c.Set("user", uid)

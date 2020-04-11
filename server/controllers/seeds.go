@@ -71,7 +71,8 @@ func seedActivityTypes(db *models.DB) (err error) {
 func (e *Env) SeedHandler(c *gin.Context) {
 	err := seedActivityTypes(e.DB)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
-	c.String(http.StatusOK, "Successfully seeded database.")
+	c.String(http.StatusOK, "Successfully seeded database. 🌱")
 }

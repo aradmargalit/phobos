@@ -70,7 +70,9 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	}
 
 	// Make sure to close the response body once this function exits
+	// or else yer' memory gonna leak everywhere
 	defer resp.Body.Close()
+
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
@@ -91,14 +93,16 @@ func (e *Env) HandleCallback(c *gin.Context) {
 		fmt.Println("Could not get user from database: ", err)
 		_, err = e.DB.InsertUser(u)
 		if err != nil {
-			panic(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 	}
 
 	// In both the new and return case, pull the user from the DB to get their ID
 	dbUser, err := e.DB.GetUserByEmail(u.Email)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	// Now that we have some information about the user, let's store it to a session

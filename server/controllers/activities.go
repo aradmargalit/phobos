@@ -15,7 +15,7 @@ import (
 func (e *Env) AddActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -24,19 +24,17 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	// Add the owner ID to the activituy
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("Could not get user from cookie")
-	}
+	uid := c.GetInt("user")
 
-	activity.OwnerID = uid.(int)
+	activity.OwnerID = uid
 
 	record, err := e.DB.InsertActivity(activity)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
+	// Currently not consumed by the UI, but echo back the record
 	c.JSON(http.StatusOK, record)
 }
 
@@ -44,7 +42,7 @@ func (e *Env) AddActivityHandler(c *gin.Context) {
 func (e *Env) UpdateActivityHandler(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -54,7 +52,7 @@ func (e *Env) UpdateActivityHandler(c *gin.Context) {
 
 	record, err := e.DB.UpdateActivity(activity)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -64,26 +62,24 @@ func (e *Env) UpdateActivityHandler(c *gin.Context) {
 // GetActivitiesHandler returns all the user's activities
 func (e *Env) GetActivitiesHandler(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
-	a, err := e.DB.ExperimentalGetActivitiesByUser(uid.(int))
+	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	count := len(a)
 	fmt.Printf("Found %v activities for user ID: %v...\n", count, uid)
 
 	withIndices := make([]responsetypes.ActivityResponse, count)
-	// No smart way to do this, add an increasing logical index to each for the frontend's benefit
-	// I also want to represent the date in an easy-to-sort way, so doing that here
+	// No smart way to do this, add an decreasing logical index to each for the frontend's benefit
+	// I also want to represent the date in an fast-to-sort fashion, so doing that here
 	for idx, activity := range a {
 		activity.LogicalIndex = count - idx
 
-		// Parse time
+		// Convert date to seconds since epoch, much faster to sort ints in the UI than cast to Date objects
 		t, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
 		activity.Epoch = t.Unix()
 		withIndices[idx] = activity
@@ -95,19 +91,18 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 // DeleteActivityHandler returns all the user's activities
 func (e *Env) DeleteActivityHandler(c *gin.Context) {
 	// Pull user out of context to confirm it's safe to delete the activity
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
 	activityID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
-	err = e.DB.DeleteActivityByID(uid.(int), activityID)
+	err = e.DB.DeleteActivityByID(uid, activityID)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
@@ -117,25 +112,36 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 // GetMonthlySums returns the user's monthly sum of workout hours and miles
 func (e *Env) GetMonthlySums(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
-	a, err := e.DB.GetActivitiesByUser(uid.(int))
+	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
+	/* This is in the format:
+	{
+		"January 2019": {
+			"duration": 12.123,
+			"distance": 12.231256
+		}
+	}
+	*/
 	monthMap := map[string]map[string]float64{}
 
 	for _, activity := range a {
 		m, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+		// Format is "January 2020"
 		month := fmt.Sprintf("%v %v", m.Month(), m.Year())
 		_, ok := monthMap[month]
+
+		// If !ok, we've never seen this month before, so initialize it to 0s
 		if !ok {
 			monthMap[month] = map[string]float64{"duration": 0, "miles": 0}
 		}
+
+		// Otherwise, add duration, and distance (if mileage)
 		monthMap[month]["duration"] += activity.Duration
 		if activity.Unit == "miles" {
 			monthMap[month]["miles"] += activity.Distance

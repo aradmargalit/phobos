@@ -48,13 +48,10 @@ const (
 func (e *Env) StravaLoginHandler(c *gin.Context) {
 	// There must be a better way, but I need to know who the user was when Strava hits my callback endpoint
 	// To do this, I'm going to send the user ID with the state, which gets returned to me in the callback
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
 	// In order to attach the UID, I need to convert it to a string
-	url := stravaConf.AuthCodeURL(stravaRandomState + "|userID:" + strconv.Itoa(uid.(int)))
+	url := stravaConf.AuthCodeURL(stravaRandomState + "|userID:" + strconv.Itoa(uid))
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
@@ -103,13 +100,10 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 
 // StravaDeauthorizationHandler is responsible for disconnecting the user from Strava updates
 func (e *Env) StravaDeauthorizationHandler(c *gin.Context) {
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
-	client := getHTTPClient(uid.(int), e.DB)
-	fmt.Println("Deauthorizing user id: " + strconv.Itoa(uid.(int)) + " from Strava access...")
+	client := getHTTPClient(uid, e.DB)
+	fmt.Println("Deauthorizing user id: " + strconv.Itoa(uid) + " from Strava access...")
 
 	resp, err := client.Post("https://www.strava.com/oauth/deauthorize", "application/json", nil)
 	if err != nil {
@@ -119,7 +113,7 @@ func (e *Env) StravaDeauthorizationHandler(c *gin.Context) {
 	defer resp.Body.Close()
 
 	// Now that we've done that, we need to delete that token from the DB
-	err = e.DB.DeleteStravaTokenByUserID(uid.(int))
+	err = e.DB.DeleteStravaTokenByUserID(uid)
 	if err != nil {
 		panic(err)
 	}

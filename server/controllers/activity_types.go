@@ -11,7 +11,8 @@ func (e *Env) ActivityTypesHandler(c *gin.Context) {
 
 	at, err := e.DB.GetActivityTypes()
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"activity_types": at})

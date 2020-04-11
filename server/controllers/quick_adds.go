@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"net/http"
 	"server/models"
 	"strconv"
@@ -12,19 +13,17 @@ import (
 func (e *Env) AddQuickAddHandler(c *gin.Context) {
 	var quickAdd models.QuickAdd
 	if err := c.ShouldBindJSON(&quickAdd); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
 	// Add the owner ID to the activituy
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("Could not get user from cookie")
-	}
-	quickAdd.OwnerID = uid.(int)
+	uid := c.GetInt("user")
+
+	quickAdd.OwnerID = uid
 	record, err := e.DB.InsertQuickAdd(quickAdd)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -34,14 +33,12 @@ func (e *Env) AddQuickAddHandler(c *gin.Context) {
 // GetQuickAddsHandler returns all the user's quick-adds
 func (e *Env) GetQuickAddsHandler(c *gin.Context) {
 	// Pull user out of context to figure out which quick-adds to grab
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
-	qa, err := e.DB.GetQuickAddsByUser(uid.(int))
+	qa, err := e.DB.GetQuickAddsByUser(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, qa)
@@ -50,19 +47,18 @@ func (e *Env) GetQuickAddsHandler(c *gin.Context) {
 // DeleteQuickAddHandler returns all the user's activities
 func (e *Env) DeleteQuickAddHandler(c *gin.Context) {
 	// Pull user out of context to confirm it's safe to delete the activity
-	uid, ok := c.Get("user")
-	if !ok {
-		panic("No user id in cookie!")
-	}
+	uid := c.GetInt("user")
 
 	quickAddID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusBadRequest, errors.New("Quick Add ID must be an int"))
+		return
 	}
 
-	err = e.DB.DeleteQuickAddByID(uid.(int), quickAddID)
+	err = e.DB.DeleteQuickAddByID(uid, quickAddID)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, "Successfully deleted quick-add: "+c.Param("id"))
