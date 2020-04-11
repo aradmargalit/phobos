@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"math"
+	"fmt"
 	"time"
 
 	responsetypes "server/response_types"
@@ -53,8 +53,8 @@ func CalculateLastTenDays(activities []responsetypes.ActivityResponse, utcOffset
 	for i := 9; i >= 0; i-- {
 		// Get the date for "i" days ago)
 		// Ugly, but use the browser offset to find the correct offset
-		adjustment := (int(math.Floor(float64(-utcOffset) / 24))) + i*-1
-		date := time.Now().UTC().AddDate(0, 0, adjustment)
+		dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
+		date := time.Now().UTC().Add(-dur).AddDate(0, 0, i*-1)
 
 		// Start a running duration for that date
 		var running float64
