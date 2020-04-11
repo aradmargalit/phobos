@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"math"
 	"net/http"
 	"server/models"
+	"strconv"
 
 	"time"
 
@@ -27,6 +29,12 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 		panic("No user id in cookie!")
 	}
 
+	// Pull the user's timezone out of the request
+	utcOffset, err := strconv.Atoi(c.Query("utc_offset"))
+	if err != nil {
+		panic(err)
+	}
+
 	a, err := e.DB.GetActivitiesByUser(uid.(int))
 	if err != nil {
 		panic(err)
@@ -41,7 +49,7 @@ func (e *Env) GetUserStatistics(c *gin.Context) {
 	totalWorkouts := len(a)
 	totalHours := calculateTotalHours(a)
 	totalMiles := calculateMileage(a)
-	lastTen := calculateLastTenDays(a)
+	lastTen := calculateLastTenDays(a, utcOffset)
 	typeBreakdown := calculateTypeBreakdown(a, at)
 	dayBreakdowns := calculateDayBreakdown(a)
 
@@ -81,11 +89,13 @@ func calculateMileage(activities []models.Activity) float64 {
 	return running
 }
 
-func calculateLastTenDays(activities []models.Activity) (lastTen []float64) {
+func calculateLastTenDays(activities []models.Activity, utcOffset int) (lastTen []float64) {
 	// For each of the past 10 days, we need to sum up the durations from those days
 	for i := 9; i >= 0; i-- {
-		// Get the date for "i" days ago
-		date := time.Now().AddDate(0, 0, -1*i)
+		// Get the date for "i" days ago)
+		// Ugly, but use the browser offset to find the correct offset
+		adjustment := (int(math.Floor(float64(-utcOffset) / 24))) + i*-1
+		date := time.Now().UTC().AddDate(0, 0, adjustment)
 
 		// Start a running duration for that date
 		var running float64
