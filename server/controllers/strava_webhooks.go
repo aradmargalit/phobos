@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
+	"os"
 	"server/models"
 	"server/utils"
 	"strconv"
@@ -22,11 +23,12 @@ const metersToYards = 1.09361
 
 // Technically, they send more than this, but as of today, we don't care
 type stravaWebhookEvent struct {
-	ObjectType string `json:"object_type"`
-	ObjectID   int    `json:"object_id"`
-	AspectType string `json:"aspect_type"`
-	OwnerID    int    `json:"owner_id"`
-	EventTime  int    `json:"event_time"`
+	ObjectType     string `json:"object_type"`
+	ObjectID       int    `json:"object_id"`
+	AspectType     string `json:"aspect_type"`
+	OwnerID        int    `json:"owner_id"`
+	EventTime      int    `json:"event_time"`
+	SubscriptionID int    `json:"subscription_id"`
 }
 
 type stravaActivity struct {
@@ -61,6 +63,12 @@ func (e *Env) StravaWebHookCatcher(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Bail out if the subscription doesn't match Strava's ID, this may be a malicious POST!
+	if ok := strconv.Itoa(event.SubscriptionID) == os.Getenv("STRAVA_WEBHOOK_SUB_ID"); !ok {
+		c.AbortWithError(http.StatusForbidden, fmt.Errorf("unauthorized webhook POST! Tried to use %v as the subscription ID", event.SubscriptionID))
 		return
 	}
 
