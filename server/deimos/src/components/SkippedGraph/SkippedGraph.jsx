@@ -47,8 +47,8 @@ export default function SkippedGraph({ loading, monthlyData }) {
         >
           <defs>
             <linearGradient id="skipColor" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8BD8c6" stopOpacity={0.6} />
-              <stop offset="95%" stopColor="#8BD8c6" stopOpacity={0} />
+              <stop offset="5%" stopColor="#043927" stopOpacity={0.6} />
+              <stop offset="95%" stopColor="#043927" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
@@ -61,7 +61,7 @@ export default function SkippedGraph({ loading, monthlyData }) {
           <CartesianGrid strokeDasharray="3 3" />
           <ReferenceLine
             y={calculateAverage(data)}
-            stroke="red"
+            stroke="#043927"
             strokeDasharray="3 3"
             label={{
               position: 'top',
@@ -77,7 +77,7 @@ export default function SkippedGraph({ loading, monthlyData }) {
           <Area
             dataKey="skipped"
             type="monotone"
-            stroke="#8BD8c6"
+            stroke="#043927"
             fillOpacity={1}
             fill="url(#skipColor)"
           />
