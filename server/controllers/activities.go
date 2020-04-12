@@ -5,7 +5,9 @@ import (
 	"net/http"
 	models "server/models"
 	responsetypes "server/response_types"
+	"server/utils"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -120,11 +122,24 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 		return
 	}
 
+	// In order to figure out which days have no activities, we start with an array with every day from
+	// their first activity until now
+	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", a[len(a)-1].ActivityDate)
+
+	// Make a map of days to whether or not they were skipped
+	skippedMap := map[time.Time]bool{}
+
+	// Start by assuming each date is skipped, we'll invalidate that assumption as we go
+	for d := firstActivityDate; !utils.DateEqual(d, time.Now().AddDate(0, 0, 1)); d = d.AddDate(0, 0, 1) {
+		skippedMap[utils.RoundTimeToDay(d)] = true
+	}
+
 	/* This is in the format:
 	{
 		"January 2019": {
 			"duration": 12.123,
-			"distance": 12.231256
+			"distance": 12.231256,
+			"daysSkipped": 12
 		}
 	}
 	*/
@@ -132,13 +147,17 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 
 	for _, activity := range a {
 		m, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+
+		// Go into our date map and mark the date as unskipped
+		skippedMap[utils.RoundTimeToDay(m)] = false
+
 		// Format is "January 2020"
 		month := fmt.Sprintf("%v %v", m.Month(), m.Year())
 		_, ok := monthMap[month]
 
 		// If !ok, we've never seen this month before, so initialize it to 0s
 		if !ok {
-			monthMap[month] = map[string]float64{"duration": 0, "miles": 0}
+			monthMap[month] = map[string]float64{"duration": 0, "miles": 0, "days_skipped": 0}
 		}
 
 		// Otherwise, add duration, and distance (if mileage)
@@ -148,15 +167,31 @@ func (e *Env) GetMonthlySums(c *gin.Context) {
 		}
 	}
 
+	// After going through every activity, we need to summarize the skipped days
+	for month, payload := range monthMap {
+		m := strings.Split(month, " ")[0]
+		y := strings.Split(month, " ")[1]
+
+		// For each skipped activity, see if it matches, and if so, add it to the tally
+		for sA, wasSkipped := range skippedMap {
+			if wasSkipped && sA.Month().String() == m && strconv.Itoa(sA.Year()) == y {
+				newPayload := payload
+				newPayload["days_skipped"]++
+				monthMap[month] = newPayload
+			}
+		}
+	}
+
 	type monthlySum struct {
-		Month    string  `json:"month"`
-		Duration float64 `json:"duration"`
-		Miles    float64 `json:"miles"`
+		Month       string  `json:"month"`
+		Duration    float64 `json:"duration"`
+		Miles       float64 `json:"miles"`
+		DaysSkipped float64 `json:"days_skipped"`
 	}
 
 	response := []monthlySum{}
 	for k, v := range monthMap {
-		response = append(response, monthlySum{Month: k, Duration: v["duration"], Miles: v["miles"]})
+		response = append(response, monthlySum{Month: k, Duration: v["duration"], Miles: v["miles"], DaysSkipped: v["days_skipped"]})
 	}
 	c.JSON(http.StatusOK, response)
 }

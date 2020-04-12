@@ -9,6 +9,7 @@ import ActivityGraph from '../ActivityGraph';
 import DOWBarChart from '../DOWBarChart';
 import MileageGraph from '../MileageGraph';
 import RadialActivityTypesGraph from '../RadialActivityTypesGraph';
+import SkippedGraph from '../SkippedGraph';
 
 export default function Graphs() {
   const { stats, setStats } = useContext(StatsContext);
@@ -47,6 +48,10 @@ export default function Graphs() {
       <DOWBarChart dayBreakdown={dayBreakdown} />
       <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
       <MileageGraph
+        loading={monthlyData.loading}
+        monthlyData={monthlyData.payload}
+      />
+      <SkippedGraph
         loading={monthlyData.loading}
         monthlyData={monthlyData.payload}
       />
