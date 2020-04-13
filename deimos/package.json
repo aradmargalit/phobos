@@ -29,6 +29,7 @@
     "start": "REACT_APP_API_URL=http://localhost:8080 react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
+    "test:ci": "CI=true yarn test --coverage --colors",
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
@@ -65,6 +66,9 @@
     "hooks": {
       "pre-commit": [
         "lint-staged && pretty-quick --staged"
+      ],
+      "pre-push": [
+        "yarn test:ci"
       ]
     }
   },
