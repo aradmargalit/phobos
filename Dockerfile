@@ -12,11 +12,11 @@ RUN yarn build
 # Phase 2 : Server Build
 FROM golang:latest
 RUN mkdir /server 
-ADD . /server/ 
+ADD ./server /server/ 
 WORKDIR /server 
 
 # Copy in the compiled frontend app
-COPY --from=builder /usr/src/app/build ./deimos/build
+COPY --from=builder /usr/src/app/build ../deimos/build
 
 RUN go build -o main . 
 CMD ["/server/main"]

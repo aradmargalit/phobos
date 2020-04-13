@@ -41,9 +41,9 @@ func main() {
 	registerStravaHandlers(r, env)
 
 	// If none of registered routes match, serve the client JS
-	r.Use(static.Serve("/", static.LocalFile("./deimos/build", true)))
+	r.Use(static.Serve("/", static.LocalFile("../deimos/build", true)))
 	r.NoRoute(func(c *gin.Context) {
-		c.File("./deimos/build")
+		c.File("../deimos/build")
 	})
 
 	fmt.Println("🚀 🌑 Phobos is ready!")
