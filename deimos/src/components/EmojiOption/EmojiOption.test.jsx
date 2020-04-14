@@ -20,7 +20,6 @@ const generateComponent = props => {
 describe('<EmojiOption />', () => {
   it('renders without crashing', () => {
     const component = generateComponent();
-    expect(component).toMatchSnapshot();
     expect(component.find(Option)).toHaveLength(1);
     expect(component.find('span')).toHaveLength(1);
   });
