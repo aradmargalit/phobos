@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ActivityGraph /> monthly average calculates the correct average with multiple months 1`] = `ShallowWrapper {}`;
+
+exports[`<ActivityGraph /> monthly average calculates the correct average with one month 1`] = `ShallowWrapper {}`;

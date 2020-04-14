@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ActivityTable /> matches the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`<ActivityTable /> with activities renders a table with no pagination 1`] = `ShallowWrapper {}`;

@@ -12,9 +12,11 @@ const generateComponent = props => {
 };
 
 describe('<MileageGraph />', () => {
-  it('renders without crashing', () => {
-    generateComponent({
-      monthlyData: [{ month: 'January 2020', miles: 123 }],
-    });
+  it('matches snapshots', () => {
+    expect(
+      generateComponent({
+        monthlyData: [{ month: 'January 2020', miles: 123 }],
+      })
+    ).toMatchSnapshot();
   });
 });

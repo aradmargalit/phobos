@@ -14,13 +14,14 @@ const generateComponent = props => {
 };
 
 describe('<ActivityGraph />', () => {
-  it('renders without crashing', () => {
+  it('matches snapshots', () => {
     generateComponent();
   });
 
   describe('monthly average', () => {
     it('calculates the correct average with one month', () => {
       const component = generateComponent();
+      expect(component).toMatchSnapshot();
       expect(component.find('ReferenceLine').prop('y')).toEqual(123 / 60);
     });
 
@@ -31,6 +32,7 @@ describe('<ActivityGraph />', () => {
           { month: 'February 2020', duration: 180 },
         ],
       });
+      expect(component).toMatchSnapshot();
       expect(component.find('ReferenceLine').prop('y')).toEqual(2);
     });
   });
