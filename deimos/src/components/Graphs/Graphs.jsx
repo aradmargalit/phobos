@@ -1,15 +1,18 @@
 import './Graphs.scss';
 
-import { Empty, Spin } from 'antd';
+import { Empty, Select, Spin } from 'antd';
+import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { fetchMonthlySums, fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
-import ActivityGraph from '../ActivityGraph';
 import DOWBarChart from '../DOWBarChart';
+import DurationGraph from '../DurationGraph';
 import MileageGraph from '../MileageGraph';
 import RadialActivityTypesGraph from '../RadialActivityTypesGraph';
 import SkippedGraph from '../SkippedGraph';
+
+const { Option } = Select;
 
 export default function Graphs() {
   const { stats, setStats } = useContext(StatsContext);
@@ -39,22 +42,36 @@ export default function Graphs() {
     type_breakdown: typeBreakdown,
   } = stats.payload;
 
+  const sortedMonthlyData = monthlyData.payload.sort(
+    (a, b) => moment(new Date(a.month)) - moment(new Date(b.month))
+  );
+
   return (
-    <div className="graphs">
-      <ActivityGraph
-        loading={monthlyData.loading}
-        monthlyData={monthlyData.payload}
-      />
-      <DOWBarChart dayBreakdown={dayBreakdown} />
-      <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
-      <MileageGraph
-        loading={monthlyData.loading}
-        monthlyData={monthlyData.payload}
-      />
-      <SkippedGraph
-        loading={monthlyData.loading}
-        monthlyData={monthlyData.payload}
-      />
+    <div className="graphs-container">
+      <Select
+        className="granularity-selector"
+        placeholder="Select summary granularity"
+      >
+        <Option value="weekly">Weekly</Option>
+        <Option value="monthly">Monthly</Option>
+        <Option value="yearly">Yearly</Option>
+      </Select>
+      <div className="graphs">
+        <DurationGraph
+          loading={monthlyData.loading}
+          monthlyData={sortedMonthlyData}
+        />
+        <DOWBarChart dayBreakdown={dayBreakdown} />
+        <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
+        <MileageGraph
+          loading={monthlyData.loading}
+          monthlyData={sortedMonthlyData}
+        />
+        <SkippedGraph
+          loading={monthlyData.loading}
+          monthlyData={sortedMonthlyData}
+        />
+      </div>
     </div>
   );
 }
