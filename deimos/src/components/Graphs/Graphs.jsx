@@ -47,31 +47,30 @@ export default function Graphs() {
   );
 
   return (
-    <div className="graphs-container">
-      <Select
-        className="granularity-selector"
-        placeholder="Select summary granularity"
-      >
-        <Option value="weekly">Weekly</Option>
-        <Option value="monthly">Monthly</Option>
-        <Option value="yearly">Yearly</Option>
-      </Select>
-      <div className="graphs">
-        <DurationGraph
-          loading={monthlyData.loading}
-          monthlyData={sortedMonthlyData}
-        />
-        <DOWBarChart dayBreakdown={dayBreakdown} />
-        <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
-        <MileageGraph
-          loading={monthlyData.loading}
-          monthlyData={sortedMonthlyData}
-        />
-        <SkippedGraph
-          loading={monthlyData.loading}
-          monthlyData={sortedMonthlyData}
-        />
+    <div className="graphs">
+      <DOWBarChart dayBreakdown={dayBreakdown} />
+      <RadialActivityTypesGraph typeBreakdown={typeBreakdown} />
+      <div className="granularity-selector">
+        <h3>Summary Interval: </h3>
+
+        <Select placeholder="Monthly">
+          <Option value="weekly">Weekly</Option>
+          <Option value="monthly">Monthly</Option>
+          <Option value="yearly">Yearly</Option>
+        </Select>
       </div>
+      <DurationGraph
+        loading={monthlyData.loading}
+        monthlyData={sortedMonthlyData}
+      />
+      <MileageGraph
+        loading={monthlyData.loading}
+        monthlyData={sortedMonthlyData}
+      />
+      <SkippedGraph
+        loading={monthlyData.loading}
+        monthlyData={sortedMonthlyData}
+      />
     </div>
   );
 }
