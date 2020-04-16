@@ -10,8 +10,8 @@ const projection = data =>
   (moment().daysInMonth() * data[data.length - 1].skipped) /
   moment(new Date()).date();
 
-export default function SkippedGraph({ loading, monthlyData }) {
-  const data = monthlyData.map(({ month, days_skipped: daysSkipped }) => ({
+export default function SkippedGraph({ loading, intervalData }) {
+  const data = intervalData.map(({ month, days_skipped: daysSkipped }) => ({
     month,
     skipped: parseFloat(daysSkipped),
   }));

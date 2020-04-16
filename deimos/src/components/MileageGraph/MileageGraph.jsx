@@ -10,8 +10,8 @@ const projection = data =>
   (moment().daysInMonth() * data[data.length - 1].miles) /
   moment(new Date()).date();
 
-export default function MileageGraph({ loading, monthlyData }) {
-  const data = monthlyData.map(({ month, miles }) => ({
+export default function MileageGraph({ loading, intervalData }) {
+  const data = intervalData.map(({ month, miles }) => ({
     month,
     miles: parseFloat(miles.toFixed(2)),
   }));

@@ -88,8 +88,11 @@ export const deleteActivity = async id => {
 };
 
 // Statistics
-export const fetchMonthlySums = async setMonthlySums => {
-  await protectedGet(setMonthlySums, '/private/activities/monthly');
+export const fetchSummariesByInterval = async (setIntervalData, interval) => {
+  await protectedGet(
+    setIntervalData,
+    `/private/activities/interval_summary?interval=${interval}`
+  );
 };
 
 export const fetchStatistics = async setStats => {

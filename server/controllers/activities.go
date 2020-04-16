@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	models "server/models"
@@ -111,10 +112,17 @@ func (e *Env) DeleteActivityHandler(c *gin.Context) {
 	return
 }
 
-// GetMonthlySums returns the user's monthly sum of workout hours and miles
-func (e *Env) GetMonthlySums(c *gin.Context) {
+// GetIntervalSummary returns the user's aggregate data for the given interval
+func (e *Env) GetIntervalSummary(c *gin.Context) {
 	// Pull user out of context to figure out which activities to grab
 	uid := c.GetInt("user")
+
+	// Pull the interval from the query string
+	interval := c.Query("interval")
+	if interval != "monthly" {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be monthly"))
+		return
+	}
 
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {

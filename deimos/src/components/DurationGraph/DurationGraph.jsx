@@ -10,8 +10,8 @@ const projection = data =>
   (moment().daysInMonth() * data[data.length - 1].duration) /
   moment(new Date()).date();
 
-export default function DurationGraph({ loading, monthlyData }) {
-  const data = monthlyData.map(({ month, duration }) => ({
+export default function DurationGraph({ loading, intervalData }) {
+  const data = intervalData.map(({ month, duration }) => ({
     month,
     rawDuration: duration,
     duration: parseFloat((duration / 60).toFixed(2)),
