@@ -136,9 +136,9 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 	c2 := make(chan map[string]float64, 1)
 	c3 := make(chan map[string]float64, 1)
 
-	go makeDurationMap(a, intervals, c1)
-	go makeDistanceMap(a, intervals, c2)
-	go makeSkippedMap(a, intervals, c3)
+	go makeDurationMap(a, intervals, interval, c1)
+	go makeDistanceMap(a, intervals, interval, c2)
+	go makeSkippedMap(a, intervals, interval, c3)
 
 	durationMap := <-c1
 	distanceMap := <-c2
@@ -154,17 +154,17 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 	}
 	*/
 
-	response := []monthlySum{}
-	for _, month := range intervals {
-		mSum := monthlySum{Month: month, Duration: durationMap[month], Miles: distanceMap[month], DaysSkipped: skippedMap[month]}
+	response := []intervalSum{}
+	for _, itvl := range intervals {
+		mSum := intervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], DaysSkipped: skippedMap[itvl]}
 		response = append(response, mSum)
 	}
 
 	c.JSON(http.StatusOK, response)
 }
 
-type monthlySum struct {
-	Month       string  `json:"month"`
+type intervalSum struct {
+	Interval    string  `json:"interval"`
 	Duration    float64 `json:"duration"`
 	Miles       float64 `json:"miles"`
 	DaysSkipped float64 `json:"days_skipped"`
@@ -176,7 +176,6 @@ func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl strin
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		// Format is "January 2020"
 		activityInterval := activityDateToInterval(t, itvl)
 		if activityInterval != prev {
 			intervals = append(intervals, activityInterval)
@@ -187,40 +186,39 @@ func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl strin
 	return intervals
 }
 
-func makeDurationMap(activities []responsetypes.ActivityResponse, months []string, c chan map[string]float64) {
+func makeDurationMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
 	durationMap := map[string]float64{}
-	for _, month := range months {
-		durationMap[month] = 0
+	for _, interval := range intervals {
+		durationMap[interval] = 0
 	}
 
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		// Format is "January 2020"
-		month := fmt.Sprintf("%v %v", t.Month(), t.Year())
-		durationMap[month] += a.Duration
+		activityInterval := activityDateToInterval(t, itvl)
+		durationMap[activityInterval] += a.Duration
 	}
 	c <- durationMap
 }
 
-func makeDistanceMap(activities []responsetypes.ActivityResponse, months []string, c chan map[string]float64) {
+func makeDistanceMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
 	distanceMap := map[string]float64{}
-	for _, month := range months {
-		distanceMap[month] = 0
+	for _, interval := range intervals {
+		distanceMap[interval] = 0
 	}
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		// Format is "January 2020"
-		month := fmt.Sprintf("%v %v", t.Month(), t.Year())
+		activityInterval := activityDateToInterval(t, itvl)
+
 		if a.Unit == "miles" {
-			distanceMap[month] += a.Distance
+			distanceMap[activityInterval] += a.Distance
 		}
 	}
 	c <- distanceMap
 }
 
-func makeSkippedMap(activities []responsetypes.ActivityResponse, months []string, c chan map[string]float64) {
+func makeSkippedMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
 	// In order to figure out which days have no activities, we start with an array with every day from
 	// their first activity until now
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)
@@ -241,23 +239,20 @@ func makeSkippedMap(activities []responsetypes.ActivityResponse, months []string
 	}
 
 	// After going through every activity, we need to summarize the skipped days
-	monthlySkips := map[string]float64{}
+	groupedSkips := map[string]float64{}
 
-	for _, month := range months {
-		monthlySkips[month] = 0
-		m := strings.Split(month, " ")[0]
-		y := strings.Split(month, " ")[1]
+	for _, interval := range intervals {
+		groupedSkips[interval] = 0
 
 		// For each skipped activity, see if it matches, and if so, add it to the tally
-		for sA, wasSkipped := range skippedMap {
-			if wasSkipped && sA.Month().String() == m && strconv.Itoa(sA.Year()) == y {
-
-				monthlySkips[month]++
+		for t, wasSkipped := range skippedMap {
+			if wasSkipped && matchesIntervalDate(t, interval, itvl) {
+				groupedSkips[interval]++
 			}
 		}
 	}
 
-	c <- monthlySkips
+	c <- groupedSkips
 }
 
 func activityDateToInterval(t time.Time, itvl string) string {
@@ -269,4 +264,16 @@ func activityDateToInterval(t time.Time, itvl string) string {
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
 	return ""
+}
+
+func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
+	switch itvl {
+	case "yearly":
+		return strconv.Itoa(t.Year()) == interval
+	case "monthly":
+		m := strings.Split(interval, " ")[0]
+		y := strings.Split(interval, " ")[1]
+		return t.Month().String() == m && strconv.Itoa(t.Year()) == y
+	}
+	return false
 }
