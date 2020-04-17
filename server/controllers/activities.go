@@ -119,7 +119,7 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 
 	// Pull the interval from the query string
 	interval := c.Query("interval")
-	if interval != "monthly" {
+	if interval != "monthly" && interval != "yearly" {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be monthly"))
 		return
 	}
@@ -130,15 +130,15 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 		return
 	}
 
-	months := bucketIntoMonths(a)
+	intervals := bucketIntoIntervals(a, interval)
 
 	c1 := make(chan map[string]float64, 1)
 	c2 := make(chan map[string]float64, 1)
 	c3 := make(chan map[string]float64, 1)
 
-	go makeDurationMap(a, months, c1)
-	go makeDistanceMap(a, months, c2)
-	go makeSkippedMap(a, months, c3)
+	go makeDurationMap(a, intervals, c1)
+	go makeDistanceMap(a, intervals, c2)
+	go makeSkippedMap(a, intervals, c3)
 
 	durationMap := <-c1
 	distanceMap := <-c2
@@ -146,7 +146,7 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 
 	/* This is in the format:
 	{
-		"January 2019": {
+		"January 2019": {``
 			"duration": 12.123,
 			"distance": 12.231256,
 			"daysSkipped": 12
@@ -155,7 +155,7 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 	*/
 
 	response := []monthlySum{}
-	for _, month := range months {
+	for _, month := range intervals {
 		mSum := monthlySum{Month: month, Duration: durationMap[month], Miles: distanceMap[month], DaysSkipped: skippedMap[month]}
 		response = append(response, mSum)
 	}
@@ -170,21 +170,21 @@ type monthlySum struct {
 	DaysSkipped float64 `json:"days_skipped"`
 }
 
-func bucketIntoMonths(activities []responsetypes.ActivityResponse) []string {
-	months := []string{}
-	var previousMonth string
+func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl string) []string {
+	intervals := []string{}
+	var prev string
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
 		// Format is "January 2020"
-		month := fmt.Sprintf("%v %v", t.Month(), t.Year())
-		if month != previousMonth {
-			months = append(months, month)
-			previousMonth = month
+		activityInterval := activityDateToInterval(t, itvl)
+		if activityInterval != prev {
+			intervals = append(intervals, activityInterval)
+			prev = activityInterval
 		}
 
 	}
-	return months
+	return intervals
 }
 
 func makeDurationMap(activities []responsetypes.ActivityResponse, months []string, c chan map[string]float64) {
@@ -258,4 +258,15 @@ func makeSkippedMap(activities []responsetypes.ActivityResponse, months []string
 	}
 
 	c <- monthlySkips
+}
+
+func activityDateToInterval(t time.Time, itvl string) string {
+	switch itvl {
+	case "yearly":
+		return fmt.Sprintf("%v", t.Year())
+	case "monthly":
+		return fmt.Sprintf("%v %v", t.Month(), t.Year())
+	}
+	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
+	return ""
 }
