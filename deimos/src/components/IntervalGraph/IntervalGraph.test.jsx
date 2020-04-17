@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import MonthlyGraph from './MonthlyGraph';
+import IntervalGraph from './IntervalGraph';
 
 const generateComponent = props => {
   const defaultProps = {
@@ -12,10 +12,10 @@ const generateComponent = props => {
 
   const mergedProps = { ...defaultProps, ...props };
 
-  return shallow(<MonthlyGraph {...mergedProps} />);
+  return shallow(<IntervalGraph {...mergedProps} />);
 };
 
-describe('<MonthlyGraph />', () => {
+describe('<IntervalGraph />', () => {
   it('renders', () => {
     generateComponent();
   });

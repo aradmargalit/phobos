@@ -1,7 +1,6 @@
-import './MonthlyGraph.scss';
+import './IntervalGraph.scss';
 
 import { Spin } from 'antd';
-import { startCase as _startCase } from 'lodash';
 import React from 'react';
 import {
   Area,
@@ -17,7 +16,7 @@ import {
 
 import AngledGraphTick from '../AngledGraphTick';
 
-export default function MonthlyGraph({
+export default function IntervalGraph({
   loading,
   data,
   average,
@@ -33,13 +32,13 @@ export default function MonthlyGraph({
   if (loading) return <Spin />;
 
   return (
-    <div className="monthly-graph-wrapper">
+    <div className="interval-graph-wrapper">
       <div className="graph-header">
         <h2>{title}</h2>
       </div>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
-          className="monthly-graph"
+          className="interval-graph"
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
@@ -51,7 +50,7 @@ export default function MonthlyGraph({
             </linearGradient>
           </defs>
           <XAxis
-            interval={data.length >= 10 ? 3 : 1}
+            interval={data.length >= 50 ? 10 : Math.ceil(data.length / 5)}
             dataKey={xAxisKey}
             height={120}
             tick={<AngledGraphTick />}
@@ -65,7 +64,7 @@ export default function MonthlyGraph({
             label={{
               position: 'top',
               fontWeight: 600,
-              value: `${_startCase(unit)}ly Average`,
+              value: `${unit}ly Average`,
             }}
           />
           <ReferenceDot
@@ -76,7 +75,7 @@ export default function MonthlyGraph({
             label={{
               position: 'left',
               fontWeight: 600,
-              value: `This ${_startCase(unit)}'s Projection`,
+              value: `This ${unit}'s Projection: ${projection.y.toFixed(1)}`,
             }}
           />
           <Tooltip separator={null} formatter={tooltipFormatter} animationDuration={300} />

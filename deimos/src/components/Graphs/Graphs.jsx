@@ -42,9 +42,14 @@ export default function Graphs() {
 
   const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats.payload;
 
-  const data = intervalData.payload.sort(
-    (a, b) => moment(new Date(a.interval)) - moment(new Date(b.interval))
-  );
+  let data;
+  if (interval === 'year' || interval === 'month') {
+    data = intervalData.payload.sort(
+      (a, b) => moment(new Date(a.interval)) - moment(new Date(b.interval))
+    );
+  } else {
+    data = intervalData.payload.sort((a, b) => a.interval.localeCompare(b.interval));
+  }
 
   return (
     <div className="graphs">

@@ -1,13 +1,24 @@
-import { meanBy as _meanBy } from 'lodash';
+import { meanBy as _meanBy, startCase as _startCase } from 'lodash';
 import moment from 'moment';
 import React from 'react';
 
-import MonthlyGraph from '../MonthlyGraph';
+import IntervalGraph from '../IntervalGraph';
 
 const average = data => _meanBy(data, 'skipped');
 
-const projection = data =>
-  (moment().daysInMonth() * data[data.length - 1].skipped) / moment(new Date()).date();
+const projection = (data, intervalType) => {
+  const running = data[data.length - 1].skipped;
+  switch (intervalType) {
+    case 'month':
+      return moment().daysInMonth() * (running / moment(new Date()).date());
+    case 'year':
+      return 365 * (running / moment().dayOfYear());
+    case 'week':
+      return 7 * (running / moment().day());
+    default:
+      return 0;
+  }
+};
 
 export default function SkippedGraph({ loading, intervalData, intervalType }) {
   const data = intervalData.map(({ interval, days_skipped: daysSkipped }) => ({
@@ -15,20 +26,20 @@ export default function SkippedGraph({ loading, intervalData, intervalType }) {
     skipped: parseFloat(daysSkipped),
   }));
 
-  console.log(projection(data));
+  const startCaseIntervalType = _startCase(intervalType);
 
   return (
-    <MonthlyGraph
+    <IntervalGraph
       loading={loading}
       data={data}
       average={average(data)}
-      projection={{ x: data[data.length - 1].interval, y: projection(data) }}
-      title="Monthly Days Skipped"
+      projection={{ x: data[data.length - 1].interval, y: projection(data, intervalType) }}
+      title={`${startCaseIntervalType}ly Days Skipped`}
       color="#9055A2"
       stroke="#2E294E"
       xAxisKey="interval"
       dataKey="skipped"
-      unit={intervalType}
+      unit={startCaseIntervalType}
       tooltipFormatter={value => [`${value} Days Skipped`, '']}
     />
   );

@@ -119,14 +119,19 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 
 	// Pull the interval from the query string
 	interval := c.Query("interval")
-	if interval != "month" && interval != "year" {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be month or year"))
+	if interval != "week" && interval != "month" && interval != "year" {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be week, month, or year"))
 		return
 	}
 
 	a, err := e.DB.GetActivitiesByUser(uid)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if len(a) < 1 {
+		c.JSON(http.StatusOK, nil)
 		return
 	}
 
@@ -176,7 +181,7 @@ func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl strin
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		activityInterval := activityDateToInterval(t, itvl)
+		activityInterval := timeToIntervalString(t, itvl)
 		if activityInterval != prev {
 			intervals = append(intervals, activityInterval)
 			prev = activityInterval
@@ -195,9 +200,10 @@ func makeDurationMap(activities []responsetypes.ActivityResponse, intervals []st
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		activityInterval := activityDateToInterval(t, itvl)
+		activityInterval := timeToIntervalString(t, itvl)
 		durationMap[activityInterval] += a.Duration
 	}
+
 	c <- durationMap
 }
 
@@ -209,7 +215,7 @@ func makeDistanceMap(activities []responsetypes.ActivityResponse, intervals []st
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-		activityInterval := activityDateToInterval(t, itvl)
+		activityInterval := timeToIntervalString(t, itvl)
 
 		if a.Unit == "miles" {
 			distanceMap[activityInterval] += a.Distance
@@ -255,12 +261,15 @@ func makeSkippedMap(activities []responsetypes.ActivityResponse, intervals []str
 	c <- groupedSkips
 }
 
-func activityDateToInterval(t time.Time, itvl string) string {
+func timeToIntervalString(t time.Time, itvl string) string {
 	switch itvl {
 	case "year":
 		return fmt.Sprintf("%v", t.Year())
 	case "month":
 		return fmt.Sprintf("%v %v", t.Month(), t.Year())
+	case "week":
+		year, week := t.ISOWeek()
+		return fmt.Sprintf("%v, week %v", year, week)
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
 	return ""
@@ -274,6 +283,10 @@ func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
 		m := strings.Split(interval, " ")[0]
 		y := strings.Split(interval, " ")[1]
 		return t.Month().String() == m && strconv.Itoa(t.Year()) == y
+	case "week":
+		year, week := t.ISOWeek()
+		return fmt.Sprintf("%v, week %v", year, week) == interval
+
 	}
 	return false
 }
