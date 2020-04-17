@@ -119,8 +119,8 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 
 	// Pull the interval from the query string
 	interval := c.Query("interval")
-	if interval != "monthly" && interval != "yearly" {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be monthly"))
+	if interval != "month" && interval != "year" {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be month or year"))
 		return
 	}
 
@@ -257,9 +257,9 @@ func makeSkippedMap(activities []responsetypes.ActivityResponse, intervals []str
 
 func activityDateToInterval(t time.Time, itvl string) string {
 	switch itvl {
-	case "yearly":
+	case "year":
 		return fmt.Sprintf("%v", t.Year())
-	case "monthly":
+	case "month":
 		return fmt.Sprintf("%v %v", t.Month(), t.Year())
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
@@ -268,9 +268,9 @@ func activityDateToInterval(t time.Time, itvl string) string {
 
 func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
 	switch itvl {
-	case "yearly":
+	case "year":
 		return strconv.Itoa(t.Year()) == interval
-	case "monthly":
+	case "month":
 		m := strings.Split(interval, " ")[0]
 		y := strings.Split(interval, " ")[1]
 		return t.Month().String() == m && strconv.Itoa(t.Year()) == y

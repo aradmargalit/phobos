@@ -1,6 +1,7 @@
 import './MonthlyGraph.scss';
 
 import { Spin } from 'antd';
+import { startCase as _startCase } from 'lodash';
 import React from 'react';
 import {
   Area,
@@ -64,7 +65,7 @@ export default function MonthlyGraph({
             label={{
               position: 'top',
               fontWeight: 600,
-              value: `${unit}ly Average`,
+              value: `${_startCase(unit)}ly Average`,
             }}
           />
           <ReferenceDot
@@ -75,14 +76,10 @@ export default function MonthlyGraph({
             label={{
               position: 'left',
               fontWeight: 600,
-              value: `This ${unit}'s Projection`,
+              value: `This ${_startCase(unit)}'s Projection`,
             }}
           />
-          <Tooltip
-            separator={null}
-            formatter={tooltipFormatter}
-            animationDuration={300}
-          />
+          <Tooltip separator={null} formatter={tooltipFormatter} animationDuration={300} />
           <Area
             dataKey={dataKey}
             type="monotone"

@@ -63,11 +63,7 @@ export const protectedDelete = async endpoint => {
 
 // Activity Types
 export const fetchActivityTypes = async setActivityTypes => {
-  await protectedGet(
-    setActivityTypes,
-    '/metadata/activity_types',
-    'activity_types'
-  );
+  await protectedGet(setActivityTypes, '/metadata/activity_types', 'activity_types');
 };
 
 // Activities
@@ -89,10 +85,7 @@ export const deleteActivity = async id => {
 
 // Statistics
 export const fetchSummariesByInterval = async (setIntervalData, interval) => {
-  await protectedGet(
-    setIntervalData,
-    `/private/activities/interval_summary?interval=${interval}`
-  );
+  await protectedGet(setIntervalData, `/private/activities/interval_summary?interval=${interval}`);
 };
 
 export const fetchStatistics = async setStats => {

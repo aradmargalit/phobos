@@ -4,10 +4,7 @@ import { Empty, Select, Spin } from 'antd';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 
-import {
-  fetchStatistics,
-  fetchSummariesByInterval,
-} from '../../apis/phobos-api';
+import { fetchStatistics, fetchSummariesByInterval } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
 import DOWBarChart from '../DOWBarChart';
 import DurationGraph from '../DurationGraph';
@@ -19,7 +16,7 @@ const { Option } = Select;
 
 export default function Graphs() {
   const { stats, setStats } = useContext(StatsContext);
-  const [interval, setInterval] = useState('monthly');
+  const [interval, setInterval] = useState('month');
 
   const [intervalData, setIntervalData] = useState({
     payload: [],
@@ -32,7 +29,9 @@ export default function Graphs() {
     fetchSummariesByInterval(setIntervalData, interval);
   }, [setStats, interval]);
 
-  if (stats.loading || intervalData.loading) return <Spin />;
+  const loading = stats.loading || intervalData.loading;
+
+  if (loading) return <Spin />;
   if (!intervalData.payload || !intervalData.payload.length || !stats.payload)
     return (
       <Empty
@@ -41,13 +40,10 @@ export default function Graphs() {
       />
     );
 
-  const {
-    day_breakdown: dayBreakdown,
-    type_breakdown: typeBreakdown,
-  } = stats.payload;
+  const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats.payload;
 
-  const sortedData = intervalData.payload.sort(
-    (a, b) => moment(new Date(a.month)) - moment(new Date(b.month))
+  const data = intervalData.payload.sort(
+    (a, b) => moment(new Date(a.interval)) - moment(new Date(b.interval))
   );
 
   return (
@@ -58,14 +54,14 @@ export default function Graphs() {
         <h3>Summary Interval: </h3>
 
         <Select placeholder="Monthly" onChange={value => setInterval(value)}>
-          <Option value="weekly">Weekly</Option>
-          <Option value="monthly">Monthly</Option>
-          <Option value="yearly">Yearly</Option>
+          <Option value="week">Weekly</Option>
+          <Option value="month">Monthly</Option>
+          <Option value="year">Yearly</Option>
         </Select>
       </div>
-      <DurationGraph loading={intervalData.loading} intervalData={sortedData} />
-      <MileageGraph loading={intervalData.loading} intervalData={sortedData} />
-      <SkippedGraph loading={intervalData.loading} intervalData={sortedData} />
+      <DurationGraph loading={loading} intervalData={data} intervalType={interval} />
+      <MileageGraph loading={loading} intervalData={data} intervalType={interval} />
+      <SkippedGraph loading={loading} intervalData={data} intervalType={interval} />
     </div>
   );
 }

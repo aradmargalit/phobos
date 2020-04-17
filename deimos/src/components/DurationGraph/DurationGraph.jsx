@@ -7,12 +7,11 @@ import MonthlyGraph from '../MonthlyGraph';
 const average = data => _meanBy(data, 'rawDuration') / 60;
 
 const projection = data =>
-  (moment().daysInMonth() * data[data.length - 1].duration) /
-  moment(new Date()).date();
+  (moment().daysInMonth() * data[data.length - 1].duration) / moment(new Date()).date();
 
-export default function DurationGraph({ loading, intervalData }) {
-  const data = intervalData.map(({ month, duration }) => ({
-    month,
+export default function DurationGraph({ loading, intervalData, intervalType }) {
+  const data = intervalData.map(({ interval, duration }) => ({
+    interval,
     rawDuration: duration,
     duration: parseFloat((duration / 60).toFixed(2)),
   }));
@@ -22,13 +21,13 @@ export default function DurationGraph({ loading, intervalData }) {
       loading={loading}
       data={data}
       average={average(data)}
-      projection={{ x: data[data.length - 1].month, y: projection(data) }}
+      projection={{ x: data[data.length - 1].interval, y: projection(data) }}
       title="Monthly Workout Hours"
       color="#117088"
       stroke="#0e5a6d"
-      xAxisKey="month"
+      xAxisKey="interval"
       dataKey="duration"
-      unit="Month"
+      unit={intervalType}
       tooltipFormatter={value => [`${value} Hours`, '']}
     />
   );
