@@ -64,7 +64,7 @@ export default function IntervalGraph({
             label={{
               position: 'top',
               fontWeight: 600,
-              value: `${unit}ly Average`,
+              value: `${unit}ly Average: ${average.toFixed(1)}`,
             }}
           />
           <ReferenceDot
