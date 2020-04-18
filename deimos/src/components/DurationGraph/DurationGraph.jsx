@@ -4,15 +4,15 @@ import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'skipped');
+const average = data => _meanBy(data, 'rawDuration') / 60;
 
 const projection = (data, intervalType) => {
-  const running = data[data.length - 1].skipped;
+  const running = data[data.length - 1].duration;
   switch (intervalType) {
     case 'month':
       return moment().daysInMonth() * (running / moment(new Date()).date());
     case 'year':
-      return 365 * (running / moment().dayOfYear());
+      return (365 * running) / moment().dayOfYear();
     case 'week':
       return 7 * (running / moment().day());
     default:
@@ -20,10 +20,11 @@ const projection = (data, intervalType) => {
   }
 };
 
-export default function SkippedGraph({ loading, intervalData, intervalType }) {
-  const data = intervalData.map(({ interval, days_skipped: daysSkipped }) => ({
+export default function DurationGraph({ loading, intervalData, intervalType }) {
+  const data = intervalData.map(({ interval, duration }) => ({
     interval,
-    skipped: parseFloat(daysSkipped),
+    rawDuration: duration,
+    duration: parseFloat((duration / 60).toFixed(2)),
   }));
 
   const startCaseIntervalType = _startCase(intervalType);
@@ -34,13 +35,13 @@ export default function SkippedGraph({ loading, intervalData, intervalType }) {
       data={data}
       average={average(data)}
       projection={{ x: data[data.length - 1].interval, y: projection(data, intervalType) }}
-      title={`${startCaseIntervalType}ly Days Skipped`}
-      color="#9055A2"
-      stroke="#2E294E"
+      title={`${startCaseIntervalType}ly Workout Hours`}
+      color="#117088"
+      stroke="#0e5a6d"
       xAxisKey="interval"
-      dataKey="skipped"
+      dataKey="duration"
       unit={startCaseIntervalType}
-      tooltipFormatter={value => [`${value} Days Skipped`, '']}
+      tooltipFormatter={value => [`${value} Hours`, '']}
     />
   );
 }

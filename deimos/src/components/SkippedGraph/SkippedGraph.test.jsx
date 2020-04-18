@@ -14,7 +14,7 @@ const generateComponent = props => {
 describe('<SkippedGraph />', () => {
   it('renders correctly', () => {
     generateComponent({
-      monthlyData: [{ month: 'January 2020', days_skipped: 123 }],
+      intervalData: [{ month: 'January 2020', days_skipped: 123 }],
     });
   });
 });

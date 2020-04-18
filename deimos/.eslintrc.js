@@ -4,11 +4,7 @@ module.exports = {
     es6: true,
     jest: true,
   },
-  extends: [
-    'plugin:react/recommended',
-    'airbnb',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['plugin:react/recommended', 'airbnb', 'plugin:prettier/recommended'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -25,11 +21,8 @@ module.exports = {
     'react/prop-types': 0,
     'react/jsx-props-no-spreading': 0,
     'simple-import-sort/sort': 'error',
-    'max-len': ['error', { code: 120 }],
+    'max-len': ['error', { code: 100 }],
     'prettier/prettier': 'error',
-    'react/jsx-wrap-multilines': [
-      'error',
-      { declaration: false, assignment: false },
-    ],
+    'react/jsx-wrap-multilines': ['error', { declaration: false, assignment: false }],
   },
 };
