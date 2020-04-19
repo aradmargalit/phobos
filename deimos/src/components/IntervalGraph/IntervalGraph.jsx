@@ -40,8 +40,9 @@ export default function IntervalGraph({
         <AreaChart
           className="interval-graph"
           data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
+          margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
+          padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
+          syncId="trulycouldnotmatterless"
         >
           <defs>
             <linearGradient id={`g-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
@@ -64,7 +65,7 @@ export default function IntervalGraph({
             label={{
               position: 'top',
               fontWeight: 600,
-              value: `${unit}ly Average`,
+              value: `${unit}ly Average: ${average.toFixed(1)}`,
             }}
           />
           <ReferenceDot
