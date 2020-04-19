@@ -8,7 +8,6 @@ import Graphs from './components/Graphs';
 import Header from './components/Header';
 import Home from './components/Home';
 import Landing from './components/Landing';
-import Strava from './components/Strava';
 import { StatsContext, UserContext } from './contexts';
 
 export default function App() {
@@ -42,10 +41,6 @@ export default function App() {
               <Route exact path="/graph">
                 <Header showBack />
                 <Graphs />
-              </Route>
-              <Route exact path="/dashboard/strava">
-                <Header showBack />
-                <Strava />
               </Route>
               <Route path="/error">
                 <Header showBack />
