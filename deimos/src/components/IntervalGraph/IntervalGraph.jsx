@@ -42,6 +42,7 @@ export default function IntervalGraph({
           data={data}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
+          syncId="trulycouldnotmatterless"
         >
           <defs>
             <linearGradient id={`g-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
