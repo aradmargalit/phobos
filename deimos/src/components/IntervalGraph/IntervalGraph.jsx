@@ -40,8 +40,8 @@ export default function IntervalGraph({
         <AreaChart
           className="interval-graph"
           data={data}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          padding={{ top: 10, right: 30, left: 30, bottom: 10 }}
+          margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
+          padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
           syncId="trulycouldnotmatterless"
         >
           <defs>
