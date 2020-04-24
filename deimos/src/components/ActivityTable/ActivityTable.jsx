@@ -53,7 +53,8 @@ export default function ActivityTable({ loading, activities, refetch }) {
       onClick={() => {
         const toEdit = { ...activity };
         toEdit.activity_date = moment(activity.activity_date);
-        // We need to re-create the duration breakdown from the total in order to properly display in the form
+        // We need to re-create the duration breakdown from the total
+        // in order to properly display in the form
         toEdit.duration = makeDurationBreakdown(activity.duration);
         setEditingActivity(toEdit);
         setEditModalVisible(true);
@@ -148,11 +149,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
         onChange={onChangeHandler}
         width="50%"
       />
-      <Table
-        rowKey="id"
-        dataSource={filterActivities(searchTerm, activities)}
-        columns={columns}
-      />
+      <Table rowKey="id" dataSource={filterActivities(searchTerm, activities)} columns={columns} />
       <Modal
         title="Edit Activity"
         visible={editModalVisible}
@@ -162,11 +159,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
         footer={null}
         destroyOnClose
       >
-        <EditActivity
-          refetch={refetch}
-          initialActivity={editingActivity}
-          modalClose={closeModal}
-        />
+        <EditActivity refetch={refetch} initialActivity={editingActivity} modalClose={closeModal} />
       </Modal>
     </div>
   );

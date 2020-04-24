@@ -31,8 +31,23 @@ describe('<ActivityTable />', () => {
 
   describe('with activities', () => {
     it('renders a table with no pagination', () => {
-      const component = generateComponent({ activities: [] });
-      expect(component.find('Table')).toHaveLength(1);
+      const component = generateComponent({
+        activities: [
+          {
+            strava_id: 1,
+            logical_index: 1,
+            name: 'Fun Run',
+            activity_date: new Date('2020-01-01'),
+            activity_type: { name: 'Run' },
+            duration: 12,
+            distance: 40,
+          },
+        ],
+      });
+      const table = component.find('Table');
+      expect(table).toHaveLength(1);
+      expect(table.prop('dataSource')).toHaveLength(1);
+      expect(table.prop('columns')).toHaveLength(9);
     });
   });
 });
