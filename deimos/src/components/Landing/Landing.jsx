@@ -19,11 +19,7 @@ export default function Landing() {
       <h1>P H O B O S</h1>
       <h3>a smarter fitness tracker</h3>
       <div className="landing-container__tray">
-        <img
-          className="landing-container__hero"
-          src={require('./moon.png')}
-          alt="rocket"
-        />
+        <img className="landing-container__hero" src={require('./phobos.png')} alt="phobos" />
         <div className="landing-container__actions">
           <Button
             href="/auth/google"
