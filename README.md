@@ -81,6 +81,18 @@ yarn install
 yarn start
 ```
 
+## Testing :white_check_mark:
+
+There are unit tests for both the frontend and backend projects.
+
+### Deimos Testing
+
+Run `yarn test`. If you want a coverage report, run `yarn test --coverage`.
+
+### Server Testing
+
+Run `go test -v ./...`, or if you have [Richgo](https://github.com/kyoh86/richgo) installed, run `richgo test -v ./...` for colorized output.
+
 ## Deployment :rocket:
 
 This project is deployed on [Google Cloud Platform](https://cloud.google.com/), using [Cloud SQL](https://cloud.google.com/sql/) as a managed relational database solution and [Cloud Run](https://cloud.google.com/run) as a very simple managed container service.
