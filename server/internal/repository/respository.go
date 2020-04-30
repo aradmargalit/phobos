@@ -1,26 +1,19 @@
-package models
+package repository
 
 import (
 	"database/sql"
 	"errors"
+	"server/internal/models"
 	responsetypes "server/response_types"
 	"strconv"
 )
 
-// Activity represents a workout session
-type Activity struct {
-	ID             int           `json:"id" db:"id"`
-	Name           string        `json:"name" db:"name"`
-	ActivityDate   string        `json:"activity_date" db:"activity_date"`
-	ActivityTypeID int           `json:"activity_type_id" db:"activity_type_id"`
-	OwnerID        int           `json:"owner_id" db:"owner_id"`
-	Duration       float64       `json:"duration" db:"duration"`
-	Distance       float64       `json:"distance" db:"distance"`
-	Unit           string        `json:"unit" db:"unit"`
-	StravaID       sql.NullInt64 `json:"strava_id" db:"strava_id"`
-	CreatedAt      string        `json:"created_at" db:"created_at"`
-	UpdatedAt      string        `json:"updated_at" db:"updated_at"`
+type PhobosDB interface {
+	// Arad todo
 }
+
+// Need a New func to initialize a new "PhobosDB"
+func ()
 
 const (
 	activityInsertSQL = `
@@ -42,7 +35,7 @@ const (
 )
 
 // InsertActivity adds a new activity to the database
-func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
+func (db *DB) InsertActivity(a models.Activity) (activity models.Activity, err error) {
 	res, err := db.conn.NamedExec(activityInsertSQL, a)
 	if err != nil {
 		return
@@ -59,7 +52,7 @@ func (db *DB) InsertActivity(a Activity) (activity Activity, err error) {
 }
 
 // UpdateActivity updates an existing activity in the database
-func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
+func (db *DB) UpdateActivity(a models.Activity) (activity models.Activity, err error) {
 	res, err := db.conn.NamedExec(activityUpdateSQL, a)
 	if err != nil {
 		return
@@ -79,13 +72,13 @@ func (db *DB) UpdateActivity(a Activity) (activity Activity, err error) {
 }
 
 // GetActivityByStravaID will trade a strava activity ID for an application ID
-func (db *DB) GetActivityByStravaID(stravaID sql.NullInt64) (activity Activity, err error) {
+func (db *DB) GetActivityByStravaID(stravaID sql.NullInt64) (activity models.Activity, err error) {
 	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", stravaID)
 	return
 }
 
 // GetActivityByID returns a single activity by Id
-func (db *DB) GetActivityByID(id int) (activity Activity, err error) {
+func (db *DB) GetActivityByID(id int) (activity models.Activity, err error) {
 	err = db.conn.Get(&activity, `SELECT * FROM activities WHERE id=?`, id)
 	return
 }

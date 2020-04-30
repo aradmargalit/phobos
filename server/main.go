@@ -28,6 +28,7 @@ func main() {
 	db := models.DB{}
 	db.Connect()
 
+	service := service.New(db)
 	env := &controllers.Env{DB: &db}
 
 	// Session Management
