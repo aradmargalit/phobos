@@ -12,27 +12,17 @@ I wanted to keep a list of lessons I learned while building this projects, parti
 
 - Now for the real plot twist - I wouldn't recommend serving the front end on its own. It's possible, but for small-scale applications, I find it easier to have the API serve up the client bundle.
 
-- If we plan on using cookies for sessions management (which we are in this application), `fetch` calls need to include credentials:
-
-  ```javascript
-  const res = await fetch(`${BACKEND_URL}/what/ever`, {
-    credentials: "include"
-  });
-  ```
-
-  That's all well and good, but doing so requires a non-wildcard CORS header on the backend, so this requires a CORS setup with a whitelist of `Allowed-Origins`.
-
 - I hadn't used React Hooks before, and they're awesome! I'm a huge fan of writing components functionally and using hooks to manage state. :thumbsup:
 
 ## Backend :rocket:
 
-- Since I'm using Go for this project, storing it in my `$GOPATH` is critically important to help the compiler find installed packages on the system.
-
 - I learned to be careful with HTTP Status codes like `Permanent Redirect` or `Moved Permanently`. These are cached by the browser indefinitely and make recovering from a lazy typo in development very difficult. (Hint: clearing the browser cache (images and files) solves the issue.)
 
-- [Gin](https://github.com/gin-gonic/gin) is awesome, but leaning on the community contributions was a lifesaver. That's how I was able to easily get session management, CORS setup, and other tedious tasks.
+- [Gin](https://github.com/gin-gonic/gin) is awesome, but leaning on the community contributions was a lifesaver. That's how I was able to easily get session management and other tedious tasks.
 
-- Getting a single database connection (or any other singleton) available to controller functions across files is easy if you define the database as part of the environment, and then make each controller function a method where the `Env` is the receiveer. Nice little trick.
+- Getting a single database connection (or any other singleton) available to controller functions across files is easy if you define the database as part of the environment, and then make each controller function a method where the `Env` is the receiver. Nice little trick.
+
+  :warning: I've since adjusted my view here a bit, and wish that I'd composed this differently. In retrospect, I'd have initialized a service which contains the data access objects, which connect to the DB as needed.
 
 ## Database :inbox_tray:
 

@@ -17,6 +17,12 @@ and to provide insights to the end-user:
 
 Users can also enable automatic updates from [Strava](http://strava.com).
 
+---
+
+<div align=center><b>NOTE: </b>This is a personal project and is not representative of my quality of work in a professional context. This project allowed me to try many new technologies, and as a result, does not adhere to best practices.</div>
+
+---
+
 ## Getting Started :rocket:
 
 ### Cloning the Repository
@@ -48,7 +54,7 @@ docker-compose up -d mysql
 
 #### Go Server :mailbox_with_no_mail:
 
-You'll need Go Version 1.14
+You'll need Go Version >= 1.14
 
 ```sh
 cd server
@@ -133,6 +139,7 @@ While the above is all you need to get started, I'll keep more documents browsea
 ### Table of Contents
 
 - [Lessons Learned :mortar_board:](./docs/lessons.md)
+- [Next Steps :footprints:](./docs/lessons.md)
 
 ## Etymology
 
