@@ -22,6 +22,12 @@ type PhobosDB interface {
 	GetAllUsers() []models.User
 	GetUserByEmail(string) (models.User, error)
 	GetUserByID(int) (responsetypes.User, error)
+
+	// Quick Adds
+	InsertQuickAdd(a *models.QuickAdd) (*models.QuickAdd, error)
+	GetQuickAddByID(id int) (qa models.QuickAdd, err error)
+	GetQuickAddsByUser(uid int) (quickAdds []models.QuickAdd, err error)
+	DeleteQuickAddByID(uid int, quickAddID int) (err error)
 }
 
 // db will be our data access object and holds the connection

@@ -27,6 +27,11 @@ type PhobosAPI interface {
 	// Statistics
 	GetIntervalSummary(uid int, interval string) (*[]responsetypes.IntervalSum, error)
 	GetUserStatistics(uid int, offset int) (*responsetypes.Stats, error)
+
+	// Quick Adds
+	GetQuickAdds(uid int) (*[]models.QuickAdd, error)
+	AddQuickAdd(int, *models.QuickAdd) (*models.QuickAdd, error)
+	DeleteQuickAdd(uid int, quickAddID int) error
 }
 
 type service struct {
