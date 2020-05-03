@@ -1,7 +1,7 @@
 package responsetypes
 
-// UserResponse represents the database user
-type UserResponse struct {
+// User represents the database user
+type User struct {
 	ID          int    `json:"id" db:"id"`
 	Name        string `json:"name" db:"name"`
 	GivenName   string `json:"given_name" db:"given_name"`

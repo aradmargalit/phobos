@@ -1,7 +1,7 @@
-package controllers
+package service
 
 import (
-	models "server/models"
+	"server/internal/models"
 	utils "server/utils"
 
 	"encoding/json"
@@ -41,14 +41,14 @@ func init() {
 }
 
 // HandleLogin sends the user to Google for authentication
-func (e *Env) HandleLogin(c *gin.Context) {
+func (svc *service) HandleLogin(c *gin.Context) {
 	url := conf.AuthCodeURL(randomState)
 
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
 // HandleCallback parses the access token and exchanges it for the user information
-func (e *Env) HandleCallback(c *gin.Context) {
+func (svc *service) HandleCallback(c *gin.Context) {
 	if state := c.Query("state"); state != randomState {
 		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, randomState))
 		return
@@ -86,12 +86,12 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	}
 
 	// Check if the user exists in the database
-	_, err = e.DB.GetUserByEmail(u.Email)
+	_, err = svc.db.GetUserByEmail(u.Email)
 
 	// If we got an err, there's no user in the database
 	if err != nil {
 		fmt.Println("Could not get user from database: ", err)
-		_, err = e.DB.InsertUser(u)
+		_, err = svc.db.InsertUser(u)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -99,7 +99,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 	}
 
 	// In both the new and return case, pull the user from the DB to get their ID
-	dbUser, err := e.DB.GetUserByEmail(u.Email)
+	dbUser, err := svc.db.GetUserByEmail(u.Email)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -115,7 +115,7 @@ func (e *Env) HandleCallback(c *gin.Context) {
 }
 
 // Logout will clear the current users cookie
-func (e *Env) Logout(c *gin.Context) {
+func (svc *service) Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(UserID)
 

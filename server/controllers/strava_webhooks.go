@@ -100,7 +100,7 @@ func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) (err error) {
 
 func fetchAndCreate(ownerID int, activityID int, db *models.DB) error {
 	// 1. Fetch the activity from our application to check if we already have it
-	dbActivity, err := db.GetActivityByStravaID(utils.MakeI64(activityID))
+	dbActivity, err := db.GetActivityByStravaID(activityID)
 	if err == nil {
 		// If we had no problems fetching this ID, we must already have it. No need to re-insert
 		fmt.Printf("We already have this activity! Strava ID: %v | Phobos ID: %v\n", activityID, dbActivity.ID)

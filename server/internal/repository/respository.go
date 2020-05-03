@@ -1,101 +1,38 @@
 package repository
 
 import (
-	"database/sql"
-	"errors"
 	"server/internal/models"
-	responsetypes "server/response_types"
-	"strconv"
+	"server/internal/responsetypes"
+
+	"github.com/jmoiron/sqlx"
 )
 
+// PhobosDB defines the methods available to access data
 type PhobosDB interface {
-	// Arad todo
+	// Activities
+	InsertActivity(*models.Activity) (*models.Activity, error)
+	GetActivityByStravaID(int) (models.Activity, error)
+	GetActivityByID(int) (models.Activity, error)
+	GetActivitiesByUser(int) ([]responsetypes.Activity, error)
+	UpdateActivity(*models.Activity) (*models.Activity, error)
+	DeleteActivityByID(int, int) error
+
+	// Users
+	InsertUser(models.User) (responsetypes.User, error)
+	GetAllUsers() []models.User
+	GetUserByEmail(string) (models.User, error)
+	GetUserByID(int) (responsetypes.User, error)
 }
 
-// Need a New func to initialize a new "PhobosDB"
-func ()
-
-const (
-	activityInsertSQL = `
-		INSERT INTO activities 
-		(name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id)
-		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit, :strava_id)
-	`
-	activityUpdateSQL = `
-		UPDATE activities 
-		SET 
-			name=:name, 
-			activity_date=:activity_date,
-			activity_type_id=:activity_type_id,
-			duration=:duration,
-			distance=:distance,
-			unit=:unit
-		WHERE id=:id
-		`
-)
-
-// InsertActivity adds a new activity to the database
-func (db *DB) InsertActivity(a models.Activity) (activity models.Activity, err error) {
-	res, err := db.conn.NamedExec(activityInsertSQL, a)
-	if err != nil {
-		return
-	}
-
-	inserted, err := res.LastInsertId()
-	if err != nil {
-		return
-	}
-
-	// Return the recently inserted record back to the user
-	activity, err = db.GetActivityByID(int(inserted))
-	return
+// db will be our data access object and holds the connection
+type db struct {
+	conn *sqlx.DB
 }
 
-// UpdateActivity updates an existing activity in the database
-func (db *DB) UpdateActivity(a models.Activity) (activity models.Activity, err error) {
-	res, err := db.conn.NamedExec(activityUpdateSQL, a)
-	if err != nil {
-		return
-	}
+// New initializes a new PhobosDB, connects, and makes the DB available to the service
+func New() PhobosDB {
+	db := db{}
+	db.Connect()
 
-	updatedCount, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if updatedCount != 1 {
-		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
-	}
-
-	// Return the recently inserted record back to the user
-	activity, err = db.GetActivityByID(a.ID)
-	return
-}
-
-// GetActivityByStravaID will trade a strava activity ID for an application ID
-func (db *DB) GetActivityByStravaID(stravaID sql.NullInt64) (activity models.Activity, err error) {
-	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", stravaID)
-	return
-}
-
-// GetActivityByID returns a single activity by Id
-func (db *DB) GetActivityByID(id int) (activity models.Activity, err error) {
-	err = db.conn.Get(&activity, `SELECT * FROM activities WHERE id=?`, id)
-	return
-}
-
-// DeleteActivityByID deletes an activity by ID, verified with userID
-func (db *DB) DeleteActivityByID(uid int, activityID int) (err error) {
-	_, err = db.conn.Exec(`DELETE FROM activities WHERE id=? AND owner_id=?`, activityID, uid)
-	return
-}
-
-// GetActivitiesByUser returns all activies from user
-func (db *DB) GetActivitiesByUser(uid int) (activities []responsetypes.ActivityResponse, err error) {
-	err = db.conn.Select(&activities, `
-		SELECT a.*, at.id "activity_type.id", at.name "activity_type.name" 
-		FROM activities a 
-		JOIN activity_types at ON at.id = a.activity_type_id 
-		WHERE owner_id=? ORDER BY a.activity_date DESC
-		`, uid)
-	return
+	return &db
 }

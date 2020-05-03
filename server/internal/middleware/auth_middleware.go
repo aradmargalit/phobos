@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	"server/controllers"
+	"server/internal/constants"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 // AuthRequired is a simple middleware to check the session
 func AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
-	uid := session.Get(controllers.UserID)
+	uid := session.Get(constants.UserID)
 
 	if uid == nil {
 		// Abort the request with the appropriate error code

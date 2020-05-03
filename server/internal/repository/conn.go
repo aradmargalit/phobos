@@ -1,4 +1,4 @@
-package models
+package repository
 
 import (
 	"fmt"
@@ -11,14 +11,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// DB allows for creating a database connection
-type DB struct {
-	conn *sqlx.DB
-}
-
 // Connect connects to the specified database
 // The database may not yet be ready, so we're going to retry every second for 30 seconds
-func (db *DB) Connect() {
+func (db *db) Connect() {
 	var err error
 	var conn *sqlx.DB
 
@@ -39,6 +34,6 @@ func (db *DB) Connect() {
 		panic(err)
 	}
 
-	// Store the session to the db object
+	// store the connection in the db struct once established
 	db.conn = conn
 }

@@ -1,82 +1,58 @@
-package controllers
+package service
 
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	models "server/models"
-	responsetypes "server/response_types"
+	"server/internal/models"
+	"server/internal/responsetypes"
 	"server/utils"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
-// AddActivityHandler adds a new activity to the database
-func (e *Env) AddActivityHandler(c *gin.Context) {
-	var activity models.Activity
-	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
+// AddActivity adds a new activity to the database
+func (svc *service) AddActivity(activity *models.Activity, uid int) (*models.Activity, error) {
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	activity.ActivityDate = d.Format("2006-01-02")
-
-	// Add the owner ID to the activituy
-	uid := c.GetInt("user")
 
 	activity.OwnerID = uid
 
-	record, err := e.DB.InsertActivity(activity)
+	record, err := svc.db.InsertActivity(activity)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return nil, err
 	}
 
-	// Currently not consumed by the UI, but echo back the record
-	c.JSON(http.StatusOK, record)
+	return record, nil
 }
 
-// UpdateActivityHandler adds a new activity to the database
-func (e *Env) UpdateActivityHandler(c *gin.Context) {
-	var activity models.Activity
-	if err := c.ShouldBindJSON(&activity); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+// UpdateActivity adds a new activity to the database
+func (svc *service) UpdateActivity(activity *models.Activity) (*models.Activity, error) {
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	activity.ActivityDate = d.Format("2006-01-02")
 
-	record, err := e.DB.UpdateActivity(activity)
+	record, err := svc.db.UpdateActivity(activity)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return nil, err
 	}
 
-	c.JSON(http.StatusOK, record)
+	return record, nil
 }
 
-// GetActivitiesHandler returns all the user's activities
-func (e *Env) GetActivitiesHandler(c *gin.Context) {
-	// Pull user out of context to figure out which activities to grab
-	uid := c.GetInt("user")
-
-	a, err := e.DB.GetActivitiesByUser(uid)
+// GetActivities returns all the user's activities
+func (svc *service) GetActivities(uid int) (*[]responsetypes.Activity, error) {
+	a, err := svc.db.GetActivitiesByUser(uid)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+		return nil, err
 	}
 
 	count := len(a)
 	fmt.Printf("Found %v activities for user ID: %v...\n", count, uid)
 
-	withIndices := make([]responsetypes.ActivityResponse, count)
+	withIndices := make([]responsetypes.Activity, count)
 	// No smart way to do this, add an decreasing logical index to each for the frontend's benefit
 	// I also want to represent the date in an fast-to-sort fashion, so doing that here
 	for idx, activity := range a {
@@ -88,51 +64,28 @@ func (e *Env) GetActivitiesHandler(c *gin.Context) {
 		withIndices[idx] = activity
 	}
 
-	c.JSON(http.StatusOK, gin.H{"activities": withIndices})
+	return &withIndices, nil
 }
 
-// DeleteActivityHandler returns all the user's activities
-func (e *Env) DeleteActivityHandler(c *gin.Context) {
-	// Pull user out of context to confirm it's safe to delete the activity
-	uid := c.GetInt("user")
-
-	activityID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	err = e.DB.DeleteActivityByID(uid, activityID)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, "Successfully deleted activity: "+c.Param("id"))
-	return
+// DeleteActivity returns all the user's activities
+func (svc *service) DeleteActivity(activityID int, uid int) error {
+	return svc.db.DeleteActivityByID(uid, activityID)
 }
 
 // GetIntervalSummary returns the user's aggregate data for the given interval
-func (e *Env) GetIntervalSummary(c *gin.Context) {
-	// Pull user out of context to figure out which activities to grab
-	uid := c.GetInt("user")
-
-	// Pull the interval from the query string
-	interval := c.Query("interval")
+func (svc *service) GetIntervalSummary(uid int, interval string) (*[]responsetypes.IntervalSum, error) {
+	// Validate the interval
 	if interval != "week" && interval != "month" && interval != "year" {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("interval must be week, month, or year"))
-		return
+		return nil, errors.New("interval must be week, month, or year")
 	}
 
-	a, err := e.DB.GetActivitiesByUser(uid)
+	a, err := svc.db.GetActivitiesByUser(uid)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+		return nil, err
 	}
 
 	if len(a) < 1 {
-		c.JSON(http.StatusOK, nil)
-		return
+		return &[]responsetypes.IntervalSum{}, nil
 	}
 
 	intervals := bucketIntoIntervals(a, interval)
@@ -159,23 +112,16 @@ func (e *Env) GetIntervalSummary(c *gin.Context) {
 	}
 	*/
 
-	response := []intervalSum{}
+	response := []responsetypes.IntervalSum{}
 	for _, itvl := range intervals {
-		mSum := intervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], DaysSkipped: skippedMap[itvl]}
+		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], DaysSkipped: skippedMap[itvl]}
 		response = append(response, mSum)
 	}
 
-	c.JSON(http.StatusOK, response)
+	return &response, nil
 }
 
-type intervalSum struct {
-	Interval    string  `json:"interval"`
-	Duration    float64 `json:"duration"`
-	Miles       float64 `json:"miles"`
-	DaysSkipped float64 `json:"days_skipped"`
-}
-
-func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl string) []string {
+func bucketIntoIntervals(activities []responsetypes.Activity, itvl string) []string {
 	intervals := []string{}
 	var prev string
 	for _, a := range activities {
@@ -191,7 +137,7 @@ func bucketIntoIntervals(activities []responsetypes.ActivityResponse, itvl strin
 	return intervals
 }
 
-func makeDurationMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
+func makeDurationMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
 	durationMap := map[string]float64{}
 	for _, interval := range intervals {
 		durationMap[interval] = 0
@@ -207,7 +153,7 @@ func makeDurationMap(activities []responsetypes.ActivityResponse, intervals []st
 	c <- durationMap
 }
 
-func makeDistanceMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
+func makeDistanceMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
 	distanceMap := map[string]float64{}
 	for _, interval := range intervals {
 		distanceMap[interval] = 0
@@ -224,7 +170,7 @@ func makeDistanceMap(activities []responsetypes.ActivityResponse, intervals []st
 	c <- distanceMap
 }
 
-func makeSkippedMap(activities []responsetypes.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
+func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
 	// In order to figure out which days have no activities, we start with an array with every day from
 	// their first activity until now
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)

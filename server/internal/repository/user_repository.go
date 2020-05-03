@@ -1,19 +1,12 @@
-package models
+package repository
 
-import responsetypes "server/response_types"
-
-// User represents the user the comes back from the Google Response
-type User struct {
-	ID        int    `json:"id" db:"id"`
-	Name      string `json:"name" db:"name"`
-	GivenName string `json:"given_name" db:"given_name"`
-	Email     string `json:"email" db:"email"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
-}
+import (
+	"server/internal/models"
+	"server/internal/responsetypes"
+)
 
 // InsertUser inserts a User into the database, if possible
-func (db *DB) InsertUser(u User) (user responsetypes.UserResponse, err error) {
+func (db *db) InsertUser(u models.User) (user responsetypes.User, err error) {
 	result, err := db.conn.NamedExec(`INSERT INTO users (name, given_name, email) VALUES (:name, :given_name, :email)`, u)
 	if err != nil {
 		panic(err)
@@ -35,8 +28,8 @@ func (db *DB) InsertUser(u User) (user responsetypes.UserResponse, err error) {
 }
 
 // GetAllUsers gets all users from the database
-func (db *DB) GetAllUsers() []User {
-	people := []User{}
+func (db *db) GetAllUsers() []models.User {
+	people := []models.User{}
 	err := db.conn.Select(&people, "SELECT * FROM `users` ORDER BY id ASC")
 	if err != nil {
 		panic(err)
@@ -46,13 +39,13 @@ func (db *DB) GetAllUsers() []User {
 }
 
 // GetUserByEmail gets a database user by their email
-func (db *DB) GetUserByEmail(email string) (u User, err error) {
+func (db *db) GetUserByEmail(email string) (u models.User, err error) {
 	err = db.conn.Get(&u, "SELECT * FROM users WHERE email=?", email)
 	return
 }
 
 // GetUserByID gets a database user by their ID
-func (db *DB) GetUserByID(id int) (u responsetypes.UserResponse, err error) {
+func (db *db) GetUserByID(id int) (u responsetypes.User, err error) {
 	// This warrants an explanation!
 	// I want to deserialize this query response to a responsetypes.UserResponse object
 	// which expects "strava_token" to be a boolean, so I check for existance and convert
