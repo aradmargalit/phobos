@@ -1,15 +1,12 @@
-package models
+package repository
 
-// ActivityType represents a type for a workout
-type ActivityType struct {
-	ID        int    `json:"id" db:"id"`
-	Name      string `json:"name" db:"name"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
-}
+import (
+	"server/internal/models"
+	"server/internal/responsetypes"
+)
 
 // GetActivityTypes gets all activity types from the database
-func (db *DB) GetActivityTypes() (at []ActivityType, err error) {
+func (db *db) GetActivityTypes() (at []responsetypes.ActivityType, err error) {
 	err = db.conn.Select(&at, "SELECT * FROM `activity_types`;")
 	if err != nil {
 		return nil, err
@@ -19,14 +16,14 @@ func (db *DB) GetActivityTypes() (at []ActivityType, err error) {
 }
 
 // InsertActivityType adds a new activity type to the database
-func (db *DB) InsertActivityType(at ActivityType) (err error) {
+func (db *db) InsertActivityType(at models.ActivityType) (err error) {
 	_, err = db.conn.NamedExec(`INSERT INTO activity_types (name) VALUES (:name)`, at)
 
 	return
 }
 
 // DeleteAllActivityTypes deletes all activity types, should only be used during seeding
-func (db *DB) DeleteAllActivityTypes() (err error) {
+func (db *db) DeleteAllActivityTypes() (err error) {
 	_, err = db.conn.Exec(`DELETE FROM activity_types`)
 	if err != nil {
 		return
@@ -38,7 +35,7 @@ func (db *DB) DeleteAllActivityTypes() (err error) {
 }
 
 // GetActivityTypeIDByStravaType swaps a Strava activity string to an ID
-func (db *DB) GetActivityTypeIDByStravaType(stravaType string) (typeID int, err error) {
+func (db *db) GetActivityTypeIDByStravaType(stravaType string) (typeID int, err error) {
 	if stravaType == "WeightTraining" {
 		stravaType = "Weight Training"
 	}

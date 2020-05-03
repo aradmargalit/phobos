@@ -28,6 +28,18 @@ type PhobosDB interface {
 	GetQuickAddByID(id int) (qa models.QuickAdd, err error)
 	GetQuickAddsByUser(uid int) (quickAdds []models.QuickAdd, err error)
 	DeleteQuickAddByID(uid int, quickAddID int) (err error)
+
+	// Metadata
+	GetActivityTypes() ([]responsetypes.ActivityType, error)
+	DeleteAllActivityTypes() error
+	InsertActivityType(models.ActivityType) error
+
+	// Strava
+	InsertStravaToken(tok models.StravaToken) (dbToken models.StravaToken, err error)
+	GetStravaTokenByUserID(uid int) (token models.StravaToken, err error)
+	UpdateStravaToken(tok models.StravaToken) (dbToken models.StravaToken, err error)
+	GetUserIDByStravaID(stravaID int) (userID int, err error)
+	DeleteStravaTokenByUserID(uid int) error
 }
 
 // db will be our data access object and holds the connection

@@ -1,10 +1,11 @@
-package controllers
+package service
 
 import (
 	"fmt"
 	"net/http"
 	"os"
-	models "server/models"
+	"server/internal/models"
+	"server/internal/repository"
 	"server/utils"
 	"strconv"
 	"strings"
@@ -44,8 +45,8 @@ const (
 	baseURL      = "https://www.strava.com/api/v3"
 )
 
-// StravaLoginHandler sends the user to Google for authentication
-func (e *Env) StravaLoginHandler(c *gin.Context) {
+// HandleStravaLogin sends the user to Strava for authentication
+func (svc *service) HandleStravaLogin(c *gin.Context) {
 	// There must be a better way, but I need to know who the user was when Strava hits my callback endpoint
 	// To do this, I'm going to send the user ID with the state, which gets returned to me in the callback
 	uid := c.GetInt("user")
@@ -56,8 +57,8 @@ func (e *Env) StravaLoginHandler(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-// StravaCallbackHandler handles the Strava OAuth2.0 reponse containing the user token
-func (e *Env) StravaCallbackHandler(c *gin.Context) {
+// HandleStravaCallback handles the Strava OAuth2.0 reponse containing the user token
+func (svc *service) HandleStravaCallback(c *gin.Context) {
 	state := c.Query("state")
 	stateParts := strings.Split(state, "|userID:")
 	// First, check to make sure they returned the same random state we sent earlier
@@ -92,17 +93,16 @@ func (e *Env) StravaCallbackHandler(c *gin.Context) {
 	uid, _ := strconv.Atoi(stateParts[1])
 
 	// In the event that the user already has a token in the database, we'll want to update it
-	upsertToken(toDatabaseTokens(token, uid, stravaID), e.DB)
+	upsertToken(toDatabaseTokens(token, uid, stravaID), svc.db)
 
 	// Now that we have a token for the user, send them back to the UI
 	c.Redirect(http.StatusTemporaryRedirect, os.Getenv("FRONTEND_URL")+"/home")
 }
 
-// StravaDeauthorizationHandler is responsible for disconnecting the user from Strava updates
-func (e *Env) StravaDeauthorizationHandler(c *gin.Context) {
-	uid := c.GetInt("user")
+// HandleStravaDeauthorization is responsible for disconnecting the user from Strava updates
+func (svc *service) HandleStravaDeauthorization(uid int) error {
 
-	client := getHTTPClient(uid, e.DB)
+	client := getHTTPClient(uid, svc.db)
 	fmt.Println("Deauthorizing user id: " + strconv.Itoa(uid) + " from Strava access...")
 
 	resp, err := client.Post("https://www.strava.com/oauth/deauthorize", "application/json", nil)
@@ -113,15 +113,14 @@ func (e *Env) StravaDeauthorizationHandler(c *gin.Context) {
 	defer resp.Body.Close()
 
 	// Now that we've done that, we need to delete that token from the DB
-	err = e.DB.DeleteStravaTokenByUserID(uid)
+	err = svc.db.DeleteStravaTokenByUserID(uid)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
-	c.JSON(http.StatusOK, gin.H{"deleted": true})
+	return nil
 }
 
-func upsertToken(stravaToken models.StravaToken, db *models.DB) {
+func upsertToken(stravaToken models.StravaToken, db repository.PhobosDB) {
 	// 1. Check if a token already exists
 	_, err := db.GetStravaTokenByUserID(stravaToken.UserID)
 	if err != nil {
@@ -142,7 +141,7 @@ func upsertToken(stravaToken models.StravaToken, db *models.DB) {
 	return
 }
 
-func getHTTPClient(uid int, db *models.DB) *http.Client {
+func getHTTPClient(uid int, db repository.PhobosDB) *http.Client {
 	// 1. Get the current access and refresh tokens from the DB
 	dbToken, err := db.GetStravaTokenByUserID(uid)
 	if err != nil {

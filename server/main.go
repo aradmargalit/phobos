@@ -34,13 +34,10 @@ func main() {
 	// init the service with the database
 	svc := service.New(db)
 
-	metadata := r.Group("/metadata")
-	{
-		metadata.GET("/activity_types", env.ActivityTypesHandler)
-	}
-	registerAdminHandlers(r, svc)
-	registerStravaHandlers(r, svc)
-
+	// Session Management
+	// Because this token is random sessions are invalidated when the server restarts
+	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))
+	r.Use(sessions.Sessions("phobos-auth", store))
 	// If none of registered routes match, serve the client JS
 	r.Use(static.Serve("/", static.LocalFile("../deimos/build", true)))
 	r.NoRoute(func(c *gin.Context) {
@@ -49,25 +46,4 @@ func main() {
 
 	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")
-}
-
-func registerAdminHandlers(r *gin.Engine, env *controllers.Env) {
-	admin := r.Group("/admin")
-	admin.Use(middleware.NonProd)
-	{
-		admin.GET("/seed", env.SeedHandler)
-	}
-}
-
-func registerStravaHandlers(r *gin.Engine, env *controllers.Env) {
-	r.GET("/public/strava/callback", env.StravaCallbackHandler)
-	r.GET("/public/strava/webhook", env.StravaWebookVerificationHandler)
-	r.POST("/public/strava/webhook", env.StravaWebHookCatcher)
-
-	strava := r.Group("/strava")
-	strava.Use(middleware.AuthRequired)
-	{
-		strava.GET("/auth", env.StravaLoginHandler)
-		strava.GET("/deauth", env.StravaDeauthorizationHandler)
-	}
 }

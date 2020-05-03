@@ -1,20 +1,10 @@
-package models
+package repository
 
 import (
 	"errors"
+	"server/internal/models"
 	"strconv"
 )
-
-// StravaToken represents a ready-to-add workout session
-type StravaToken struct {
-	UserID       int    `json:"user_id" db:"user_id"`
-	StravaID     int    `json:"strava_id" db:"strava_id"`
-	AccessToken  string `json:"access_token" db:"access_token"`
-	RefreshToken string `json:"refresh_token" db:"refresh_token"`
-	Expiry       string `json:"expiry" db:"expiry"`
-	CreatedAt    string `json:"created_at" db:"created_at"`
-	UpdatedAt    string `json:"updated_at" db:"updated_at"`
-}
 
 const (
 	insertStravaToken = `
@@ -34,7 +24,7 @@ const (
 )
 
 // InsertStravaToken registers a new set of tokens for a user's Strava access
-func (db *DB) InsertStravaToken(tok StravaToken) (dbToken StravaToken, err error) {
+func (db *db) InsertStravaToken(tok models.StravaToken) (dbToken models.StravaToken, err error) {
 	res, err := db.conn.NamedExec(insertStravaToken, tok)
 	if err != nil {
 		return
@@ -51,13 +41,13 @@ func (db *DB) InsertStravaToken(tok StravaToken) (dbToken StravaToken, err error
 }
 
 // GetStravaTokenByUserID returns all activies from auser
-func (db *DB) GetStravaTokenByUserID(uid int) (token StravaToken, err error) {
+func (db *db) GetStravaTokenByUserID(uid int) (token models.StravaToken, err error) {
 	err = db.conn.Get(&token, `SELECT * FROM strava_tokens WHERE user_id=?`, uid)
 	return
 }
 
 // UpdateStravaToken refreshes the user's strava token
-func (db *DB) UpdateStravaToken(tok StravaToken) (dbToken StravaToken, err error) {
+func (db *db) UpdateStravaToken(tok models.StravaToken) (dbToken models.StravaToken, err error) {
 	res, err := db.conn.NamedExec(updateStravaTokenSQL, tok)
 	if err != nil {
 		return
@@ -77,13 +67,13 @@ func (db *DB) UpdateStravaToken(tok StravaToken) (dbToken StravaToken, err error
 }
 
 // GetUserIDByStravaID swaps a Strava ID for a User ID
-func (db *DB) GetUserIDByStravaID(stravaID int) (userID int, err error) {
+func (db *db) GetUserIDByStravaID(stravaID int) (userID int, err error) {
 	err = db.conn.Get(&userID, `SELECT user_id FROM strava_tokens WHERE strava_id=?`, stravaID)
 	return
 }
 
 // DeleteStravaTokenByUserID clears out a user's token
-func (db *DB) DeleteStravaTokenByUserID(uid int) (err error) {
+func (db *db) DeleteStravaTokenByUserID(uid int) (err error) {
 	_, err = db.conn.Exec("DELETE FROM strava_tokens WHERE user_id=?", uid)
 	return
 }

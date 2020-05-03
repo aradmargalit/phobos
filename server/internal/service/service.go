@@ -32,6 +32,17 @@ type PhobosAPI interface {
 	GetQuickAdds(uid int) (*[]models.QuickAdd, error)
 	AddQuickAdd(int, *models.QuickAdd) (*models.QuickAdd, error)
 	DeleteQuickAdd(uid int, quickAddID int) error
+
+	// Metadata
+	GetActivityTypes() (*[]responsetypes.ActivityType, error)
+
+	// Seeds
+	SeedActivityTypes() (err error)
+
+	// Strava
+	HandleStravaLogin(c *gin.Context)
+	HandleStravaCallback(c *gin.Context)
+	HandleStravaDeauthorization(uid int) error
 }
 
 type service struct {
