@@ -21,7 +21,6 @@ func registerActivityHandlers(r *gin.Engine, svc service.PhobosAPI) {
 		private.DELETE("/activities/:id", makeDeleteActivityHandler(svc))
 		private.PUT("/activities/:id", makeUpdateActivityHandler(svc))
 		private.GET("/activities/interval_summary", makeGetIntervalSummaryHandler(svc))
-		private.GET("/statistics", makeGetUserStatisticsHandler(svc))
 	}
 }
 

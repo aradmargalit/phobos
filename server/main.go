@@ -31,8 +31,8 @@ func init() {
 func main() {
 	db := repository.New()
 	svc := service.New(db)
-	r := transport.BuildRouter(svc)
-	
+	r := gin.Default()
+
 	// Session Management
 	// Because this token is random sessions are invalidated when the server restarts
 	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))
@@ -43,6 +43,7 @@ func main() {
 		c.File("../deimos/build")
 	})
 
+	transport.BuildRouter(r, svc)
 	fmt.Println("🚀 🌑 Phobos is ready!")
 	r.Run(":8080")
 }

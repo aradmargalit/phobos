@@ -2,11 +2,10 @@ package repository
 
 import (
 	"server/internal/models"
-	"server/internal/responsetypes"
 )
 
 // GetActivityTypes gets all activity types from the database
-func (db *db) GetActivityTypes() (at []responsetypes.ActivityType, err error) {
+func (db *db) GetActivityTypes() (at []models.ActivityType, err error) {
 	err = db.conn.Select(&at, "SELECT * FROM `activity_types`;")
 	if err != nil {
 		return nil, err

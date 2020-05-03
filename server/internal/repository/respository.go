@@ -31,7 +31,7 @@ type PhobosDB interface {
 	DeleteQuickAddByID(uid int, quickAddID int) (err error)
 
 	// Metadata
-	GetActivityTypes() ([]responsetypes.ActivityType, error)
+	GetActivityTypes() ([]models.ActivityType, error)
 	DeleteAllActivityTypes() error
 	InsertActivityType(models.ActivityType) error
 

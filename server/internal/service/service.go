@@ -34,7 +34,7 @@ type PhobosAPI interface {
 	DeleteQuickAdd(uid int, quickAddID int) error
 
 	// Metadata
-	GetActivityTypes() (*[]responsetypes.ActivityType, error)
+	GetActivityTypes() (*[]models.ActivityType, error)
 
 	// Seeds
 	SeedActivityTypes() (err error)
