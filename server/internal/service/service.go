@@ -43,6 +43,8 @@ type PhobosAPI interface {
 	HandleStravaLogin(c *gin.Context)
 	HandleStravaCallback(c *gin.Context)
 	HandleStravaDeauthorization(uid int) error
+	HandleStravaWebhookVerification(c *gin.Context)
+	HandleWebhookEvent(event models.StravaWebhookEvent) error
 }
 
 type service struct {

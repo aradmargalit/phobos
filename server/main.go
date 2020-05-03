@@ -1,13 +1,15 @@
 package main
 
 import (
-	"server/internal/middleware"
 	"server/internal/repository"
 	"server/internal/service"
+	"server/internal/transport"
 
 	"fmt"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -27,13 +29,10 @@ func init() {
 }
 
 func main() {
-
-	// init the database
 	db := repository.New()
-
-	// init the service with the database
 	svc := service.New(db)
-
+	r := transport.BuildRouter(svc)
+	
 	// Session Management
 	// Because this token is random sessions are invalidated when the server restarts
 	store := cookie.NewStore([]byte(os.Getenv("COOKIE_SECRET_TOKEN")))

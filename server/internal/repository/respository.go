@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"server/internal/models"
 	"server/internal/responsetypes"
 
@@ -11,7 +12,7 @@ import (
 type PhobosDB interface {
 	// Activities
 	InsertActivity(*models.Activity) (*models.Activity, error)
-	GetActivityByStravaID(int) (models.Activity, error)
+	GetActivityByStravaID(sql.NullInt64) (models.Activity, error)
 	GetActivityByID(int) (models.Activity, error)
 	GetActivitiesByUser(int) ([]responsetypes.Activity, error)
 	UpdateActivity(*models.Activity) (*models.Activity, error)
@@ -40,6 +41,7 @@ type PhobosDB interface {
 	UpdateStravaToken(tok models.StravaToken) (dbToken models.StravaToken, err error)
 	GetUserIDByStravaID(stravaID int) (userID int, err error)
 	DeleteStravaTokenByUserID(uid int) error
+	GetActivityTypeIDByStravaType(string) (int, error)
 }
 
 // db will be our data access object and holds the connection

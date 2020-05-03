@@ -1,4 +1,4 @@
-package controllers
+package service
 
 import (
 	"database/sql"
@@ -9,7 +9,8 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"server/models"
+	"server/internal/models"
+	"server/internal/repository"
 	"server/utils"
 	"strconv"
 	"strings"
@@ -21,29 +22,8 @@ import (
 const metersToMiles = 0.000621371
 const metersToYards = 1.09361
 
-// Technically, they send more than this, but as of today, we don't care
-type stravaWebhookEvent struct {
-	ObjectType     string `json:"object_type"`
-	ObjectID       int    `json:"object_id"`
-	AspectType     string `json:"aspect_type"`
-	OwnerID        int    `json:"owner_id"`
-	EventTime      int    `json:"event_time"`
-	SubscriptionID int    `json:"subscription_id"`
-}
-
-type stravaActivity struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Distance    float64 `json:"distance"`
-	ElapsedTime int     `json:"elapsed_time"`
-	MovingTime  int     `json:"moving_time"`
-	Type        string  `json:"type"`
-	StartDate   string  `json:"start_date"`
-	Timezone    string  `json:"timezone"`
-}
-
-// StravaWebookVerificationHandler responds with an OK so Strava knows we have a real server
-func (e *Env) StravaWebookVerificationHandler(c *gin.Context) {
+// HandleStravaWebhookVerification responds with an OK so Strava knows we have a real server
+func (svc *service) HandleStravaWebhookVerification(c *gin.Context) {
 	// https://developers.strava.com/docs/webhooks/
 	/* 	Your callback address must respond within two seconds to the GET request from Strava’s subscription service.
 	The response should indicate status code 200 and should echo the hub.challenge field in the response body as application/json content type:
@@ -57,36 +37,26 @@ func (e *Env) StravaWebookVerificationHandler(c *gin.Context) {
 	})
 }
 
-// StravaWebHookCatcher will listen for webhook events and act accordingly
-func (e *Env) StravaWebHookCatcher(c *gin.Context) {
-	var event stravaWebhookEvent
-
-	if err := c.ShouldBindJSON(&event); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+// HandleWebhookEvent will listen for webhook events and act accordingly
+func (svc *service) HandleWebhookEvent(event models.StravaWebhookEvent) error {
 	// Bail out if the subscription doesn't match Strava's ID, this may be a malicious POST!
 	if ok := strconv.Itoa(event.SubscriptionID) == os.Getenv("STRAVA_WEBHOOK_SUB_ID"); !ok {
-		c.AbortWithError(http.StatusForbidden, fmt.Errorf("unauthorized webhook POST! Tried to use %v as the subscription ID", event.SubscriptionID))
-		return
+		return fmt.Errorf("unauthorized webhook POST! Tried to use %v as the subscription ID", event.SubscriptionID)
 	}
 
 	// Now we're off to actually process the event!
 	// I tried doing this as a go routine, but it's useful to have Strava retry if we fail
 	// Strava retries up to 3 times or until it gets a 200 in under 2s
 	if event.ObjectType == "activity" {
-		err := handleWebhookEvent(event, e.DB)
+		err := handleWebhookEvent(event, svc.db)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
+			return err
 		}
 	}
-	// We're going to respond with an OK so the webhook doesn't retry if this succeeds
-	c.JSON(http.StatusOK, gin.H{})
+	return nil
 }
 
-func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) (err error) {
+func handleWebhookEvent(e models.StravaWebhookEvent, db repository.PhobosDB) (err error) {
 	switch e.AspectType {
 	case "create":
 		err = fetchAndCreate(e.OwnerID, e.ObjectID, db)
@@ -98,9 +68,9 @@ func handleWebhookEvent(e stravaWebhookEvent, db *models.DB) (err error) {
 	return
 }
 
-func fetchAndCreate(ownerID int, activityID int, db *models.DB) error {
+func fetchAndCreate(ownerID int, activityID int, db repository.PhobosDB) error {
 	// 1. Fetch the activity from our application to check if we already have it
-	dbActivity, err := db.GetActivityByStravaID(activityID)
+	dbActivity, err := db.GetActivityByStravaID(utils.MakeI64(activityID))
 	if err == nil {
 		// If we had no problems fetching this ID, we must already have it. No need to re-insert
 		fmt.Printf("We already have this activity! Strava ID: %v | Phobos ID: %v\n", activityID, dbActivity.ID)
@@ -115,7 +85,7 @@ func fetchAndCreate(ownerID int, activityID int, db *models.DB) error {
 
 	// 3. Convert the Strava Activity to a Phobos one and insert
 	activity := convertStravaActivity(fetchedActivity, userID, db)
-	inserted, err := db.InsertActivity(activity)
+	inserted, err := db.InsertActivity(&activity)
 	if err != nil {
 		return fmt.Errorf("failed to insert activity ID %v from Strava: %v", activityID, err)
 	}
@@ -123,7 +93,7 @@ func fetchAndCreate(ownerID int, activityID int, db *models.DB) error {
 	return nil
 }
 
-func fetchAndUpdate(ownerID int, activityID int, db *models.DB) error {
+func fetchAndUpdate(ownerID int, activityID int, db repository.PhobosDB) error {
 	// 1. We -always- need to fetch the full activity from Strava, since we always upsert
 	fetchedActivity, userID, err := fetchActivity(ownerID, activityID, db)
 	if err != nil {
@@ -136,7 +106,7 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) error {
 	dbActivity, err := db.GetActivityByStravaID(activity.StravaID)
 	if err != nil {
 		// We were unable to get this activity, so just insert it instead
-		inserted, err := db.InsertActivity(activity)
+		inserted, err := db.InsertActivity(&activity)
 		if err != nil {
 			return fmt.Errorf("unable to insert activity from update action: %v", err)
 		}
@@ -146,7 +116,7 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) error {
 
 	// If we don't need to insert it, we'll just update it
 	activity.ID = dbActivity.ID
-	_, err = db.UpdateActivity(activity)
+	_, err = db.UpdateActivity(&activity)
 	if err != nil {
 		return fmt.Errorf("unable to update activity: %v", err)
 	}
@@ -154,7 +124,7 @@ func fetchAndUpdate(ownerID int, activityID int, db *models.DB) error {
 	return nil
 }
 
-func eventDelete(ownerID int, activityID int, db *models.DB) error {
+func eventDelete(ownerID int, activityID int, db repository.PhobosDB) error {
 	// Get the ID from our application
 	// TODO, there's no reason this shouldn't be a single DB call
 	activity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
@@ -170,8 +140,8 @@ func eventDelete(ownerID int, activityID int, db *models.DB) error {
 	return nil
 }
 
-func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, int, error) {
-	var fetchedActivity stravaActivity
+func fetchActivity(ownerID int, activityID int, db repository.PhobosDB) (models.StravaActivity, int, error) {
+	var fetchedActivity models.StravaActivity
 
 	// We need to swap the ownerID for our user ID
 	userID, err := db.GetUserIDByStravaID(ownerID)
@@ -204,7 +174,7 @@ func fetchActivity(ownerID int, activityID int, db *models.DB) (stravaActivity, 
 	return fetchedActivity, userID, errors.New("Could not fetch the activity from Strava")
 }
 
-func convertStravaActivity(fetchedActivity stravaActivity, userID int, db *models.DB) models.Activity {
+func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db repository.PhobosDB) models.Activity {
 	// Convert the activity to our version of that activity
 	typeID, err := db.GetActivityTypeIDByStravaType(fetchedActivity.Type)
 	if err != nil {

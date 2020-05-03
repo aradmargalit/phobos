@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"server/internal/models"
 	"server/internal/responsetypes"
-	"server/utils"
 	"strconv"
 )
 
@@ -32,9 +32,8 @@ func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
 }
 
 // GetActivityByStravaID will trade a strava activity ID for an application ID
-func (db *db) GetActivityByStravaID(stravaID int) (activity models.Activity, err error) {
-	id64 := utils.MakeI64(stravaID)
-	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", id64)
+func (db *db) GetActivityByStravaID(stravaID sql.NullInt64) (activity models.Activity, err error) {
+	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", stravaID)
 	return
 }
 
