@@ -23,6 +23,9 @@ func TestAddActivity(t *testing.T) {
 	mockDB.On("InsertActivity", mock.AnythingOfType("*models.Activity")).Return(inputActivity, nil)
 	svc := New(mockDB)
 	
+	// Assert that this'll fail before acting
+	assert.NotEqual(t, inputActivity.ActivityDate, testdata.GetTestActivity().ActivityDate)
+
 	// Act
 	result, err := svc.AddActivity(inputActivity, 1)
 
