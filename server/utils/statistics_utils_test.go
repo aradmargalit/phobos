@@ -2,20 +2,20 @@ package utils
 
 import (
 	"fmt"
-	responsetypes "server/response_types"
+	"server/internal/responsetypes"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func getActivityResponses(n int, dateStepHours int) []responsetypes.ActivityResponse {
-	activities := []responsetypes.ActivityResponse{}
+func getActivityResponses(n int, dateStepHours int) []responsetypes.Activity {
+	activities := []responsetypes.Activity{}
 	startDate, _ := time.Parse(dbLayout, "2001-01-02 03:04:05")
 
 	for i := 1; i <= n; i++ {
 		step, _ := time.ParseDuration(fmt.Sprintf("%vh", dateStepHours*i))
-		activities = append(activities, responsetypes.ActivityResponse{
+		activities = append(activities, responsetypes.Activity{
 			ID:           i,
 			Name:         fmt.Sprintf("Activity Number: %v", i),
 			ActivityDate: startDate.Add(step).Format(dbLayout),
@@ -40,26 +40,26 @@ func TestCalculateMileage(t *testing.T) {
 	assert.Equal(t, float64(20), CalculateMileage(activities))
 
 	// Yardage doesn't get counted
-	activities = append(activities, responsetypes.ActivityResponse{Unit: "yards", Distance: 1})
+	activities = append(activities, responsetypes.Activity{Unit: "yards", Distance: 1})
 	assert.Equal(t, float64(20), CalculateMileage(activities))
 
 	// All mileage conuts
-	activities = append(activities, responsetypes.ActivityResponse{Unit: "miles", Distance: 1})
+	activities = append(activities, responsetypes.Activity{Unit: "miles", Distance: 1})
 	assert.Equal(t, float64(21), CalculateMileage(activities))
 }
 
 func TestCalculateLastTenDays(t *testing.T) {
-	activities := []responsetypes.ActivityResponse{{Duration: 10, ActivityDate: time.Now().UTC().Format(dbLayout)}}
+	activities := []responsetypes.Activity{{Duration: 10, ActivityDate: time.Now().UTC().Format(dbLayout)}}
 	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
 	assert.Equal(t, want, CalculateLastTenDays(activities, 0))
 }
 
 func TestCalculateTypeBreakdown(t *testing.T) {
-	activities := []responsetypes.ActivityResponse{
-		{ActivityType: responsetypes.ActivityTypeResponse{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityTypeResponse{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityTypeResponse{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityTypeResponse{Name: "Swim"}},
+	activities := []responsetypes.Activity{
+		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
+		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
+		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
+		{ActivityType: responsetypes.ActivityType{Name: "Swim"}},
 	}
 
 	portions := CalculateTypeBreakdown(activities)
@@ -68,12 +68,12 @@ func TestCalculateTypeBreakdown(t *testing.T) {
 }
 
 func TestCalculateTypeBreakdownWithOtherActivities(t *testing.T) {
-	activities := []responsetypes.ActivityResponse{}
+	activities := []responsetypes.Activity{}
 	for i := 0; i < 100; i++ {
-		activities = append(activities, responsetypes.ActivityResponse{ActivityType: responsetypes.ActivityTypeResponse{Name: "Run"}})
+		activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Run"}})
 	}
-	activities = append(activities, responsetypes.ActivityResponse{ActivityType: responsetypes.ActivityTypeResponse{Name: "Jog"}})
-	activities = append(activities, responsetypes.ActivityResponse{ActivityType: responsetypes.ActivityTypeResponse{Name: "Swim"}})
+	activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Jog"}})
+	activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Swim"}})
 
 	portions := CalculateTypeBreakdown(activities)
 	assert.Contains(t, portions, TypePortion{Name: "Run", Portion: 100})
