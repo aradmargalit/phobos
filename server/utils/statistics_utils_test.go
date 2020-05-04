@@ -63,8 +63,8 @@ func TestCalculateTypeBreakdown(t *testing.T) {
 	}
 
 	portions := CalculateTypeBreakdown(activities)
-	assert.Contains(t, portions, TypePortion{Name: "Run", Portion: 3})
-	assert.Contains(t, portions, TypePortion{Name: "Other", Portion: 0})
+	assert.Contains(t, portions, responsetypes.TypePortion{Name: "Run", Portion: 3})
+	assert.Contains(t, portions, responsetypes.TypePortion{Name: "Other", Portion: 0})
 }
 
 func TestCalculateTypeBreakdownWithOtherActivities(t *testing.T) {
@@ -76,15 +76,15 @@ func TestCalculateTypeBreakdownWithOtherActivities(t *testing.T) {
 	activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Swim"}})
 
 	portions := CalculateTypeBreakdown(activities)
-	assert.Contains(t, portions, TypePortion{Name: "Run", Portion: 100})
-	assert.Contains(t, portions, TypePortion{Name: "Other", Portion: 2})
-	assert.NotContains(t, portions, TypePortion{Name: "Jog", Portion: 1})
+	assert.Contains(t, portions, responsetypes.TypePortion{Name: "Run", Portion: 100})
+	assert.Contains(t, portions, responsetypes.TypePortion{Name: "Other", Portion: 2})
+	assert.NotContains(t, portions, responsetypes.TypePortion{Name: "Jog", Portion: 1})
 }
 
 func TestCalculateDayBreakdown(t *testing.T) {
 	// Create 20 1 mile runs
 	activities := getActivityResponses(20, 24)
-	want := []DayBreakdown([]DayBreakdown{
+	want := []responsetypes.DayBreakdown([]responsetypes.DayBreakdown{
 		{DOW: "Monday", Count: 3},
 		{DOW: "Tuesday", Count: 2},
 		{DOW: "Wednesday", Count: 3},
