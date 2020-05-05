@@ -185,8 +185,10 @@ func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itv
 
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
+		fmt.Println(a.ActivityDate)
 
 		// Go into our date map and mark the date as unskipped
+		fmt.Println("About to clear: ", utils.RoundTimeToDay(t))
 		skippedMap[utils.RoundTimeToDay(t)] = false
 	}
 
