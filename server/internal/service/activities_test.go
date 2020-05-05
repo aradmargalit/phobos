@@ -2,6 +2,8 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"server/internal/responsetypes"
 	"server/mocks"
 	"server/testdata"
 	"testing"
@@ -116,8 +118,8 @@ func TestUpdateActivityReturnsError(t *testing.T) {
 }
 
 func TestGetActivities(t *testing.T) {
-	userID := 1
 	// Arrange
+	userID := 1
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(10, 24), nil)
 	
@@ -143,8 +145,8 @@ func TestGetActivities(t *testing.T) {
 }
 
 func TestGetActivitiesWithError(t *testing.T) {
-	userID := 1
 	// Arrange
+	userID := 1
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("GetActivitiesByUser", userID).Return(nil, errors.New("Oh dear"))
 	
@@ -156,6 +158,74 @@ func TestGetActivitiesWithError(t *testing.T) {
 	// Assert
 	assert.Nil(t, result)
 	assert.Error(t, err)
+
+	// Sanity check: assert that our mock did everything we thought it would
+	mockDB.AssertExpectations(t)
+}
+
+func TestDeleteActivity(t *testing.T) {
+	// Arrange
+	activityID := 1
+	userID := 2
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("DeleteActivityByID", activityID, userID).Return(nil)
+	
+	svc := New(mockDB)
+	
+	// Act
+	err := svc.DeleteActivity(userID, activityID)
+
+	// Assert that if the DB throws no errors, neither do we
+	assert.NoError(t, err)
+
+	// Sanity check: assert that our mock did everything we thought it would
+	mockDB.AssertExpectations(t)
+}
+
+func TestDeleteActivityErrorWithWrongUserID(t *testing.T) {
+	// Arrange
+	activityID := 1
+	userID := 2
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("DeleteActivityByID", activityID, userID).Return(errors.New("oh dear"))
+
+	svc := New(mockDB)
+	
+	// Act
+	err := svc.DeleteActivity(userID, activityID)
+
+	// Assert that if the DB throws no errors, neither do we
+	assert.Error(t, err)
+
+	// Sanity check: assert that our mock did everything we thought it would
+	mockDB.AssertExpectations(t)
+}
+
+func TestGetIntervalSummary(t *testing.T) {
+	// Arrange
+	userID := 1
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(20, 24), nil)
+
+	svc := New(mockDB)
+	
+	// Act
+	result, err := svc.GetIntervalSummary(userID, "month")
+
+	fmt.Printf("%+v\n", (*result)[0])
+
+	// Assert that if the DB throws no errors, neither do we
+	assert.NotNil(t, result)
+	assert.NoError(t, err)
+
+	want := []responsetypes.IntervalSum{{
+		Interval: "January 2001", // Our generator only creates 20 days in January
+		Duration: 20, // Each activity is 1 minute (x20 => 20min)
+		Miles: 20, // Each activity is 1 mile (x20 => 20 miles)
+		DaysSkipped: 10, // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+	}}
+
+	assert.Equal(t, want, *result)
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)

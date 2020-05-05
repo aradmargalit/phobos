@@ -13,7 +13,7 @@ func GetActivityResponses(n int, dateStepHours int) []responsetypes.Activity {
 	startDate, _ := time.Parse(constants.DBLayout, "2001-01-02 03:04:05")
 
 	for i := 1; i <= n; i++ {
-		step, _ := time.ParseDuration(fmt.Sprintf("%vh", dateStepHours*i))
+		step, _ := time.ParseDuration(fmt.Sprintf("%vh", dateStepHours*(i-1)))
 		activities = append(activities, responsetypes.Activity{
 			ID:           i,
 			Name:         fmt.Sprintf("Activity Number: %v", i),
