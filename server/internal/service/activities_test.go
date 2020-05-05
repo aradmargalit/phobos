@@ -25,7 +25,7 @@ func TestAddActivity(t *testing.T) {
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("InsertActivity", mock.AnythingOfType("*models.Activity")).Return(inputActivity, nil)
 	svc := New(mockDB)
-	
+
 	// Assert that this'll fail before acting
 	assert.NotEqual(t, inputActivity.ActivityDate, testdata.GetTestActivity().ActivityDate)
 
@@ -53,7 +53,7 @@ func TestAddActivityReturnsError(t *testing.T) {
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("InsertActivity", mock.AnythingOfType("*models.Activity")).Return(nil, errors.New("Uh oh"))
 	svc := New(mockDB)
-	
+
 	// Act
 	result, err := svc.AddActivity(inputActivity, 1)
 
@@ -77,7 +77,7 @@ func TestUpdateActivity(t *testing.T) {
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("UpdateActivity", mock.AnythingOfType("*models.Activity")).Return(inputActivity, nil)
 	svc := New(mockDB)
-	
+
 	// Assert that this'll fail before acting
 	assert.NotEqual(t, inputActivity.ActivityDate, testdata.GetTestActivity().ActivityDate)
 
@@ -105,7 +105,7 @@ func TestUpdateActivityReturnsError(t *testing.T) {
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("UpdateActivity", mock.AnythingOfType("*models.Activity")).Return(nil, errors.New("Uh oh"))
 	svc := New(mockDB)
-	
+
 	// Act
 	result, err := svc.UpdateActivity(inputActivity)
 
@@ -122,9 +122,9 @@ func TestGetActivities(t *testing.T) {
 	userID := 1
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(10, 24), nil)
-	
+
 	svc := New(mockDB)
-	
+
 	// Act
 	result, err := svc.GetActivities(userID)
 
@@ -137,7 +137,7 @@ func TestGetActivities(t *testing.T) {
 
 	// Assert that the activities have a logical index that makes sense
 	for idx, activity := range *result {
-		assert.Equal(t, activity.LogicalIndex, len(*result) - idx)
+		assert.Equal(t, activity.LogicalIndex, len(*result)-idx)
 	}
 
 	// Sanity check: assert that our mock did everything we thought it would
@@ -149,9 +149,9 @@ func TestGetActivitiesWithError(t *testing.T) {
 	userID := 1
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("GetActivitiesByUser", userID).Return(nil, errors.New("Oh dear"))
-	
+
 	svc := New(mockDB)
-	
+
 	// Act
 	result, err := svc.GetActivities(userID)
 
@@ -169,9 +169,9 @@ func TestDeleteActivity(t *testing.T) {
 	userID := 2
 	mockDB := new(mocks.PhobosDB)
 	mockDB.On("DeleteActivityByID", activityID, userID).Return(nil)
-	
+
 	svc := New(mockDB)
-	
+
 	// Act
 	err := svc.DeleteActivity(userID, activityID)
 
@@ -190,7 +190,7 @@ func TestDeleteActivityErrorWithWrongUserID(t *testing.T) {
 	mockDB.On("DeleteActivityByID", activityID, userID).Return(errors.New("oh dear"))
 
 	svc := New(mockDB)
-	
+
 	// Act
 	err := svc.DeleteActivity(userID, activityID)
 
@@ -208,7 +208,7 @@ func TestGetIntervalSummary(t *testing.T) {
 	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(20, 24), nil)
 
 	svc := New(mockDB)
-	
+
 	// Act
 	result, err := svc.GetIntervalSummary(userID, "month")
 
@@ -219,10 +219,10 @@ func TestGetIntervalSummary(t *testing.T) {
 	assert.NoError(t, err)
 
 	want := []responsetypes.IntervalSum{{
-		Interval: "January 2001", // Our generator only creates 20 days in January
-		Duration: 20, // Each activity is 1 minute (x20 => 20min)
-		Miles: 20, // Each activity is 1 mile (x20 => 20 miles)
-		DaysSkipped: 10, // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+		Interval:    "January 2001", // Our generator only creates 20 days in January
+		Duration:    20,             // Each activity is 1 minute (x20 => 20min)
+		Miles:       20,             // Each activity is 1 mile (x20 => 20 miles)
+		DaysSkipped: 10,             // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
 	}}
 
 	assert.Equal(t, want, *result)
