@@ -210,7 +210,7 @@ func TestGetIntervalSummary(t *testing.T) {
 	svc := New(mockDB)
 
 	// Act
-	result, err := svc.GetIntervalSummary(userID, "month")
+	result, err := svc.GetIntervalSummary(userID, "month", 0)
 
 	fmt.Printf("%+v\n", (*result)[0])
 
