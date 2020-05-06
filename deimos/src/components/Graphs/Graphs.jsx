@@ -48,7 +48,13 @@ export default function Graphs() {
       (a, b) => moment(new Date(a.interval)) - moment(new Date(b.interval))
     );
   } else {
-    data = intervalData.payload.sort((a, b) => a.interval.localeCompare(b.interval));
+    data = intervalData.payload.sort((a, b) => {
+      const [yearA, weekA] = a.interval.split(', week ');
+      const [yearB, weekB] = b.interval.split(', week ');
+
+      // eslint-disable-next-line radix
+      return yearA !== yearB ? yearA.localeCompare(yearB) : parseInt(weekA) - parseInt(weekB);
+    });
   }
 
   return (
