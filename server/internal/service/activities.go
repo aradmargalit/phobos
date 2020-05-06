@@ -73,7 +73,7 @@ func (svc *service) DeleteActivity(activityID int, uid int) error {
 }
 
 // GetIntervalSummary returns the user's aggregate data for the given interval
-func (svc *service) GetIntervalSummary(uid int, interval string) (*[]responsetypes.IntervalSum, error) {
+func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[]responsetypes.IntervalSum, error) {
 	// Validate the interval
 	if interval != "week" && interval != "month" && interval != "year" {
 		return nil, errors.New("interval must be week, month, or year")
@@ -96,7 +96,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string) (*[]responsetyp
 
 	go makeDurationMap(a, intervals, interval, c1)
 	go makeDistanceMap(a, intervals, interval, c2)
-	go makeSkippedMap(a, intervals, interval, c3)
+	go makeSkippedMap(a, intervals, interval, offset, c3)
 
 	durationMap := <-c1
 	distanceMap := <-c2
@@ -170,7 +170,7 @@ func makeDistanceMap(activities []responsetypes.Activity, intervals []string, it
 	c <- distanceMap
 }
 
-func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
+func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itvl string, offset int, c chan map[string]float64) {
 	// In order to figure out which days have no activities, we start with an array with every day from
 	// their first activity until now
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)
@@ -179,16 +179,17 @@ func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itv
 	skippedMap := map[time.Time]bool{}
 
 	// Start by assuming each date is skipped, we'll invalidate that assumption as we go
-	for d := firstActivityDate; !utils.DateEqual(d, time.Now().AddDate(0, 0, 1)); d = d.AddDate(0, 0, 1) {
+	// Need to use UTC for time.Now() since the server is deployed in UTC
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
+	now := time.Now().UTC().Add(-dur)
+	for d := firstActivityDate; !utils.DateEqual(d, now.AddDate(0, 0, 1)); d = d.AddDate(0, 0, 1) {
 		skippedMap[utils.RoundTimeToDay(d)] = true
 	}
 
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
-		fmt.Println(a.ActivityDate)
 
 		// Go into our date map and mark the date as unskipped
-		fmt.Println("About to clear: ", utils.RoundTimeToDay(t))
 		skippedMap[utils.RoundTimeToDay(t)] = false
 	}
 

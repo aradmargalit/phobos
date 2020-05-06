@@ -109,8 +109,10 @@ func makeGetIntervalSummaryHandler(svc service.PhobosAPI) func(*gin.Context) {
 		// Pull user out of context to figure out which activities to grab
 		uid := c.GetInt("user")
 		interval := c.Query("interval")
+		// Pull the user's timezone out of the request
+		utcOffset, err := strconv.Atoi(c.Query("utc_offset"))
 
-		activities, err := svc.GetIntervalSummary(uid, interval)
+		activities, err := svc.GetIntervalSummary(uid, interval, utcOffset)
 
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)

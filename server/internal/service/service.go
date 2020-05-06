@@ -25,7 +25,7 @@ type PhobosAPI interface {
 	DeleteActivity(activityID int, uid int) error
 
 	// Statistics
-	GetIntervalSummary(uid int, interval string) (*[]responsetypes.IntervalSum, error)
+	GetIntervalSummary(uid int, interval string, offset int) (*[]responsetypes.IntervalSum, error)
 	GetUserStatistics(uid int, offset int) (*responsetypes.Stats, error)
 
 	// Quick Adds
