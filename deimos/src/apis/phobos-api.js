@@ -85,7 +85,11 @@ export const deleteActivity = async id => {
 
 // Statistics
 export const fetchSummariesByInterval = async (setIntervalData, interval) => {
-  await protectedGet(setIntervalData, `/private/activities/interval_summary?interval=${interval}`);
+  const utcOffset = new Date().getTimezoneOffset() / 60;
+  await protectedGet(
+    setIntervalData,
+    `/private/activities/interval_summary?interval=${interval}&utc_offset=${utcOffset}`
+  );
 };
 
 export const fetchStatistics = async setStats => {
