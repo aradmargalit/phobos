@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"server/internal/responsetypes"
 	"server/mocks"
 	"server/testdata"
@@ -212,8 +211,6 @@ func TestGetIntervalSummary(t *testing.T) {
 	// Act
 	result, err := svc.GetIntervalSummary(userID, "month", 0)
 
-	fmt.Printf("%+v\n", (*result)[0])
-
 	// Assert that if the DB throws no errors, neither do we
 	assert.NotNil(t, result)
 	assert.NoError(t, err)
@@ -229,4 +226,103 @@ func TestGetIntervalSummary(t *testing.T) {
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)
+}
+
+func TestGetIntervalSummaryWeekly(t *testing.T) {
+	// Arrange
+	userID := 1
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(22, 24), nil)
+
+	svc := New(mockDB)
+
+	// Act
+	result, err := svc.GetIntervalSummary(userID, "week", 0)
+
+	// Assert that if the DB throws no errors, neither do we
+	assert.NotNil(t, result)
+	assert.NoError(t, err)
+
+	want := []responsetypes.IntervalSum{
+		// Despite only working out 6 days, we "started" on the 2nd, meaning it wasn't skipped
+		{Interval: "2001, week 1", Duration: 6, Miles: 6, DaysSkipped: 0},
+		{Interval: "2001, week 2", Duration: 7, Miles: 7, DaysSkipped: 0},
+		{Interval: "2001, week 3", Duration: 7, Miles: 7, DaysSkipped: 0},
+		{Interval: "2001, week 4", Duration: 2, Miles: 2, DaysSkipped: 5},
+	}
+
+	assert.Equal(t, want, *result)
+
+	// Sanity check: assert that our mock did everything we thought it would
+	mockDB.AssertExpectations(t)
+}
+
+func TestGetIntervalSummaryYearly(t *testing.T) {
+	// Arrange
+	userID := 1
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("GetActivitiesByUser", userID).Return(testdata.GetActivityResponses(20, 24), nil)
+
+	svc := New(mockDB)
+
+	// Act
+	result, err := svc.GetIntervalSummary(userID, "year", 0)
+
+	// Assert that if the DB throws no errors, neither do we
+	assert.NotNil(t, result)
+	assert.NoError(t, err)
+
+	want := []responsetypes.IntervalSum{
+		// 364 days (skipped the 1st) - 20 = 344
+		{Interval:"2001", Duration:20, Miles:20, DaysSkipped:344},
+	}
+
+	assert.Equal(t, want, *result)
+
+	// Sanity check: assert that our mock did everything we thought it would
+	mockDB.AssertExpectations(t)
+}
+
+func TestGetIntervalSummaryInvalidInterval(t *testing.T) {
+	// Arrange
+	svc := New(new(mocks.PhobosDB))
+
+	// Act
+	_, err := svc.GetIntervalSummary(1, "blorgus", 0)
+
+	// Assert
+	assert.EqualError(t, err, "interval must be week, month, or year")
+}
+
+func TestGetIntervalSummaryNoActivities(t *testing.T) {
+	// Arrange
+	userID := 1
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("GetActivitiesByUser", userID).Return([]responsetypes.Activity{}, nil)
+
+	svc := New(mockDB)
+
+	// Act
+	result, err := svc.GetIntervalSummary(userID, "year", 0)
+
+	// Assert
+	want := &[]responsetypes.IntervalSum{}
+
+	assert.Equal(t, want, result)
+	assert.NoError(t, err)
+}
+
+func TestGetIntervalSummaryDBError(t *testing.T) {
+	// Arrange
+	userID := 1
+	mockDB := new(mocks.PhobosDB)
+	mockDB.On("GetActivitiesByUser", userID).Return(nil, errors.New("oh no please no"))
+
+	svc := New(mockDB)
+
+	// Act
+	_, err := svc.GetIntervalSummary(userID, "year", 0)
+
+	// Assert
+	assert.EqualError(t, err, "oh no please no")
 }
