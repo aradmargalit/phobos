@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"server/internal/responsetypes"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ func (svc *service) GetCurrentUser(c *gin.Context) responsetypes.User {
 
 	u, err := svc.db.GetUserByID(uid)
 	if err != nil {
-		panic(err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
 	return u

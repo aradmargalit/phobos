@@ -41,7 +41,7 @@ func makeStravaDeAuthHandler(svc service.PhobosAPI) func(*gin.Context) {
 		uid := c.GetInt("user")
 		err := svc.HandleStravaDeauthorization(uid)
 		if err != nil {
-			panic(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
 		}
 		c.JSON(http.StatusOK, gin.H{"deleted": true})
 	}

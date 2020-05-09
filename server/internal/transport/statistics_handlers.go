@@ -26,7 +26,8 @@ func makeGetUserStatisticsHandler(svc service.PhobosAPI) func(*gin.Context) {
 		// Pull the user's timezone out of the request
 		utcOffset, err := strconv.Atoi(c.Query("utc_offset"))
 		if err != nil {
-			panic(err)
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 
 		stats, err := svc.GetUserStatistics(uid, utcOffset)
