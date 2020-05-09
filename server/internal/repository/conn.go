@@ -13,7 +13,7 @@ import (
 
 // Connect connects to the specified database
 // The database may not yet be ready, so we're going to retry every second for 30 seconds
-func (db *db) Connect() error{
+func (db *db) Connect() error {
 	var err error
 	var conn *sqlx.DB
 

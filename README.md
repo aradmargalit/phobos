@@ -77,6 +77,10 @@ Once the server is stood up, seed the database!
 curl http://localhost:8080/admin/seed
 ```
 
+#### Makefile
+
+Check out the [Makefile](./server/makefile) for some common commands to help with development.
+
 #### Client :moon:
 
 To start deimos:
