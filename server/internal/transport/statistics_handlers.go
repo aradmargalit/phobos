@@ -30,6 +30,10 @@ func makeGetUserStatisticsHandler(svc service.PhobosAPI) func(*gin.Context) {
 		}
 
 		stats, err := svc.GetUserStatistics(uid, utcOffset)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 		c.JSON(http.StatusOK, *stats)
 	}
 }

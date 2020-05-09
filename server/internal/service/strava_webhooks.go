@@ -171,7 +171,7 @@ func fetchActivity(ownerID int, activityID int, db repository.PhobosDB) (models.
 		return fetchedActivity, userID, nil
 	}
 
-	return fetchedActivity, userID, errors.New("Could not fetch the activity from Strava")
+	return fetchedActivity, userID, errors.New("could not fetch the activity from Strava")
 }
 
 func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db repository.PhobosDB) models.Activity {
@@ -184,7 +184,14 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 	// Convert time to the correct format, using the provided timezone
 	// Timezone is provided as (GMT-08:00) America/Los_Angeles, so split on the space to get the portion we need
 	location, err := time.LoadLocation(strings.Split(fetchedActivity.Timezone, " ")[1])
+	if err != nil {
+		panic(err)
+	}
+
 	t, err := time.Parse("2006-01-02T15:04:05Z", fetchedActivity.StartDate)
+	if err != nil {
+		panic(err)
+	}
 
 	unit := "miles"
 	// Convert Meters to Miles

@@ -78,8 +78,12 @@ func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if updatedCount != 1 {
 		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Return the recently inserted record back to the user

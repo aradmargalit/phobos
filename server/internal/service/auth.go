@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"server/internal/models"
 	utils "server/utils"
 
@@ -50,18 +51,18 @@ func (svc *service) HandleLogin(c *gin.Context) {
 // HandleCallback parses the access token and exchanges it for the user information
 func (svc *service) HandleCallback(c *gin.Context) {
 	if state := c.Query("state"); state != randomState {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, randomState))
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("invalid session state: %s is not %s", state, randomState))
 		return
 	}
 
 	// Handle the exchange code to initiate a transport.
-	token, err := conf.Exchange(oauth2.NoContext, c.Query("code"))
+	token, err := conf.Exchange(context.Background(), c.Query("code"))
 	if err != nil {
 		panic(err)
 	}
 
 	// Construct the client.
-	client := conf.Client(oauth2.NoContext, token)
+	client := conf.Client(context.Background(), token)
 
 	// Fetch the user information from Google
 	resp, err := client.Get(googleUserInfoEndpoint)

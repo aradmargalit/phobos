@@ -59,6 +59,9 @@ func (db *db) UpdateStravaToken(tok models.StravaToken) (dbToken models.StravaTo
 	}
 	if updatedCount != 1 {
 		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
+		if err != nil {
+			return models.StravaToken{}, err
+		}
 	}
 
 	// Return the recently inserted record back to the user

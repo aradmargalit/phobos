@@ -63,7 +63,7 @@ func makeDeleteQuickAddHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 		quickAddID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, errors.New("Quick Add ID must be an int"))
+			c.AbortWithError(http.StatusBadRequest, errors.New("quick Add ID must be an int"))
 			return
 		}
 

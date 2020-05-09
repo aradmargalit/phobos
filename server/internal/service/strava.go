@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -63,7 +64,7 @@ func (svc *service) HandleStravaCallback(c *gin.Context) {
 	stateParts := strings.Split(state, "|userID:")
 	// First, check to make sure they returned the same random state we sent earlier
 	if stateParts[0] != stravaRandomState {
-		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("Invalid session state: %s is not %s", state, stravaRandomState))
+		c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("invalid session state: %s is not %s", state, stravaRandomState))
 		return
 	}
 
@@ -75,7 +76,7 @@ func (svc *service) HandleStravaCallback(c *gin.Context) {
 	}
 
 	// Handle the exchange code to initiate a transport.
-	token, err := stravaConf.Exchange(oauth2.NoContext, c.Query("code"))
+	token, err := stravaConf.Exchange(context.Background(), c.Query("code"))
 	if err != nil {
 		panic(err)
 	}
@@ -138,7 +139,6 @@ func upsertToken(stravaToken models.StravaToken, db repository.PhobosDB) {
 	if err != nil {
 		panic(err)
 	}
-	return
 }
 
 func getHTTPClient(uid int, db repository.PhobosDB) *http.Client {
@@ -149,8 +149,8 @@ func getHTTPClient(uid int, db repository.PhobosDB) *http.Client {
 	}
 
 	// 2. The OAuth2 library kindly handles refreshes for us as needed. Blessed.
-	tokenSource := stravaConf.TokenSource(oauth2.NoContext, toOAuthToken(dbToken))
-	client := oauth2.NewClient(oauth2.NoContext, tokenSource)
+	tokenSource := stravaConf.TokenSource(context.Background(), toOAuthToken(dbToken))
+	client := oauth2.NewClient(context.Background(), tokenSource)
 	newToken, err := tokenSource.Token()
 	if err != nil {
 		panic(err)

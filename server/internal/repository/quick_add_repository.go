@@ -24,7 +24,7 @@ func (db *db) InsertQuickAdd(a *models.QuickAdd) (*models.QuickAdd, error) {
 
 	// Return the recently inserted record back to the user
 	qa, err := db.GetQuickAddByID(int(inserted))
-	return &qa, nil
+	return &qa, err
 }
 
 // GetQuickAddByID returns a single quick add by ID

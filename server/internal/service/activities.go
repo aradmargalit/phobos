@@ -15,6 +15,10 @@ import (
 func (svc *service) AddActivity(activity *models.Activity, uid int) (*models.Activity, error) {
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
+	if err != nil {
+		return nil, err
+	}
+
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	activity.OwnerID = uid
@@ -32,6 +36,10 @@ func (svc *service) UpdateActivity(activity *models.Activity) (*models.Activity,
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
+	if err != nil {
+		return nil, err
+	}
+	
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	record, err := svc.db.UpdateActivity(activity)

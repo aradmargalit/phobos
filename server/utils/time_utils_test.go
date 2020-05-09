@@ -15,8 +15,8 @@ func TestDateEqual(t *testing.T) {
 	assert.True(t, DateEqual(d, d))
 
 	// Assert that within the same day, we still get a match
-	fiveSeconds, _ := time.ParseDuration("5s")
-	d2 := d.Add(fiveSeconds)
+	fiveS, _ := time.ParseDuration("5s")
+	d2 := d.Add(fiveS)
 	assert.True(t, DateEqual(d, d2))
 
 	d3, _ := time.Parse(layout, "2020-01-02 10:11:12")
