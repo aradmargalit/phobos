@@ -6,36 +6,25 @@ import (
 )
 
 // InsertUser inserts a User into the database, if possible
-func (db *db) InsertUser(u models.User) (user responsetypes.User, err error) {
+func (db *db) InsertUser(u models.User) (*responsetypes.User, error) {
 	result, err := db.conn.NamedExec(`INSERT INTO users (name, given_name, email) VALUES (:name, :given_name, :email)`, u)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Get the ID for the inserted user
 	insertedID, err := result.LastInsertId()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Grab the user from the database
-	user, err = db.GetUserByID(int(insertedID))
+	user, err := db.GetUserByID(int(insertedID))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return
-}
-
-// GetAllUsers gets all users from the database
-func (db *db) GetAllUsers() []models.User {
-	people := []models.User{}
-	err := db.conn.Select(&people, "SELECT * FROM `users` ORDER BY id ASC")
-	if err != nil {
-		panic(err)
-	}
-
-	return people
+	return &user, nil
 }
 
 // GetUserByEmail gets a database user by their email

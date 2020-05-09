@@ -22,6 +22,7 @@ func init() {
 		"FRONTEND_URL",
 		"SERVER_URL",
 	} {
+		// Normally I don't like to "panic", but the app is dead without these
 		if os.Getenv(v) == "" {
 			panic(fmt.Sprintf("%v must be set in the environment!", v))
 		}

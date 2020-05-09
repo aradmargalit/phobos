@@ -182,22 +182,6 @@ func (_m *PhobosDB) GetActivityTypes() ([]models.ActivityType, error) {
 	return r0, r1
 }
 
-// GetAllUsers provides a mock function with given fields:
-func (_m *PhobosDB) GetAllUsers() []models.User {
-	ret := _m.Called()
-
-	var r0 []models.User
-	if rf, ok := ret.Get(0).(func() []models.User); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.User)
-		}
-	}
-
-	return r0
-}
-
 // GetQuickAddByID provides a mock function with given fields: id
 func (_m *PhobosDB) GetQuickAddByID(id int) (models.QuickAdd, error) {
 	ret := _m.Called(id)
@@ -408,14 +392,16 @@ func (_m *PhobosDB) InsertStravaToken(tok models.StravaToken) (models.StravaToke
 }
 
 // InsertUser provides a mock function with given fields: _a0
-func (_m *PhobosDB) InsertUser(_a0 models.User) (responsetypes.User, error) {
+func (_m *PhobosDB) InsertUser(_a0 models.User) (*responsetypes.User, error) {
 	ret := _m.Called(_a0)
 
-	var r0 responsetypes.User
-	if rf, ok := ret.Get(0).(func(models.User) responsetypes.User); ok {
+	var r0 *responsetypes.User
+	if rf, ok := ret.Get(0).(func(models.User) *responsetypes.User); ok {
 		r0 = rf(_a0)
 	} else {
-		r0 = ret.Get(0).(responsetypes.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*responsetypes.User)
+		}
 	}
 
 	var r1 error
