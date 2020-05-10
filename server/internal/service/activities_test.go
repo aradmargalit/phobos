@@ -274,7 +274,7 @@ func TestGetIntervalSummaryYearly(t *testing.T) {
 
 	want := []responsetypes.IntervalSum{
 		// 364 days (skipped the 1st) - 20 = 344
-		{Interval:"2001", Duration:20, Miles:20, DaysSkipped:344},
+		{Interval: "2001", Duration: 20, Miles: 20, DaysSkipped: 344},
 	}
 
 	assert.Equal(t, want, *result)

@@ -12,5 +12,8 @@ There is a lot that I wished I'd done differently in this project, so here's a l
 ## Backend :rocket:
 
 - [ ] Unit tests
-- [ ] Hide concrete implementations (database, service) behind interfaces
-- [ ] Separate transport layer from service layer, and separate service layer from data layer.
+- [ ] Decouple authentication flows from Gin
+- [ ] Use a real logger instead of `fmt.Println`
+- [ ] Remove as many `panic`s as possible.
+- [x] Hide concrete implementations (database, service) behind interfaces
+- [x] Separate transport layer from service layer, and separate service layer from data layer.

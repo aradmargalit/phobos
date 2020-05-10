@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"server/internal/constants"
 
@@ -21,7 +22,7 @@ func AuthRequired(c *gin.Context) {
 
 	_, ok := uid.(int)
 	if !ok {
-		panic("Something is very wrong, uid is not an integer...")
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("uid should always be an int but was a %T", uid))
 	}
 
 	// Store the user

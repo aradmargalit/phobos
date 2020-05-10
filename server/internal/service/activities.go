@@ -39,7 +39,7 @@ func (svc *service) UpdateActivity(activity *models.Activity) (*models.Activity,
 	if err != nil {
 		return nil, err
 	}
-	
+
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	record, err := svc.db.UpdateActivity(activity)

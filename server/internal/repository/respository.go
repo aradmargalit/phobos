@@ -19,8 +19,7 @@ type PhobosDB interface {
 	DeleteActivityByID(int, int) error
 
 	// Users
-	InsertUser(models.User) (responsetypes.User, error)
-	GetAllUsers() []models.User
+	InsertUser(models.User) (*responsetypes.User, error)
 	GetUserByEmail(string) (models.User, error)
 	GetUserByID(int) (responsetypes.User, error)
 
@@ -52,7 +51,11 @@ type db struct {
 // New initializes a new PhobosDB, connects, and makes the DB available to the service
 func New() PhobosDB {
 	db := db{}
-	db.Connect()
+	err := db.Connect()
+	if err != nil {
+		// No choice but to panic here, we cannot proceed without a database connection
+		panic(err)
+	}
 
 	return &db
 }
