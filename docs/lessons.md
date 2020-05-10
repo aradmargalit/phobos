@@ -28,17 +28,15 @@ I wanted to keep a list of lessons I learned while building this projects, parti
 
 - MySQL uses `?` for parameterized queries. SQLite uses `$1`, `$2`, etc. This took me a little while to figure out and fix during database setup.
 
-- Docker will pull some sneakies on ya while working on the databse. Notably:
+- Any scripts linked under `/docker-entrypoint-initdb.d/` will only run if the Docker volume has not yet been created. To re-run the scripts, you need to remove the volume with:
 
-  - Any scripts linked under `/docker-entrypoint-initdb.d/` will only run if the Docker volume has not yet been created. To re-run the scripts, you need to remove the volume with:
+  ```sh
+  docker-compose stop -v
 
-    ```sh
-    docker-compose stop -v
+  # OR if the containers are already stopped:
 
-    # OR if the containers are already stopped:
-
-    docker-compose rm -v
-    ```
+  docker-compose rm -v
+  ```
 
 - The database takes a minute to get ready to accept connections. While it's possible to build a healthcheck dependency into the docker compose file, it seemed way easier to build a static retry into the API.
 
