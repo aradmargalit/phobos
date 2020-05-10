@@ -17,6 +17,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	// Autoloads .env file to supply environment variables
+	_ "github.com/joho/godotenv/autoload"
 )
 
 const metersToMiles = 0.000621371

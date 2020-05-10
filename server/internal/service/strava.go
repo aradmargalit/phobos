@@ -14,6 +14,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
+	// Autoloads .env file to supply environment variables
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var stravaConf *oauth2.Config

@@ -5,15 +5,9 @@ import React, { useContext } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import { UserContext } from '../../contexts';
+import GitHubLink from '../GitHubLink';
 import IdentityButton from '../IdentityButton';
 import StravaButton from '../StravaButton';
-
-const extra = (registeredWithStrava, loading) => (
-  <div className="header__extra">
-    <StravaButton registered={registeredWithStrava} loading={loading} />
-    <IdentityButton />
-  </div>
-);
 
 const Header = ({ history, showBack, showStrava }) => {
   const { user } = useContext(UserContext);
@@ -24,11 +18,16 @@ const Header = ({ history, showBack, showStrava }) => {
       title="PHOBOS"
       subTitle="A Fitness Tracker"
       extra={
-        showStrava ? (
-          extra(user.payload && user.payload.strava_token, user.loading)
-        ) : (
+        <div className="header__extra">
+          <GitHubLink />
+          {showStrava && (
+            <StravaButton
+              registered={user.payload && user.payload.strava_token}
+              loading={user.loading}
+            />
+          )}
           <IdentityButton />
-        )
+        </div>
       }
     />
   );

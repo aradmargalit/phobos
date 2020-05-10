@@ -15,6 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	// Autoloads .env file to supply environment variables
+	_ "github.com/joho/godotenv/autoload"
 )
 
 const (

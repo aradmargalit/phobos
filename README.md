@@ -54,21 +54,25 @@ docker-compose up -d mysql
 
 #### Go Server :mailbox_with_no_mail:
 
+Create a `.env` file under the `server` directory and fill out these variables:
+
+```
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+API_DB_STRING=
+COOKIE_SECRET_TOKEN=
+FRONTEND_URL=http://localhost:3000
+SERVER_URL=http://localhost:8080
+STRAVA_CLIENT_ID=
+STRAVA_CLIENT_SECRET=
+STRAVA_WEBHOOK_SUB_ID=
+```
+
 You'll need Go Version >= 1.14
 
 ```sh
 cd server
-go build
-
-GOOGLE_CLIENT_ID= \
-GOOGLE_CLIENT_SECRET= \
-API_DB_STRING= \
-COOKIE_SECRET_TOKEN= \
-FRONTEND_URL=http://localhost:3000 \
-SERVER_URL=http://localhost:8080 \
-STRAVA_CLIENT_ID= \
-STRAVA_CLIENT_SECRET= \
-./server
+make run
 ```
 
 Once the server is stood up, seed the database!
