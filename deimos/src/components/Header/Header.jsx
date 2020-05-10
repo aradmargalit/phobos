@@ -9,14 +9,6 @@ import GitHubLink from '../GitHubLink';
 import IdentityButton from '../IdentityButton';
 import StravaButton from '../StravaButton';
 
-const extra = (showStrava, registeredWithStrava, loading) => (
-  <div className="header__extra">
-    <GitHubLink />
-    {showStrava && <StravaButton registered={registeredWithStrava} loading={loading} />}
-    <IdentityButton />
-  </div>
-);
-
 const Header = ({ history, showBack, showStrava }) => {
   const { user } = useContext(UserContext);
   return (
@@ -25,7 +17,18 @@ const Header = ({ history, showBack, showStrava }) => {
       onBack={showBack ? () => history.push('/home') : null}
       title="PHOBOS"
       subTitle="A Fitness Tracker"
-      extra={extra(showStrava, user.payload && user.payload.strava_token, user.loading)}
+      extra={
+        <div className="header__extra">
+          <GitHubLink />
+          {showStrava && (
+            <StravaButton
+              registered={user.payload && user.payload.strava_token}
+              loading={user.loading}
+            />
+          )}
+          <IdentityButton />
+        </div>
+      }
     />
   );
 };
