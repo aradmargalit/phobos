@@ -6,6 +6,10 @@
 
 .stats {
   height: 100%;
+
+  span > svg {
+    margin-left: 5px;
+  }
 }
 
 .statistics-grid {
@@ -15,8 +19,4 @@
   align-items: center;
   justify-items: center;
   margin-bottom: 10px;
-}
-
-span > svg {
-  margin-left: 5px;
 }

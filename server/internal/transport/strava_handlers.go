@@ -32,7 +32,7 @@ func makeStravaCallBackHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 func makeStravaLoginHandler(svc service.PhobosAPI) func(*gin.Context) {
 	return func(c *gin.Context) {
-		svc.HandleLogin(c)
+		svc.HandleStravaLogin(c)
 	}
 }
 
