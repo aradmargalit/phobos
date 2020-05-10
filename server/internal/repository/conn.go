@@ -9,6 +9,9 @@ import (
 
 	// Driver for MySQL
 	_ "github.com/go-sql-driver/mysql"
+
+	// Autoloads .env file to supply environment variables
+	_ "github.com/joho/godotenv/autoload"
 )
 
 // Connect connects to the specified database

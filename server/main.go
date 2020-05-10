@@ -12,6 +12,9 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+
+	// Autoloads .env file to supply environment variables
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func init() {

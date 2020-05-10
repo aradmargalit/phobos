@@ -1,3 +1,6 @@
+run:
+	go fmt ./... && go build && ./server
+	
 test:
 	richgo test -v ./...
 
