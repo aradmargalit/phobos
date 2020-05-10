@@ -22,7 +22,7 @@ func AuthRequired(c *gin.Context) {
 
 	_, ok := uid.(int)
 	if !ok {
-		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("uid should always be an int but was a %t", uid))
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("uid should always be an int but was a %T", uid))
 	}
 
 	// Store the user
