@@ -143,7 +143,7 @@ While the above is all you need to get started, I'll keep more documents browsea
 ### Table of Contents
 
 - [Lessons Learned :mortar_board:](./docs/lessons.md)
-- [Next Steps :footprints:](./docs/lessons.md)
+- [Next Steps :footprints:](./docs/next.md)
 
 ## Etymology
 
