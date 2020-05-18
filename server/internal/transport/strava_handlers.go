@@ -13,7 +13,10 @@ import (
 
 func registerStravaHandlers(r *gin.Engine, svc service.PhobosAPI) {
 	r.GET("/public/strava/callback", makeStravaCallBackHandler(svc))
+	// Used to verify successful registration
 	r.GET("/public/strava/webhook", makeStravaWebookVerificationHandler(svc))
+
+	// Used to respond to Strava events
 	r.POST("/public/strava/webhook", makeStravaWebhookCatcher(svc))
 
 	strava := r.Group("/strava")
@@ -61,7 +64,9 @@ func makeStravaWebhookCatcher(svc service.PhobosAPI) func(*gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
 		err := svc.HandleWebhookEvent(event)
+
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return

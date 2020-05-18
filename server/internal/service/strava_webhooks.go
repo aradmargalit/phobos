@@ -86,8 +86,12 @@ func fetchAndCreate(ownerID int, activityID int, db repository.PhobosDB) error {
 	}
 
 	// 3. Convert the Strava Activity to a Phobos one and insert
-	activity := convertStravaActivity(fetchedActivity, userID, db)
-	inserted, err := db.InsertActivity(&activity)
+	activity, err := convertStravaActivity(fetchedActivity, userID, db)
+	if err != nil {
+		return err
+	}
+
+	inserted, err := db.InsertActivity(activity)
 	if err != nil {
 		return fmt.Errorf("failed to insert activity ID %v from Strava: %v", activityID, err)
 	}
@@ -102,13 +106,16 @@ func fetchAndUpdate(ownerID int, activityID int, db repository.PhobosDB) error {
 		panic(err)
 	}
 
-	activity := convertStravaActivity(fetchedActivity, userID, db)
+	activity, err := convertStravaActivity(fetchedActivity, userID, db)
+	if err != nil {
+		return err
+	}
 
 	// Get the ID from our application
 	dbActivity, err := db.GetActivityByStravaID(activity.StravaID)
 	if err != nil {
 		// We were unable to get this activity, so just insert it instead
-		inserted, err := db.InsertActivity(&activity)
+		inserted, err := db.InsertActivity(activity)
 		if err != nil {
 			return fmt.Errorf("unable to insert activity from update action: %v", err)
 		}
@@ -118,7 +125,7 @@ func fetchAndUpdate(ownerID int, activityID int, db repository.PhobosDB) error {
 
 	// If we don't need to insert it, we'll just update it
 	activity.ID = dbActivity.ID
-	_, err = db.UpdateActivity(&activity)
+	_, err = db.UpdateActivity(activity)
 	if err != nil {
 		return fmt.Errorf("unable to update activity: %v", err)
 	}
@@ -145,10 +152,11 @@ func eventDelete(ownerID int, activityID int, db repository.PhobosDB) error {
 func fetchActivity(ownerID int, activityID int, db repository.PhobosDB) (models.StravaActivity, int, error) {
 	var fetchedActivity models.StravaActivity
 
-	// We need to swap the ownerID for our user ID
+	// We need to swap the ownerID for our user ID in order to generate an HTTP client with that user's token
+	// so that we're authorized to get "private" activities for that user
 	userID, err := db.GetUserIDByStravaID(ownerID)
 	if err != nil {
-		panic(err)
+		return models.StravaActivity{}, 0, err
 	}
 
 	client := getHTTPClient(userID, db)
@@ -156,7 +164,7 @@ func fetchActivity(ownerID int, activityID int, db repository.PhobosDB) (models.
 
 	resp, err := client.Get(baseURL + "/activities/" + strconv.Itoa(activityID))
 	if err != nil {
-		panic(err)
+		return models.StravaActivity{}, 0, err
 	}
 
 	defer resp.Body.Close()
@@ -176,23 +184,23 @@ func fetchActivity(ownerID int, activityID int, db repository.PhobosDB) (models.
 	return fetchedActivity, userID, errors.New("could not fetch the activity from Strava")
 }
 
-func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db repository.PhobosDB) models.Activity {
+func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db repository.PhobosDB) (*models.Activity, error) {
 	// Convert the activity to our version of that activity
 	typeID, err := db.GetActivityTypeIDByStravaType(fetchedActivity.Type)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Convert time to the correct format, using the provided timezone
 	// Timezone is provided as (GMT-08:00) America/Los_Angeles, so split on the space to get the portion we need
 	location, err := time.LoadLocation(strings.Split(fetchedActivity.Timezone, " ")[1])
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	t, err := time.Parse("2006-01-02T15:04:05Z", fetchedActivity.StartDate)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	unit := "miles"
@@ -203,7 +211,7 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		convertedDistance = fetchedActivity.Distance * metersToYards
 	}
 
-	return models.Activity{
+	return &models.Activity{
 		Name:           fetchedActivity.Name,
 		ActivityDate:   t.In(location).Format("2006-01-02"),
 		ActivityTypeID: typeID,
@@ -212,5 +220,5 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		Distance:       math.Floor(convertedDistance*100) / 100,
 		Unit:           unit,
 		StravaID:       sql.NullInt64{Int64: int64(fetchedActivity.ID), Valid: true},
-	}
+	}, nil
 }
