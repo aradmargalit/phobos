@@ -15,6 +15,7 @@ import {
   dateSorter,
   distanceSorter,
   durationSorter,
+  heartRateSorter,
   nameSorter,
   numberSorter,
 } from './sortUtils';
@@ -122,6 +123,13 @@ export default function ActivityTable({ loading, activities, refetch }) {
         distance > 0 ? `${distance} ${record.unit}` : '-'
       ),
       sorter: distanceSorter,
+    },
+    {
+      title: 'Heart Rate',
+      dataIndex: 'heart_rate',
+      width: 70,
+      render: hr => (hr.Int64 > 0 ? hr.Int64 : null),
+      sorter: heartRateSorter,
     },
     {
       title: <EditOutlined />,

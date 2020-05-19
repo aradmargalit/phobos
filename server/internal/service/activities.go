@@ -22,6 +22,7 @@ func (svc *service) AddActivity(activity *models.Activity, uid int) (*models.Act
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	activity.OwnerID = uid
+	fmt.Println(activity)
 
 	record, err := svc.db.InsertActivity(activity)
 	if err != nil {

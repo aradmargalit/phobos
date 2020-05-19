@@ -16,6 +16,7 @@ type Activity struct {
 	StravaID       sql.NullInt64 `json:"strava_id" db:"strava_id"`
 	LogicalIndex   int           `json:"logical_index"`
 	Epoch          int64         `json:"epoch"`
+	HeartRate      sql.NullInt64 `json:"heart_rate" db:"heart_rate"`
 	CreatedAt      string        `json:"created_at" db:"created_at"`
 	UpdatedAt      string        `json:"updated_at" db:"updated_at"`
 }

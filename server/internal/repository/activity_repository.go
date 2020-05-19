@@ -13,8 +13,8 @@ func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
 	res, err := db.conn.NamedExec(
 		`
 		INSERT INTO activities 
-		(name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id)
-		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit, :strava_id)
+		(name, activity_date, activity_type_id, owner_id, duration, distance, unit, heart_rate, strava_id)
+		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit, :heart_rate, :strava_id)
 		`,
 		*a)
 	if err != nil {
@@ -65,7 +65,8 @@ func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
 			activity_type_id=:activity_type_id,
 			duration=:duration,
 			distance=:distance,
-			unit=:unit
+			unit=:unit,
+			heart_rate=:heart_rate
 		WHERE id=:id
 		`,
 		*a)
