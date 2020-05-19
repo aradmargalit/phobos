@@ -4,11 +4,7 @@ import { Form, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, withRouter } from 'react-router-dom';
 
-import {
-  fetchActivities,
-  fetchQuickAdds,
-  fetchStatistics,
-} from '../../apis/phobos-api';
+import { fetchActivities, fetchQuickAdds, fetchStatistics } from '../../apis/phobos-api';
 import { StatsContext, UserContext } from '../../contexts';
 import { makeDurationBreakdown } from '../../utils/durationUtils';
 import { defaultState } from '../../utils/stateUtils';
