@@ -3,13 +3,14 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"server/internal/models"
-	"server/internal/responsetypes"
 	"strconv"
 )
 
 // InsertActivity adds a new activity to the database
 func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
+	fmt.Printf("%+v\n", a)
 	res, err := db.conn.NamedExec(
 		`
 		INSERT INTO activities 
@@ -44,7 +45,7 @@ func (db *db) GetActivityByID(id int) (activity models.Activity, err error) {
 }
 
 // GetActivitiesByUser returns all activies from user
-func (db *db) GetActivitiesByUser(uid int) (activities []responsetypes.Activity, err error) {
+func (db *db) GetActivitiesByUser(uid int) (activities []models.ActivityResponse, err error) {
 	err = db.conn.Select(&activities, `
 		SELECT a.*, at.id "activity_type.id", at.name "activity_type.name" 
 		FROM activities a 

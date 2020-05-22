@@ -74,15 +74,15 @@ func (_m *PhobosDB) DeleteStravaTokenByUserID(uid int) error {
 }
 
 // GetActivitiesByUser provides a mock function with given fields: _a0
-func (_m *PhobosDB) GetActivitiesByUser(_a0 int) ([]responsetypes.Activity, error) {
+func (_m *PhobosDB) GetActivitiesByUser(_a0 int) ([]models.ActivityResponse, error) {
 	ret := _m.Called(_a0)
 
-	var r0 []responsetypes.Activity
-	if rf, ok := ret.Get(0).(func(int) []responsetypes.Activity); ok {
+	var r0 []models.ActivityResponse
+	if rf, ok := ret.Get(0).(func(int) []models.ActivityResponse); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]responsetypes.Activity)
+			r0 = ret.Get(0).([]models.ActivityResponse)
 		}
 	}
 

@@ -12,7 +12,18 @@ import (
 )
 
 // AddActivity adds a new activity to the database
-func (svc *service) AddActivity(activity *models.Activity, uid int) (*models.Activity, error) {
+func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*models.Activity, error) {
+	// Convert a PostActivityRequest to an Activity
+	activity := models.Activity{
+		Name:           par.Name,
+		ActivityDate:   par.ActivityDate,
+		ActivityTypeID: par.ActivityTypeID,
+		OwnerID:        uid,
+		Duration:       par.Duration,
+		Distance:       par.Distance,
+		HeartRate:      utils.MakeI64(par.HeartRate),
+	}
+
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	if err != nil {
@@ -24,7 +35,7 @@ func (svc *service) AddActivity(activity *models.Activity, uid int) (*models.Act
 	activity.OwnerID = uid
 	fmt.Println(activity)
 
-	record, err := svc.db.InsertActivity(activity)
+	record, err := svc.db.InsertActivity(&activity)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +63,7 @@ func (svc *service) UpdateActivity(activity *models.Activity) (*models.Activity,
 }
 
 // GetActivities returns all the user's activities
-func (svc *service) GetActivities(uid int) (*[]responsetypes.Activity, error) {
+func (svc *service) GetActivities(uid int) (*[]models.ActivityResponse, error) {
 	a, err := svc.db.GetActivitiesByUser(uid)
 	if err != nil {
 		return nil, err
@@ -61,7 +72,7 @@ func (svc *service) GetActivities(uid int) (*[]responsetypes.Activity, error) {
 	count := len(a)
 	fmt.Printf("Found %v activities for user ID: %v...\n", count, uid)
 
-	withIndices := make([]responsetypes.Activity, count)
+	withIndices := make([]models.ActivityResponse, count)
 	// No smart way to do this, add an decreasing logical index to each for the frontend's benefit
 	// I also want to represent the date in an fast-to-sort fashion, so doing that here
 	for idx, activity := range a {
@@ -130,7 +141,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 	return &response, nil
 }
 
-func bucketIntoIntervals(activities []responsetypes.Activity, itvl string) []string {
+func bucketIntoIntervals(activities []models.ActivityResponse, itvl string) []string {
 	intervals := []string{}
 	var prev string
 	for _, a := range activities {
@@ -146,7 +157,7 @@ func bucketIntoIntervals(activities []responsetypes.Activity, itvl string) []str
 	return intervals
 }
 
-func makeDurationMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
+func makeDurationMap(activities []models.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
 	durationMap := map[string]float64{}
 	for _, interval := range intervals {
 		durationMap[interval] = 0
@@ -162,7 +173,7 @@ func makeDurationMap(activities []responsetypes.Activity, intervals []string, it
 	c <- durationMap
 }
 
-func makeDistanceMap(activities []responsetypes.Activity, intervals []string, itvl string, c chan map[string]float64) {
+func makeDistanceMap(activities []models.ActivityResponse, intervals []string, itvl string, c chan map[string]float64) {
 	distanceMap := map[string]float64{}
 	for _, interval := range intervals {
 		distanceMap[interval] = 0
@@ -179,7 +190,7 @@ func makeDistanceMap(activities []responsetypes.Activity, intervals []string, it
 	c <- distanceMap
 }
 
-func makeSkippedMap(activities []responsetypes.Activity, intervals []string, itvl string, offset int, c chan map[string]float64) {
+func makeSkippedMap(activities []models.ActivityResponse, intervals []string, itvl string, offset int, c chan map[string]float64) {
 	// In order to figure out which days have no activities, we start with an array with every day from
 	// their first activity until now
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)

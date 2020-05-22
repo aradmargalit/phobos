@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.6.2
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/golang/mock v1.4.3
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0

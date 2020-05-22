@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"server/internal/models"
 	"server/internal/responsetypes"
 	"server/testdata"
 	"testing"
@@ -22,26 +23,33 @@ func TestCalculateMileage(t *testing.T) {
 	assert.Equal(t, float64(20), CalculateMileage(activities))
 
 	// Yardage doesn't get counted
-	activities = append(activities, responsetypes.Activity{Unit: "yards", Distance: 1})
+	activities = append(activities, models.ActivityResponse{Activity: models.Activity{Unit: "yards", Distance: 1}})
 	assert.Equal(t, float64(20), CalculateMileage(activities))
 
 	// All mileage conuts
-	activities = append(activities, responsetypes.Activity{Unit: "miles", Distance: 1})
+	activities = append(activities, models.ActivityResponse{Activity: models.Activity{Unit: "miles", Distance: 1}})
 	assert.Equal(t, float64(21), CalculateMileage(activities))
 }
 
 func TestCalculateLastTenDays(t *testing.T) {
-	activities := []responsetypes.Activity{{Duration: 10, ActivityDate: time.Now().UTC().Format(dbLayout)}}
+	activities := []models.ActivityResponse{
+		models.ActivityResponse{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Format(dbLayout),
+			},
+		},
+	}
 	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
 	assert.Equal(t, want, CalculateLastTenDays(activities, 0))
 }
 
 func TestCalculateTypeBreakdown(t *testing.T) {
-	activities := []responsetypes.Activity{
-		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityType{Name: "Run"}},
-		{ActivityType: responsetypes.ActivityType{Name: "Swim"}},
+	activities := []models.ActivityResponse{
+		{ActivityType: models.ActivityType{Name: "Run"}},
+		{ActivityType: models.ActivityType{Name: "Run"}},
+		{ActivityType: models.ActivityType{Name: "Run"}},
+		{ActivityType: models.ActivityType{Name: "Swim"}},
 	}
 
 	portions := CalculateTypeBreakdown(activities)
@@ -50,12 +58,12 @@ func TestCalculateTypeBreakdown(t *testing.T) {
 }
 
 func TestCalculateTypeBreakdownWithOtherActivities(t *testing.T) {
-	activities := []responsetypes.Activity{}
+	activities := []models.ActivityResponse{}
 	for i := 0; i < 100; i++ {
-		activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Run"}})
+		activities = append(activities, models.ActivityResponse{ActivityType: models.ActivityType{Name: "Run"}})
 	}
-	activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Jog"}})
-	activities = append(activities, responsetypes.Activity{ActivityType: responsetypes.ActivityType{Name: "Swim"}})
+	activities = append(activities, models.ActivityResponse{ActivityType: models.ActivityType{Name: "Jog"}})
+	activities = append(activities, models.ActivityResponse{ActivityType: models.ActivityType{Name: "Swim"}})
 
 	portions := CalculateTypeBreakdown(activities)
 	assert.Contains(t, portions, responsetypes.TypePortion{Name: "Run", Portion: 100})

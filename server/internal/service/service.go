@@ -19,8 +19,8 @@ type PhobosAPI interface {
 	GetCurrentUser(*gin.Context) responsetypes.User
 
 	// Activities
-	AddActivity(*models.Activity, int) (*models.Activity, error)
-	GetActivities(uid int) (*[]responsetypes.Activity, error)
+	AddActivity(*models.PostActivityRequest, int) (*models.Activity, error)
+	GetActivities(uid int) (*[]models.ActivityResponse, error)
 	UpdateActivity(*models.Activity) (*models.Activity, error)
 	DeleteActivity(activityID int, uid int) error
 

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"server/internal/models"
 	"server/internal/responsetypes"
 	"server/mocks"
 	"server/testdata"
@@ -298,7 +299,7 @@ func TestGetIntervalSummaryNoActivities(t *testing.T) {
 	// Arrange
 	userID := 1
 	mockDB := new(mocks.PhobosDB)
-	mockDB.On("GetActivitiesByUser", userID).Return([]responsetypes.Activity{}, nil)
+	mockDB.On("GetActivitiesByUser", userID).Return([]models.ActivityResponse{}, nil)
 
 	svc := New(mockDB)
 
