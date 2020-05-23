@@ -7,12 +7,7 @@ import CalculatedActivityFields from '../CalculatedActivityFields';
 import FormButtons from '../FormButtons';
 import { onFinish, onReset, onSaveQuickAdd, onSubmit } from './createUtils';
 
-export default function CreateActivity({
-  form,
-  refetch,
-  activity,
-  setActivity,
-}) {
+export default function CreateActivity({ form, refetch, activity, setActivity }) {
   const { user } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [activityTypes, setActivityTypes] = useState({
@@ -21,8 +16,7 @@ export default function CreateActivity({
     errors: null,
   });
 
-  const wrappedFinish = values =>
-    onFinish(values, setLoading, refetch, form, setActivity);
+  const wrappedFinish = values => onFinish(values, setLoading, refetch, form, setActivity);
 
   useEffect(() => {
     fetchActivityTypes(setActivityTypes);
