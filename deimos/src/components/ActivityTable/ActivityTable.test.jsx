@@ -47,7 +47,7 @@ describe('<ActivityTable />', () => {
       const table = component.find('Table');
       expect(table).toHaveLength(1);
       expect(table.prop('dataSource')).toHaveLength(1);
-      expect(table.prop('columns')).toHaveLength(9);
+      expect(table.prop('columns')).toHaveLength(10);
     });
   });
 });
