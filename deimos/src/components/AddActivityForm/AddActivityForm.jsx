@@ -54,7 +54,7 @@ export default function AddActivityForm({
           <Input
             data-lpignore="true"
             className="fullWidth"
-            placeholder={user && `${user.given_name}'s Favorite Run`}
+            placeholder={user && `Example: ${user.given_name}'s Favorite Run`}
           />
         </Item>
         {/* ============= DATEPICKER ============= */}
@@ -68,11 +68,7 @@ export default function AddActivityForm({
             },
           ]}
         >
-          <DatePicker
-            format={dateFormat}
-            className="fullWidth"
-            placeholder="2020-01-01"
-          />
+          <DatePicker format={dateFormat} className="fullWidth" placeholder="2020-01-01" />
         </Item>
         {/* ============= ACTIVITY SELECT ============= */}
         <Item
@@ -88,12 +84,10 @@ export default function AddActivityForm({
           <Select
             allowClear
             showSearch
-            placeholder="Run"
+            placeholder="Choose your activity type..."
             optionFilterProp="children"
           >
-            {activityTypes.map(({ id, name }) =>
-              EmojiOption({ value: id, title: name })
-            )}
+            {activityTypes.map(({ id, name }) => EmojiOption({ value: id, title: name }))}
           </Select>
         </Item>
         {/* ============= DURATION ============= */}
