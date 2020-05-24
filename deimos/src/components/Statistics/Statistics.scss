@@ -1,9 +1,3 @@
-.statistics--trendline {
-  height: 150px;
-  width: 90%;
-  grid-column: span 3;
-}
-
 .stats {
   height: 100%;
 
@@ -13,10 +7,15 @@
 }
 
 .statistics-grid {
+  height: 100%;
   display: grid;
-  grid-gap: 55% 20px;
-  grid-template: auto auto / 1fr 1fr 1fr;
+  grid-gap: 20px;
+  grid-template: auto auto 30px / repeat(3, 1fr);
   align-items: center;
   justify-items: center;
   margin-bottom: 10px;
+
+  & > .ant-btn {
+    grid-column: 2/3;
+  }
 }
