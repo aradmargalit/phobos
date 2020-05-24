@@ -39,7 +39,7 @@ func TestConvertStravaActivity(t *testing.T) {
 		Duration:       0.35,
 		Distance:       6.21,
 		Unit:           "miles",
-		StravaID: testdata.MakeIntPointer(1),
+		StravaID:       testdata.MakeIntPointer(1),
 	}
 
 	assert.NoError(t, err)

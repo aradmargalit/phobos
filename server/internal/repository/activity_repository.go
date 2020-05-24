@@ -2,14 +2,12 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"server/internal/models"
 	"strconv"
 )
 
 // InsertActivity adds a new activity to the database
 func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
-	fmt.Printf("%+v\n", a)
 	res, err := db.conn.NamedExec(
 		`
 		INSERT INTO activities 
@@ -56,7 +54,6 @@ func (db *db) GetActivitiesByUser(uid int) (activities []models.ActivityResponse
 
 // UpdateActivity updates an existing activity in the database
 func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
-	fmt.Printf("%+v\n", a)
 	res, err := db.conn.NamedExec(
 		`
 		UPDATE activities 
