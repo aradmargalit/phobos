@@ -127,6 +127,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
     {
       title: 'Heart Rate',
       dataIndex: 'heart_rate',
+      render: hr => (hr > 0 ? hr : '-'),
       sorter: heartRateSorter,
     },
     {
