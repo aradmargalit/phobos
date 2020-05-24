@@ -15,27 +15,29 @@ import (
 
 func TestAddActivity(t *testing.T) {
 	// Arrange
-	inputActivity := testdata.GetTestActivity()
+	dbActivity := testdata.GetTestActivity()
+	postActivity := testdata.GetTestPostActivityRequest()
 
 	// Set the time to be an RFC3339 time
-	activityDate, _ := time.Parse("2006-01-02", inputActivity.ActivityDate)
-	inputActivity.ActivityDate = activityDate.Format(time.RFC3339)
+	activityDate, _ := time.Parse("2006-01-02", postActivity.ActivityDate)
+	postActivity.ActivityDate = activityDate.Format(time.RFC3339)
+	dbActivity.ActivityDate = activityDate.Format(time.RFC3339)
 
 	// Create a service that we'll use for testing, but with a mockDB
 	mockDB := new(mocks.PhobosDB)
-	mockDB.On("InsertActivity", mock.AnythingOfType("*models.Activity")).Return(inputActivity, nil)
+	mockDB.On("InsertActivity", mock.AnythingOfType("*models.Activity")).Return(dbActivity, nil)
 	svc := New(mockDB)
 
 	// Assert that this'll fail before acting
-	assert.NotEqual(t, inputActivity.ActivityDate, testdata.GetTestActivity().ActivityDate)
+	assert.NotEqual(t, postActivity.ActivityDate, testdata.GetTestActivity().ActivityDate)
 
 	// Act
-	result, err := svc.AddActivity(inputActivity, 1)
+	result, err := svc.AddActivity(postActivity, 1)
 
 	// Assert
 	assert.NotNil(t, result)
 	assert.NoError(t, err)
-	assert.Equal(t, inputActivity.ActivityDate, result.ActivityDate)
+	assert.Equal(t, postActivity.ActivityDate, result.ActivityDate)
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)
@@ -43,7 +45,7 @@ func TestAddActivity(t *testing.T) {
 
 func TestAddActivityReturnsError(t *testing.T) {
 	// Arrange
-	inputActivity := testdata.GetTestActivity()
+	inputActivity := testdata.GetTestPostActivityRequest()
 
 	// Set the time to be an RFC3339 time
 	activityDate, _ := time.Parse("2006-01-02", inputActivity.ActivityDate)

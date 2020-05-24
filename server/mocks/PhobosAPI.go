@@ -17,11 +17,11 @@ type PhobosAPI struct {
 }
 
 // AddActivity provides a mock function with given fields: _a0, _a1
-func (_m *PhobosAPI) AddActivity(_a0 *models.Activity, _a1 int) (*models.Activity, error) {
+func (_m *PhobosAPI) AddActivity(_a0 *models.PostActivityRequest, _a1 int) (*models.Activity, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *models.Activity
-	if rf, ok := ret.Get(0).(func(*models.Activity, int) *models.Activity); ok {
+	if rf, ok := ret.Get(0).(func(*models.PostActivityRequest, int) *models.Activity); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		if ret.Get(0) != nil {
@@ -30,7 +30,7 @@ func (_m *PhobosAPI) AddActivity(_a0 *models.Activity, _a1 int) (*models.Activit
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Activity, int) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.PostActivityRequest, int) error); ok {
 		r1 = rf(_a0, _a1)
 	} else {
 		r1 = ret.Error(1)

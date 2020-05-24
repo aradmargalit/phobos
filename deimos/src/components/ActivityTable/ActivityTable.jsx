@@ -52,7 +52,6 @@ export default function ActivityTable({ loading, activities, refetch }) {
   const renderEditButtons = activity => (
     <Button
       onClick={() => {
-        console.log(activity);
         const toEdit = { ...activity };
         toEdit.activity_date = moment(activity.activity_date);
         // We need to re-create the duration breakdown from the total
@@ -128,7 +127,6 @@ export default function ActivityTable({ loading, activities, refetch }) {
     {
       title: 'Heart Rate',
       dataIndex: 'heart_rate',
-      width: 70,
       sorter: heartRateSorter,
     },
     {
