@@ -1,9 +1,9 @@
 package service
 
 import (
-	"database/sql"
 	"server/internal/models"
 	"server/mocks"
+	"server/testdata"
 	"testing"
 	"time"
 
@@ -39,10 +39,7 @@ func TestConvertStravaActivity(t *testing.T) {
 		Duration:       0.35,
 		Distance:       6.21,
 		Unit:           "miles",
-		StravaID: sql.NullInt64{
-			Int64: 1,
-			Valid: true,
-		},
+		StravaID:       testdata.MakeIntPointer(1),
 	}
 
 	assert.NoError(t, err)

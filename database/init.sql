@@ -29,6 +29,7 @@ CREATE TABLE `activities` (
   `duration` DOUBLE,
   `distance` DOUBLE,
   `unit` text,
+  `heart_rate` int(11),
   `strava_id` BIGINT,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -44,6 +45,7 @@ CREATE TABLE `quick_adds` (
   `duration` DOUBLE,
   `distance` DOUBLE,
   `unit` text,
+  `heart_rate` int(11),
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"os"
 	"server/internal/models"
 	"server/internal/repository"
-	"server/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -72,7 +70,7 @@ func handleWebhookEvent(e models.StravaWebhookEvent, db repository.PhobosDB) (er
 
 func fetchAndCreate(ownerID int, activityID int, db repository.PhobosDB) error {
 	// 1. Fetch the activity from our application to check if we already have it
-	dbActivity, err := db.GetActivityByStravaID(utils.MakeI64(activityID))
+	dbActivity, err := db.GetActivityByStravaID(&activityID)
 	if err == nil {
 		// If we had no problems fetching this ID, we must already have it. No need to re-insert
 		fmt.Printf("We already have this activity! Strava ID: %v | Phobos ID: %v\n", activityID, dbActivity.ID)
@@ -136,7 +134,7 @@ func fetchAndUpdate(ownerID int, activityID int, db repository.PhobosDB) error {
 func eventDelete(ownerID int, activityID int, db repository.PhobosDB) error {
 	// Get the ID from our application
 	// TODO, there's no reason this shouldn't be a single DB call
-	activity, err := db.GetActivityByStravaID(sql.NullInt64{Int64: int64(activityID), Valid: true})
+	activity, err := db.GetActivityByStravaID(&activityID)
 	if err != nil {
 		return fmt.Errorf("failed to fetch activity ID %v from Strava: %v", activityID, err)
 	}
@@ -219,6 +217,6 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		Duration:       (float64(fetchedActivity.MovingTime) / 60),
 		Distance:       math.Floor(convertedDistance*100) / 100,
 		Unit:           unit,
-		StravaID:       sql.NullInt64{Int64: int64(fetchedActivity.ID), Valid: true},
+		StravaID:       &fetchedActivity.ID,
 	}, nil
 }

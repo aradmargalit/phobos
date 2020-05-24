@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -43,12 +42,4 @@ func TestRetryWithFiveFailedTries(t *testing.T) {
 	err := Retry(callCounter(true), 5, nanosec)
 	assert.Error(t, err)
 	assert.Equal(t, 5, callCount)
-}
-
-func TestMakeI64(t *testing.T) {
-	// Check that it converts and that it's valid
-	ni64 := MakeI64(12)
-	assert.IsType(t, sql.NullInt64{}, ni64)
-	assert.Equal(t, true, ni64.Valid)
-	assert.Equal(t, int64(12), ni64.Int64)
 }

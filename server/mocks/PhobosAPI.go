@@ -17,11 +17,11 @@ type PhobosAPI struct {
 }
 
 // AddActivity provides a mock function with given fields: _a0, _a1
-func (_m *PhobosAPI) AddActivity(_a0 *models.Activity, _a1 int) (*models.Activity, error) {
+func (_m *PhobosAPI) AddActivity(_a0 *models.PostActivityRequest, _a1 int) (*models.Activity, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *models.Activity
-	if rf, ok := ret.Get(0).(func(*models.Activity, int) *models.Activity); ok {
+	if rf, ok := ret.Get(0).(func(*models.PostActivityRequest, int) *models.Activity); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		if ret.Get(0) != nil {
@@ -30,7 +30,7 @@ func (_m *PhobosAPI) AddActivity(_a0 *models.Activity, _a1 int) (*models.Activit
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Activity, int) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.PostActivityRequest, int) error); ok {
 		r1 = rf(_a0, _a1)
 	} else {
 		r1 = ret.Error(1)
@@ -91,15 +91,15 @@ func (_m *PhobosAPI) DeleteQuickAdd(uid int, quickAddID int) error {
 }
 
 // GetActivities provides a mock function with given fields: uid
-func (_m *PhobosAPI) GetActivities(uid int) (*[]responsetypes.Activity, error) {
+func (_m *PhobosAPI) GetActivities(uid int) (*[]models.ActivityResponse, error) {
 	ret := _m.Called(uid)
 
-	var r0 *[]responsetypes.Activity
-	if rf, ok := ret.Get(0).(func(int) *[]responsetypes.Activity); ok {
+	var r0 *[]models.ActivityResponse
+	if rf, ok := ret.Get(0).(func(int) *[]models.ActivityResponse); ok {
 		r0 = rf(uid)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]responsetypes.Activity)
+			r0 = ret.Get(0).(*[]models.ActivityResponse)
 		}
 	}
 
@@ -150,13 +150,13 @@ func (_m *PhobosAPI) GetCurrentUser(_a0 *gin.Context) responsetypes.User {
 	return r0
 }
 
-// GetIntervalSummary provides a mock function with given fields: uid, interval
-func (_m *PhobosAPI) GetIntervalSummary(uid int, interval string) (*[]responsetypes.IntervalSum, error) {
-	ret := _m.Called(uid, interval)
+// GetIntervalSummary provides a mock function with given fields: uid, interval, offset
+func (_m *PhobosAPI) GetIntervalSummary(uid int, interval string, offset int) (*[]responsetypes.IntervalSum, error) {
+	ret := _m.Called(uid, interval, offset)
 
 	var r0 *[]responsetypes.IntervalSum
-	if rf, ok := ret.Get(0).(func(int, string) *[]responsetypes.IntervalSum); ok {
-		r0 = rf(uid, interval)
+	if rf, ok := ret.Get(0).(func(int, string, int) *[]responsetypes.IntervalSum); ok {
+		r0 = rf(uid, interval, offset)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*[]responsetypes.IntervalSum)
@@ -164,8 +164,8 @@ func (_m *PhobosAPI) GetIntervalSummary(uid int, interval string) (*[]responsety
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, string) error); ok {
-		r1 = rf(uid, interval)
+	if rf, ok := ret.Get(1).(func(int, string, int) error); ok {
+		r1 = rf(uid, interval, offset)
 	} else {
 		r1 = ret.Error(1)
 	}

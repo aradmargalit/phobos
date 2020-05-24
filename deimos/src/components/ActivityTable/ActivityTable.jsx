@@ -15,6 +15,7 @@ import {
   dateSorter,
   distanceSorter,
   durationSorter,
+  heartRateSorter,
   nameSorter,
   numberSorter,
 } from './sortUtils';
@@ -80,14 +81,14 @@ export default function ActivityTable({ loading, activities, refetch }) {
     </Popconfirm>
   );
 
-  const toStravaIcon = token => {
-    if (!token || token.Int64 < 1) return null;
+  const toStravaIcon = stravaID => {
+    if (stravaID < 1) return null;
 
     return (
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href={`https://www.strava.com/activities/${token.Int64}`}
+        href={`https://www.strava.com/activities/${stravaID}`}
       >
         <img width={40} alt="strava icon" src={stravaIcon} />
       </a>
@@ -122,6 +123,12 @@ export default function ActivityTable({ loading, activities, refetch }) {
         distance > 0 ? `${distance} ${record.unit}` : '-'
       ),
       sorter: distanceSorter,
+    },
+    {
+      title: 'Heart Rate',
+      dataIndex: 'heart_rate',
+      render: hr => (hr > 0 ? hr : '-'),
+      sorter: heartRateSorter,
     },
     {
       title: <EditOutlined />,

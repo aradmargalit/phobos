@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"server/internal/models"
 	"server/internal/responsetypes"
 	"time"
 )
@@ -11,7 +12,7 @@ const (
 )
 
 // CalculateTotalHours returns the total number of hours across all activities
-func CalculateTotalHours(activities []responsetypes.Activity) float64 {
+func CalculateTotalHours(activities []models.ActivityResponse) float64 {
 	var running float64 = 0
 
 	for _, activity := range activities {
@@ -22,7 +23,7 @@ func CalculateTotalHours(activities []responsetypes.Activity) float64 {
 }
 
 // CalculateMileage returns the total mileage across all activities
-func CalculateMileage(activities []responsetypes.Activity) float64 {
+func CalculateMileage(activities []models.ActivityResponse) float64 {
 	var running float64 = 0
 
 	for _, activity := range activities {
@@ -35,7 +36,7 @@ func CalculateMileage(activities []responsetypes.Activity) float64 {
 }
 
 // CalculateLastTenDays returns an array of the sum of each day's workout duration from today to 10 days ago
-func CalculateLastTenDays(activities []responsetypes.Activity, utcOffset int) (lastTen []float64) {
+func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (lastTen []float64) {
 	// For each of the past 10 days, we need to sum up the durations from those days
 	for i := 9; i >= 0; i-- {
 		// Get the date for "i" days ago)
@@ -62,7 +63,7 @@ func CalculateLastTenDays(activities []responsetypes.Activity, utcOffset int) (l
 }
 
 // CalculateTypeBreakdown determines which activities contribute to which portions
-func CalculateTypeBreakdown(activities []responsetypes.Activity) (typePortions []responsetypes.TypePortion) {
+func CalculateTypeBreakdown(activities []models.ActivityResponse) (typePortions []responsetypes.TypePortion) {
 	total := float64(len(activities))
 	typeMap := make(map[string]int)
 	for _, activity := range activities {
@@ -84,14 +85,14 @@ func CalculateTypeBreakdown(activities []responsetypes.Activity) (typePortions [
 			continue
 		}
 
-		typePortions = append(typePortions, responsetypes.TypePortion{typeName, count})
+		typePortions = append(typePortions, responsetypes.TypePortion{Name: typeName, Portion: count})
 	}
-	typePortions = append(typePortions, responsetypes.TypePortion{"Other", insignificantTally})
+	typePortions = append(typePortions, responsetypes.TypePortion{Name: "Other", Portion: insignificantTally})
 	return
 }
 
 // CalculateDayBreakdown buckets activities into the days of the week
-func CalculateDayBreakdown(activities []responsetypes.Activity) (dayBreakdowns []responsetypes.DayBreakdown) {
+func CalculateDayBreakdown(activities []models.ActivityResponse) (dayBreakdowns []responsetypes.DayBreakdown) {
 	dayMap := make(map[string]int)
 	for _, activity := range activities {
 		// Parse date from activity
@@ -108,7 +109,7 @@ func CalculateDayBreakdown(activities []responsetypes.Activity) (dayBreakdowns [
 	}
 
 	for _, day := range []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"} {
-		dayBreakdowns = append(dayBreakdowns, responsetypes.DayBreakdown{day, dayMap[day]})
+		dayBreakdowns = append(dayBreakdowns, responsetypes.DayBreakdown{DOW: day, Count: dayMap[day]})
 	}
 	return
 }

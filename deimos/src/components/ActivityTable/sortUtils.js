@@ -10,3 +10,5 @@ export const activityTypeSorter = (a, b) =>
 export const durationSorter = (a, b) => a.duration - b.duration;
 
 export const distanceSorter = (a, b) => a.distance - b.distance;
+
+export const heartRateSorter = (a, b) => a.heart_rate - b.heart_rate;

@@ -34,8 +34,8 @@ func makeCurrentUserHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 func makeAddActivityHandler(svc service.PhobosAPI) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var activity models.Activity
-		if err := c.ShouldBindJSON(&activity); err != nil {
+		var par models.PostActivityRequest
+		if err := c.ShouldBindJSON(&par); err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
@@ -43,7 +43,7 @@ func makeAddActivityHandler(svc service.PhobosAPI) func(*gin.Context) {
 		// Add the owner ID to the activity
 		uid := c.GetInt("user")
 
-		record, err := svc.AddActivity(&activity, uid)
+		record, err := svc.AddActivity(&par, uid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		}
@@ -59,6 +59,7 @@ func makeGetActivitiesHandler(svc service.PhobosAPI) func(*gin.Context) {
 		activities, err := svc.GetActivities(uid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{"activities": *activities})

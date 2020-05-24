@@ -5,8 +5,8 @@ import "server/internal/models"
 const (
 	quickAddInsertSQL = `
 		INSERT INTO quick_adds 
-		(name, activity_type_id, owner_id, duration, distance, unit)
-		VALUES (:name, :activity_type_id, :owner_id, :duration, :distance, :unit)
+		(name, activity_type_id, owner_id, duration, distance, unit, heart_rate)
+		VALUES (:name, :activity_type_id, :owner_id, :duration, :distance, :unit, :heart_rate)
 	`
 )
 

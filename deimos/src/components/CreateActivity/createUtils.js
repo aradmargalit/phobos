@@ -24,24 +24,13 @@ const commonPost = async (setLoading, apiCall, values, refetch) => {
   }
 };
 
-export const onFinish = async (
-  values,
-  setLoading,
-  refetch,
-  form,
-  setActivity
-) => {
+export const onFinish = async (values, setLoading, refetch, form, setActivity) => {
   const postValues = {
     ...values,
     duration: values.duration.total,
     activity_date: new Date(`${values.activity_date} UTC`),
   };
-  const success = await commonPost(
-    setLoading,
-    postActivity,
-    postValues,
-    refetch
-  );
+  const success = await commonPost(setLoading, postActivity, postValues, refetch);
   if (!success) return;
   form.resetFields();
   setActivity(form.getFieldsValue());
