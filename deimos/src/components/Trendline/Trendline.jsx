@@ -7,7 +7,6 @@ import { Line, LineChart, ResponsiveContainer } from 'recharts';
 const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
 
 export default function Trendline({ trendData }) {
-  console.log(trendData);
   return (
     <div className="trendline">
       <Tooltip title="Each day's workout total minutes for the past 10 days.">
