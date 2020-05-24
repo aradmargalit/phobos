@@ -9,6 +9,7 @@ type QuickAdd struct {
 	Duration       float64 `json:"duration" db:"duration"`
 	Distance       float64 `json:"distance" db:"distance"`
 	Unit           string  `json:"unit" db:"unit"`
+	HeartRate      *int    `json:"heart_rate" db:"heart_rate"`
 	CreatedAt      string  `json:"created_at" db:"created_at"`
 	UpdatedAt      string  `json:"updated_at" db:"updated_at"`
 }

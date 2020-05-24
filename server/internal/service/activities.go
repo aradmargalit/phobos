@@ -21,7 +21,7 @@ func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*mode
 		OwnerID:        uid,
 		Duration:       par.Duration,
 		Distance:       par.Distance,
-		HeartRate:      utils.MakeI64(par.HeartRate),
+		HeartRate:      &par.HeartRate,
 	}
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
@@ -33,7 +33,6 @@ func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*mode
 	activity.ActivityDate = d.Format("2006-01-02")
 
 	activity.OwnerID = uid
-	fmt.Println(activity)
 
 	record, err := svc.db.InsertActivity(&activity)
 	if err != nil {

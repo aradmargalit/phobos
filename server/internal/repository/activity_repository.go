@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"server/internal/models"
@@ -33,8 +32,8 @@ func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
 }
 
 // GetActivityByStravaID will trade a strava activity ID for an application ID
-func (db *db) GetActivityByStravaID(stravaID sql.NullInt64) (activity models.Activity, err error) {
-	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", stravaID)
+func (db *db) GetActivityByStravaID(stravaID *int) (activity models.Activity, err error) {
+	err = db.conn.Get(&activity, "SELECT * FROM activities WHERE strava_id = ?", *stravaID)
 	return
 }
 
@@ -57,6 +56,7 @@ func (db *db) GetActivitiesByUser(uid int) (activities []models.ActivityResponse
 
 // UpdateActivity updates an existing activity in the database
 func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
+	fmt.Printf("%+v\n", a)
 	res, err := db.conn.NamedExec(
 		`
 		UPDATE activities 

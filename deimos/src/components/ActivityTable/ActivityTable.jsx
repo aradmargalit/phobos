@@ -52,6 +52,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
   const renderEditButtons = activity => (
     <Button
       onClick={() => {
+        console.log(activity);
         const toEdit = { ...activity };
         toEdit.activity_date = moment(activity.activity_date);
         // We need to re-create the duration breakdown from the total
@@ -81,14 +82,14 @@ export default function ActivityTable({ loading, activities, refetch }) {
     </Popconfirm>
   );
 
-  const toStravaIcon = token => {
-    if (!token || token.Int64 < 1) return null;
+  const toStravaIcon = stravaID => {
+    if (stravaID < 1) return null;
 
     return (
       <a
         target="_blank"
         rel="noopener noreferrer"
-        href={`https://www.strava.com/activities/${token.Int64}`}
+        href={`https://www.strava.com/activities/${stravaID}`}
       >
         <img width={40} alt="strava icon" src={stravaIcon} />
       </a>
@@ -128,7 +129,6 @@ export default function ActivityTable({ loading, activities, refetch }) {
       title: 'Heart Rate',
       dataIndex: 'heart_rate',
       width: 70,
-      render: hr => (hr.Int64 > 0 ? hr.Int64 : null),
       sorter: heartRateSorter,
     },
     {

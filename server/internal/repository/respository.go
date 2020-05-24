@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"server/internal/models"
 	"server/internal/responsetypes"
 
@@ -12,7 +11,7 @@ import (
 type PhobosDB interface {
 	// Activities
 	InsertActivity(*models.Activity) (*models.Activity, error)
-	GetActivityByStravaID(sql.NullInt64) (models.Activity, error)
+	GetActivityByStravaID(*int) (models.Activity, error)
 	GetActivityByID(int) (models.Activity, error)
 	GetActivitiesByUser(int) ([]models.ActivityResponse, error)
 	UpdateActivity(*models.Activity) (*models.Activity, error)
