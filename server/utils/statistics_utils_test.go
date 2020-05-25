@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"server/internal/models"
 	"server/internal/responsetypes"
 	"server/testdata"
@@ -29,20 +30,6 @@ func TestCalculateMileage(t *testing.T) {
 	// All mileage conuts
 	activities = append(activities, models.ActivityResponse{Activity: models.Activity{Unit: "miles", Distance: 1}})
 	assert.Equal(t, float64(21), CalculateMileage(activities))
-}
-
-func TestCalculateLastTenDays(t *testing.T) {
-	activities := []models.ActivityResponse{
-		{
-			Activity: models.Activity{
-				Duration:     10,
-				ActivityDate: time.Now().UTC().Format(dbLayout),
-			},
-		},
-	}
-	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
-	got := CalculateLastNDays(&activities, 0, 10)
-	assert.Equal(t, want, *got)
 }
 
 func TestCalculateTypeBreakdown(t *testing.T) {
@@ -86,4 +73,66 @@ func TestCalculateDayBreakdown(t *testing.T) {
 	})
 
 	assert.Equal(t, want, CalculateDayBreakdown(activities))
+}
+
+// Tests that this works as expected with contiguous days
+func TestCalculateLastNDaysDense(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		activities = append(activities, models.ActivityResponse{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-24 * i))).Format(dbLayout),
+			},
+		})
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{10},
+		},
+		{
+			n: 2,
+			want: []float64{10, 10},
+		},
+		{
+			n: 3,
+			want: []float64{10, 10, 10},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 0, 0, 10, 10, 10},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+func TestCalculateLastTenDays(t *testing.T) {
+	activities := []models.ActivityResponse{
+		{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Format(dbLayout),
+			},
+		},
+	}
+	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
+	got := CalculateLastNDays(&activities, 0, 10)
+	assert.Equal(t, want, *got)
 }
