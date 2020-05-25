@@ -33,7 +33,7 @@ func TestCalculateMileage(t *testing.T) {
 
 func TestCalculateLastTenDays(t *testing.T) {
 	activities := []models.ActivityResponse{
-		models.ActivityResponse{
+		{
 			Activity: models.Activity{
 				Duration:     10,
 				ActivityDate: time.Now().UTC().Format(dbLayout),
@@ -41,7 +41,8 @@ func TestCalculateLastTenDays(t *testing.T) {
 		},
 	}
 	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
-	assert.Equal(t, want, CalculateLastTenDays(activities, 0))
+	got := CalculateLastNDays(&activities, 0, 10)
+	assert.Equal(t, want, *got)
 }
 
 func TestCalculateTypeBreakdown(t *testing.T) {
