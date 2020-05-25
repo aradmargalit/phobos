@@ -13,12 +13,13 @@ type StravaWebhookEvent struct {
 
 // StravaActivity represents the activity in Strava's terms
 type StravaActivity struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name"`
-	Distance    float64 `json:"distance"`
-	ElapsedTime int     `json:"elapsed_time"`
-	MovingTime  int     `json:"moving_time"`
-	Type        string  `json:"type"`
-	StartDate   string  `json:"start_date"`
-	Timezone    string  `json:"timezone"`
+	ID              int     `json:"id"`
+	Name            string  `json:"name"`
+	Distance        float64 `json:"distance"`
+	ElapsedTime     int     `json:"elapsed_time"`
+	MovingTime      int     `json:"moving_time"`
+	Type            string  `json:"type"`
+	AverageHearRate float64 `json:"average_heartrate"`
+	StartDate       string  `json:"start_date"`
+	Timezone        string  `json:"timezone"`
 }

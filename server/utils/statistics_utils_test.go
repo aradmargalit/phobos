@@ -89,28 +89,28 @@ func TestCalculateLastNDaysDense(t *testing.T) {
 	}
 
 	// Act
-	scenarios := []struct{
-		n int
+	scenarios := []struct {
+		n    int
 		want []float64
-	} {
+	}{
 		{
-			n: 0,
+			n:    0,
 			want: []float64(nil),
 		},
 		{
-			n: 1,
+			n:    1,
 			want: []float64{10},
 		},
 		{
-			n: 2,
+			n:    2,
 			want: []float64{10, 10},
 		},
 		{
-			n: 3,
+			n:    3,
 			want: []float64{10, 10, 10},
 		},
 		{
-			n: 9,
+			n:    9,
 			want: []float64{0, 0, 0, 0, 0, 0, 10, 10, 10},
 		},
 	}
@@ -137,28 +137,28 @@ func TestCalculateLastNDaysSparse(t *testing.T) {
 	}
 
 	// Act
-	scenarios := []struct{
-		n int
+	scenarios := []struct {
+		n    int
 		want []float64
-	} {
+	}{
 		{
-			n: 0,
+			n:    0,
 			want: []float64(nil),
 		},
 		{
-			n: 1,
+			n:    1,
 			want: []float64{10},
 		},
 		{
-			n: 2,
+			n:    2,
 			want: []float64{0, 10},
 		},
 		{
-			n: 3,
+			n:    3,
 			want: []float64{10, 0, 10},
 		},
 		{
-			n: 9,
+			n:    9,
 			want: []float64{0, 0, 0, 0, 10, 0, 10, 0, 10},
 		},
 	}
@@ -187,28 +187,28 @@ func TestCalculateLastNDaysStacked(t *testing.T) {
 	}
 
 	// Act
-	scenarios := []struct{
-		n int
+	scenarios := []struct {
+		n    int
 		want []float64
-	} {
+	}{
 		{
-			n: 0,
+			n:    0,
 			want: []float64(nil),
 		},
 		{
-			n: 1,
+			n:    1,
 			want: []float64{20},
 		},
 		{
-			n: 2,
+			n:    2,
 			want: []float64{20, 20},
 		},
 		{
-			n: 3,
+			n:    3,
 			want: []float64{20, 20, 20},
 		},
 		{
-			n: 9,
+			n:    9,
 			want: []float64{0, 0, 0, 0, 0, 0, 20, 20, 20},
 		},
 	}

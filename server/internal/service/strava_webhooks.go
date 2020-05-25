@@ -209,6 +209,8 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		convertedDistance = fetchedActivity.Distance * metersToYards
 	}
 
+	heartRate := int(fetchedActivity.AverageHearRate)
+
 	return &models.Activity{
 		Name:           fetchedActivity.Name,
 		ActivityDate:   t.In(location).Format("2006-01-02"),
@@ -217,6 +219,7 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		Duration:       (float64(fetchedActivity.MovingTime) / 60),
 		Distance:       math.Floor(convertedDistance*100) / 100,
 		Unit:           unit,
+		HeartRate:      &heartRate,
 		StravaID:       &fetchedActivity.ID,
 	}, nil
 }
