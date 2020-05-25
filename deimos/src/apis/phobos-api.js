@@ -68,7 +68,7 @@ export const fetchActivityTypes = async setActivityTypes => {
 
 // Activities
 export const fetchActivities = async setActivities => {
-  await protectedGet(setActivities, '/private/activities', 'activities');
+  await protectedGet(setActivities, '/private/activities');
 };
 
 export const postActivity = async activity => {
@@ -129,4 +129,13 @@ export const deauthStrava = async () => {
       duration: 2,
     });
   }
+};
+
+// Trendline
+export const fetchTrendPoints = async (setTrendPoints, lookback) => {
+  const utcOffset = new Date().getTimezoneOffset() / 60;
+  await protectedGet(
+    setTrendPoints,
+    `/private/trendpoints?lookback=${lookback}&utc_offset=${utcOffset}`
+  );
 };

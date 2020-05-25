@@ -35,10 +35,12 @@ func CalculateMileage(activities []models.ActivityResponse) float64 {
 	return running
 }
 
-// CalculateLastTenDays returns an array of the sum of each day's workout duration from today to 10 days ago
-func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (lastTen []float64) {
-	// For each of the past 10 days, we need to sum up the durations from those days
-	for i := 9; i >= 0; i-- {
+// CalculateLastNDays returns an array of the sum of each day's workout duration from today to 10 days ago
+func CalculateLastNDays(activities *[]models.ActivityResponse, utcOffset int, n int) *[]float64 {
+	var lastTen []float64
+
+	// For each of the past N days, we need to sum up the durations from those days
+	for i := n - 1; i >= 0; i-- {
 		// Get the date for "i" days ago)
 		// Ugly, but use the browser offset to find the correct offset
 		dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
@@ -46,7 +48,7 @@ func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (
 
 		// Start a running duration for that date
 		var running float64
-		for _, a := range activities {
+		for _, a := range *activities {
 			// Parse the DB date
 			dbDate, _ := time.Parse(dbLayout, a.ActivityDate)
 
@@ -54,12 +56,20 @@ func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (
 			if dbDate.YearDay() == date.YearDay() && dbDate.Year() == date.Year() {
 				running += a.Duration
 			}
+
+			// Optimization
+			// If we've hit an earlier date, break, because this is a descending sorted list
+			// Give a daylong buffer to make sure we don't accidentally exclude activities that technically occur "before" the date
+			// Because of time offsets
+			if dbDate.Before(date.Add(time.Hour * -24)) {
+				break
+			}
 		}
 
 		// Append the sum to the slice
 		lastTen = append(lastTen, running)
 	}
-	return
+	return &lastTen
 }
 
 // CalculateTypeBreakdown determines which activities contribute to which portions
@@ -112,4 +122,28 @@ func CalculateDayBreakdown(activities []models.ActivityResponse) (dayBreakdowns 
 		dayBreakdowns = append(dayBreakdowns, responsetypes.DayBreakdown{DOW: day, Count: dayMap[day]})
 	}
 	return
+}
+
+// CalculateThisWeek calculates the number of minutes every day for the current week
+func CalculateThisWeek(activities *[]models.ActivityResponse, utcOffset int) *[]float64 {
+	// Need to find what today is based on UTC offset
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
+	now := time.Now().UTC().Add(-dur)
+
+	// Current day of week number
+	// Casting "Sunday" to an int returns 0, subtract one to make Monday "0" and mod 7 for safety
+	dow := int(now.Weekday()) % 7
+
+	return CalculateLastNDays(activities, utcOffset, dow)
+}
+
+// CalculateThisMonth calculates the number of minutes every day for the current month
+func CalculateThisMonth(activities *[]models.ActivityResponse, utcOffset int) *[]float64 {
+	// Need to find what today is based on UTC offset
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
+	now := time.Now().UTC().Add(-dur)
+
+	dayOfMonth := now.Day()
+
+	return CalculateLastNDays(activities, utcOffset, dayOfMonth)
 }

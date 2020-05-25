@@ -1,6 +1,6 @@
 import './AddActivityForm.scss';
 
-import { DatePicker, Form, Input, InputNumber, Select, Tooltip } from 'antd';
+import { DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import moment from 'moment';
 import React from 'react';
 
@@ -111,17 +111,15 @@ export default function AddActivityForm({
           </Item>
         </Item>
         {/* ============= HEART RATE ============= */}
-        <Tooltip title="Beats per Minute" mouseEnterDelay={2}>
-          <Item label="Heart Rate" name="heart_rate">
-            <InputNumber
-              data-lpignore="true"
-              placeholder="Average Beats per Minute"
-              className="fullWidth"
-              max={250}
-              min={1}
-            />
-          </Item>
-        </Tooltip>
+        <Item label="Heart Rate" name="heart_rate">
+          <InputNumber
+            data-lpignore="true"
+            placeholder="Average Beats per Minute"
+            className="fullWidth"
+            max={250}
+            min={1}
+          />
+        </Item>
       </Form>
     </div>
   );

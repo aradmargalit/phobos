@@ -45,6 +45,9 @@ type PhobosAPI interface {
 	HandleStravaDeauthorization(uid int) error
 	HandleStravaWebhookVerification(c *gin.Context)
 	HandleWebhookEvent(event models.StravaWebhookEvent) error
+
+	// Trendline Data
+	GetTrendPoints(int, string, int) (*[]float64, error)
 }
 
 type service struct {

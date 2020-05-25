@@ -2,4 +2,18 @@
   height: 150px;
   width: 90%;
   grid-column: span 3;
+  text-align: center;
+
+  &__label {
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+
+    & > span {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0px 10px;
+      color: var(--green);
+    }
+  }
 }

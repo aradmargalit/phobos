@@ -17,9 +17,7 @@ import { UserContext } from '../../contexts';
 const registeredModalContent = (setVisible, setUser) => (
   <div>
     <h2>Stop Strava Updates?</h2>
-    <h4>
-      Any new activities you add to Strava will no longer be synced to Phobos.
-    </h4>
+    <h4>Any new activities you add to Strava will no longer be synced to Phobos.</h4>
 
     <Button
       type="danger"
@@ -73,9 +71,7 @@ export default function StravaButton({ registered, loading }) {
         {registered && <CheckCircleOutlined />}
       </Button>
       <Modal visible={visible} onCancel={() => setVisible(false)} footer={null}>
-        {registered
-          ? registeredModalContent(setVisible, setUser)
-          : unregisteredModalContent()}
+        {registered ? registeredModalContent(setVisible, setUser) : unregisteredModalContent()}
       </Modal>
     </>
   );

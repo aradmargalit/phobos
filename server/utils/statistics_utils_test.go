@@ -31,19 +31,6 @@ func TestCalculateMileage(t *testing.T) {
 	assert.Equal(t, float64(21), CalculateMileage(activities))
 }
 
-func TestCalculateLastTenDays(t *testing.T) {
-	activities := []models.ActivityResponse{
-		models.ActivityResponse{
-			Activity: models.Activity{
-				Duration:     10,
-				ActivityDate: time.Now().UTC().Format(dbLayout),
-			},
-		},
-	}
-	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
-	assert.Equal(t, want, CalculateLastTenDays(activities, 0))
-}
-
 func TestCalculateTypeBreakdown(t *testing.T) {
 	activities := []models.ActivityResponse{
 		{ActivityType: models.ActivityType{Name: "Run"}},
@@ -85,4 +72,164 @@ func TestCalculateDayBreakdown(t *testing.T) {
 	})
 
 	assert.Equal(t, want, CalculateDayBreakdown(activities))
+}
+
+// Tests that this works as expected with contiguous days
+func TestCalculateLastNDaysDense(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		activities = append(activities, models.ActivityResponse{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-24 * i))).Format(dbLayout),
+			},
+		})
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{10},
+		},
+		{
+			n: 2,
+			want: []float64{10, 10},
+		},
+		{
+			n: 3,
+			want: []float64{10, 10, 10},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 0, 0, 10, 10, 10},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+// Test that when there are gaps in the last N days, we account for them
+func TestCalculateLastNDaysSparse(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		activities = append(activities, models.ActivityResponse{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-48 * i))).Format(dbLayout),
+			},
+		})
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{10},
+		},
+		{
+			n: 2,
+			want: []float64{0, 10},
+		},
+		{
+			n: 3,
+			want: []float64{10, 0, 10},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 10, 0, 10, 0, 10},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+// Test that when there are multiple activities in a day, we account for that
+func TestCalculateLastNDaysStacked(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 2; j++ {
+			activities = append(activities, models.ActivityResponse{
+				Activity: models.Activity{
+					Duration:     10,
+					ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-24 * i))).Format(dbLayout),
+				},
+			})
+		}
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{20},
+		},
+		{
+			n: 2,
+			want: []float64{20, 20},
+		},
+		{
+			n: 3,
+			want: []float64{20, 20, 20},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 0, 0, 20, 20, 20},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+func TestCalculateLastTenDays(t *testing.T) {
+	activities := []models.ActivityResponse{
+		{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Format(dbLayout),
+			},
+		},
+	}
+	want := []float64{0, 0, 0, 0, 0, 0, 0, 0, 0, 10}
+	got := CalculateLastNDays(&activities, 0, 10)
+	assert.Equal(t, want, *got)
 }

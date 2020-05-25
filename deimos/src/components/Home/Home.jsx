@@ -77,12 +77,12 @@ function Home({ history }) {
       </div>
       <div className="container statistics">
         <h3>Your Statistics</h3>
-        <Statistics />
+        <Statistics activityTimtestamp={activities.payload.timestamp} />
       </div>
       <div className="container data-table">
         <h3>Your Activities</h3>
         <ActivityTable
-          activities={activities.payload}
+          activities={activities.payload.activities}
           refetch={() => {
             fetchActivities(setActivities);
             fetchStatistics(setStats);
