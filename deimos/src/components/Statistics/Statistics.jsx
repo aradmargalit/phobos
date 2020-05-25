@@ -20,7 +20,7 @@ const iconTitle = (text, icon) => (
 
 export default function Statistics() {
   const { stats, setStats } = useContext(StatsContext);
-  const { workouts, hours, miles, last_ten: lastTen } = stats.payload;
+  const { workouts, hours, miles } = stats.payload;
 
   useEffect(() => {
     fetchStatistics(setStats);
@@ -41,7 +41,7 @@ export default function Statistics() {
             title={iconTitle('Total Mileage', <LineChartOutlined />)}
             value={miles.toFixed(2)}
           />
-          <Trendline trendData={lastTen} />
+          <Trendline />
           <Link className="ant-btn" to="/graph">
             More Graphs <LineChartOutlined style={{ marginLeft: '10px' }} />
           </Link>

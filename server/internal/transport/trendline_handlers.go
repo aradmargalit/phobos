@@ -21,7 +21,7 @@ func registerTrendlineHandlers(r *gin.Engine, svc service.PhobosAPI) {
 func makeTrendPointsHandler(svc service.PhobosAPI) func(*gin.Context) {
 	return func(c *gin.Context) {
 		// Pull user out of context to figure out which activities to grab
-		lookback := c.GetString("lookback")
+		lookback := c.Query("lookback")
 		uid := c.GetInt("user")
 
 		// Pull the user's timezone out of the request
@@ -33,7 +33,7 @@ func makeTrendPointsHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 		trendPoints, err := svc.GetTrendPoints(uid, lookback, utcOffset)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, *trendPoints)

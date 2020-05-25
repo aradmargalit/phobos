@@ -130,3 +130,12 @@ export const deauthStrava = async () => {
     });
   }
 };
+
+// Trendline
+export const fetchTrendPoints = async (setTrendPoints, lookback) => {
+  const utcOffset = new Date().getTimezoneOffset() / 60;
+  await protectedGet(
+    setTrendPoints,
+    `/private/trendpoints?lookback=${lookback}&utc_offset=${utcOffset}`
+  );
+};

@@ -35,10 +35,12 @@ func CalculateMileage(activities []models.ActivityResponse) float64 {
 	return running
 }
 
-// CalculateLastTenDays returns an array of the sum of each day's workout duration from today to 10 days ago
-func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (lastTen []float64) {
+// CalculateLastNDays returns an array of the sum of each day's workout duration from today to 10 days ago
+func CalculateLastNDays(activities []models.ActivityResponse, utcOffset int, n int) *[]float64 {
+	var lastTen []float64
+
 	// For each of the past 10 days, we need to sum up the durations from those days
-	for i := 9; i >= 0; i-- {
+	for i := n - 1; i >= 0; i-- {
 		// Get the date for "i" days ago)
 		// Ugly, but use the browser offset to find the correct offset
 		dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
@@ -59,7 +61,7 @@ func CalculateLastTenDays(activities []models.ActivityResponse, utcOffset int) (
 		// Append the sum to the slice
 		lastTen = append(lastTen, running)
 	}
-	return
+	return &lastTen
 }
 
 // CalculateTypeBreakdown determines which activities contribute to which portions
@@ -112,4 +114,18 @@ func CalculateDayBreakdown(activities []models.ActivityResponse) (dayBreakdowns 
 		dayBreakdowns = append(dayBreakdowns, responsetypes.DayBreakdown{DOW: day, Count: dayMap[day]})
 	}
 	return
+}
+
+// CalculateLastWeek calculates the number of minutes every day for the current week
+func CalculateLastWeek(activities []models.ActivityResponse, utcOffset int) *[]float64 {
+	// Need to find what today is based on UTC offset
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
+	now := time.Now().UTC().Add(-dur)
+
+	// Current day of week number
+	// Casting "Sunday" to an int returns 0, subtract one to make Monday "0" and mod 7 for safety
+	dow := (int(now.Weekday()) - 1) % 7
+	
+	// Super naive approach, but for every day this week, sum all activities that have that date
+	// for every activity starting with Monday, go back "i" days and sum activities from that day
 }
