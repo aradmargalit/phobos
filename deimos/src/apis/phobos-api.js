@@ -68,7 +68,7 @@ export const fetchActivityTypes = async setActivityTypes => {
 
 // Activities
 export const fetchActivities = async setActivities => {
-  await protectedGet(setActivities, '/private/activities', 'activities');
+  await protectedGet(setActivities, '/private/activities');
 };
 
 export const postActivity = async activity => {

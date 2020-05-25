@@ -13,13 +13,13 @@ const { Option } = Select;
 const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
 const sumHours = arr => arr.reduce((accum, curr) => accum + curr, 0) / 60;
 
-export default function Trendline({ activities }) {
+export default function Trendline({ activityTimtestamp }) {
   const [trendPoints, setTrendPoints] = useState(defaultState());
   const [lookback, setLookback] = useState('l10');
 
   useEffect(() => {
     fetchTrendPoints(setTrendPoints, lookback);
-  }, [lookback, activities]);
+  }, [lookback, activityTimtestamp]);
 
   if (trendPoints.loading) return <Spin />;
 

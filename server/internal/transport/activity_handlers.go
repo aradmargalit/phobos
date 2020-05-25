@@ -6,6 +6,7 @@ import (
 	"server/internal/models"
 	"server/internal/service"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,7 +63,7 @@ func makeGetActivitiesHandler(svc service.PhobosAPI) func(*gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"activities": *activities})
+		c.JSON(http.StatusOK, gin.H{"activities": *activities, "timestamp": time.Now()})
 	}
 }
 
