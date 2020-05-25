@@ -5,7 +5,6 @@ type Stats struct {
 	Workouts      int            `json:"workouts"`
 	Hours         float64        `json:"hours"`
 	Miles         float64        `json:"miles"`
-	LastTen       []float64      `json:"last_ten"`
 	TypeBreakdown []TypePortion  `json:"type_breakdown"`
 	DayBreakdown  []DayBreakdown `json:"day_breakdown"`
 }
