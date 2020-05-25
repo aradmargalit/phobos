@@ -2,4 +2,21 @@
   height: 150px;
   width: 90%;
   grid-column: span 3;
+  text-align: center;
+
+  &__label {
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+
+    & > h3 {
+      margin: 0px 10px;
+    }
+
+    & > span {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--green);
+    }
+  }
 }

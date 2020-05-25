@@ -1,37 +1,37 @@
 .strava-button {
   margin-right: 20px;
   color: white;
-  background-color: #fc4c02;
+  background-color: var(--strava-orange);
   border-color: white;
 
   &--registered {
     margin-right: 20px;
-    color: #135200 !important;
-    border-color: #135200 !important;
+    color: var(--green) !important;
+    border-color: var(--green) !important;
 
     &:hover {
       color: white !important;
-      background-color: #135200;
-      border-color: #135200;
+      background-color: var(--green);
+      border-color: var(--green);
     }
 
     &:focus {
-      color: #135200;
+      color: var(--green);
       background-color: transparent;
-      border-color: #135200;
+      border-color: var(--green);
     }
   }
 
   &:hover {
-    color: #fc4c02;
+    color: var(--strava-orange);
     background-color: transparent;
-    border-color: #fc4c02;
+    border-color: var(--strava-orange);
   }
 
   &:focus {
-    color: #fc4c02;
+    color: var(--strava-orange);
     background-color: transparent;
-    border-color: #fc4c02;
+    border-color: var(--strava-orange);
   }
 }
 
