@@ -18,7 +18,7 @@ const iconTitle = (text, icon) => (
   </span>
 );
 
-export default function Statistics() {
+export default function Statistics({ activities }) {
   const { stats, setStats } = useContext(StatsContext);
   const { workouts, hours, miles } = stats.payload;
 
@@ -41,7 +41,7 @@ export default function Statistics() {
             title={iconTitle('Total Mileage', <LineChartOutlined />)}
             value={miles.toFixed(2)}
           />
-          <Trendline />
+          <Trendline activities={activities} />
           <Link className="ant-btn" to="/graph">
             More Graphs <LineChartOutlined style={{ marginLeft: '10px' }} />
           </Link>

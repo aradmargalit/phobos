@@ -77,7 +77,7 @@ function Home({ history }) {
       </div>
       <div className="container statistics">
         <h3>Your Statistics</h3>
-        <Statistics />
+        <Statistics activities={activities} />
       </div>
       <div className="container data-table">
         <h3>Your Activities</h3>

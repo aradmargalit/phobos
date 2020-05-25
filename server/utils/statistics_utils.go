@@ -116,16 +116,27 @@ func CalculateDayBreakdown(activities []models.ActivityResponse) (dayBreakdowns 
 	return
 }
 
-// CalculateLastWeek calculates the number of minutes every day for the current week
-func CalculateLastWeek(activities []models.ActivityResponse, utcOffset int) *[]float64 {
+// CalculateThisWeek calculates the number of minutes every day for the current week
+func CalculateThisWeek(activities []models.ActivityResponse, utcOffset int) *[]float64 {
 	// Need to find what today is based on UTC offset
 	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
 	now := time.Now().UTC().Add(-dur)
 
 	// Current day of week number
 	// Casting "Sunday" to an int returns 0, subtract one to make Monday "0" and mod 7 for safety
-	dow := (int(now.Weekday()) - 1) % 7
-	
-	// Super naive approach, but for every day this week, sum all activities that have that date
-	// for every activity starting with Monday, go back "i" days and sum activities from that day
+	dow := int(now.Weekday()) % 7
+
+	return CalculateLastNDays(activities, utcOffset, dow)
+}
+
+// CalculateThisMonth calculates the number of minutes every day for the current month
+func CalculateThisMonth(activities []models.ActivityResponse, utcOffset int) *[]float64 {
+	// Need to find what today is based on UTC offset
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", utcOffset))
+	now := time.Now().UTC().Add(-dur)
+
+	dayOfMonth := now.Day()
+	fmt.Println(dayOfMonth)
+
+	return CalculateLastNDays(activities, utcOffset, dayOfMonth)
 }

@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"server/utils"
 )
 
@@ -12,7 +11,6 @@ func (svc *service) GetTrendPoints(uid int, lookback string, utcOffset int) (*[]
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(lookback)
 
 	// We'll use a different utility function for each of these
 	switch lookback {
@@ -20,9 +18,12 @@ func (svc *service) GetTrendPoints(uid int, lookback string, utcOffset int) (*[]
 		return utils.CalculateLastNDays(activities, utcOffset, 10), nil
 	case "l7": // Last 7
 		return utils.CalculateLastNDays(activities, utcOffset, 7), nil
-	case "lw": // Last Week
+	case "lw": // This Week
 		// For this, we need to use a slightly different approach than counting, since there can be sparse days
-		return utils.CalculateLastWeek(activities, utcOffset), nil
+		return utils.CalculateThisWeek(activities, utcOffset), nil
+	case "lm": // This Month
+		// For this, we need to use a slightly different approach than counting, since there can be sparse days
+		return utils.CalculateThisMonth(activities, utcOffset), nil
 	default:
 		return nil, errors.New("lookback is invalid, must be one of [l10, l7, lw, lm]")
 	}
