@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"server/internal/models"
 	"server/internal/responsetypes"
 	"server/testdata"
@@ -113,6 +112,104 @@ func TestCalculateLastNDaysDense(t *testing.T) {
 		{
 			n: 9,
 			want: []float64{0, 0, 0, 0, 0, 0, 10, 10, 10},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+// Test that when there are gaps in the last N days, we account for them
+func TestCalculateLastNDaysSparse(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		activities = append(activities, models.ActivityResponse{
+			Activity: models.Activity{
+				Duration:     10,
+				ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-48 * i))).Format(dbLayout),
+			},
+		})
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{10},
+		},
+		{
+			n: 2,
+			want: []float64{0, 10},
+		},
+		{
+			n: 3,
+			want: []float64{10, 0, 10},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 10, 0, 10, 0, 10},
+		},
+	}
+
+	// Assert
+	for _, scenario := range scenarios {
+		got := CalculateLastNDays(&activities, 0, scenario.n)
+		assert.Equal(t, scenario.want, *got)
+	}
+}
+
+// Test that when there are multiple activities in a day, we account for that
+func TestCalculateLastNDaysStacked(t *testing.T) {
+	// Arrange
+	// Set up 3 activities
+	var activities []models.ActivityResponse
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 2; j++ {
+			activities = append(activities, models.ActivityResponse{
+				Activity: models.Activity{
+					Duration:     10,
+					ActivityDate: time.Now().UTC().Add(time.Hour * time.Duration((-24 * i))).Format(dbLayout),
+				},
+			})
+		}
+	}
+
+	// Act
+	scenarios := []struct{
+		n int
+		want []float64
+	} {
+		{
+			n: 0,
+			want: []float64(nil),
+		},
+		{
+			n: 1,
+			want: []float64{20},
+		},
+		{
+			n: 2,
+			want: []float64{20, 20},
+		},
+		{
+			n: 3,
+			want: []float64{20, 20, 20},
+		},
+		{
+			n: 9,
+			want: []float64{0, 0, 0, 0, 0, 0, 20, 20, 20},
 		},
 	}
 
