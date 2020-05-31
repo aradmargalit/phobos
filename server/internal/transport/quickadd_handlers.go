@@ -29,6 +29,7 @@ func makeGetQuickAddsHandler(svc service.PhobosAPI) func(*gin.Context) {
 		qas, err := svc.GetQuickAdds(uid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
 		}
 
 		c.JSON(http.StatusOK, *qas)

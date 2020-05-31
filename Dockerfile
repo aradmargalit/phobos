@@ -1,5 +1,5 @@
 # Phase 1: App Build
-FROM node:latest as builder
+FROM node:lts as builder
 
 WORKDIR /usr/src/app
 COPY ./deimos/package.json ./deimos/yarn.lock ./
@@ -10,10 +10,9 @@ COPY ./deimos ./
 RUN yarn build
 
 # Phase 2 : Server Build
-FROM golang:latest
-RUN mkdir /server 
-ADD ./server /server/ 
+FROM golang:1.14
 WORKDIR /server 
+ADD ./server ./ 
 
 # Copy in the compiled frontend app
 COPY --from=builder /usr/src/app/build ../deimos/build
