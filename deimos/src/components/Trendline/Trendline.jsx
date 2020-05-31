@@ -23,6 +23,8 @@ export default function Trendline({ activityTimtestamp }) {
 
   if (trendPoints.loading) return <Spin />;
 
+  const points = trendPoints.payload;
+
   return (
     <div className="trendline">
       <div className="trendline__label">
@@ -32,12 +34,12 @@ export default function Trendline({ activityTimtestamp }) {
           <Option value="lw">This Week</Option>
           <Option value="lm">This Month</Option>
         </Select>
-        <CountUp end={sumHours(trendPoints.payload)} decimals={2} decimal="." duration={2.5} />
+        <CountUp end={sumHours(points)} decimals={2} decimal="." duration={2.5} />
         <h3>hours total</h3>
       </div>
-      {trendPoints.payload.length > 1 ? (
+      {points && points.length > 1 ? (
         <ResponsiveContainer id="trendline-wrapper" width="100%">
-          <LineChart data={makeGraphData(trendPoints.payload)}>
+          <LineChart data={makeGraphData(points)}>
             <Line type="monotone" dataKey="datum" stroke="#0e5a6d" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>

@@ -132,7 +132,7 @@ func CalculateThisWeek(activities *[]models.ActivityResponse, utcOffset int) *[]
 
 	// Current day of week number
 	// Casting "Sunday" to an int returns 0, subtract one to make Monday "0" and mod 7 for safety
-	dow := int(now.Weekday()) % 7
+	dow := (int(now.Weekday()) % 7) + 1
 
 	return CalculateLastNDays(activities, utcOffset, dow)
 }
