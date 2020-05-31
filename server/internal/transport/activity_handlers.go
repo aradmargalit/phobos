@@ -47,6 +47,7 @@ func makeAddActivityHandler(svc service.PhobosAPI) func(*gin.Context) {
 		record, err := svc.AddActivity(&par, uid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
 		}
 
 		// Currently not consumed by the UI, but echo back the record
