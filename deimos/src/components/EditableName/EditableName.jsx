@@ -27,15 +27,15 @@ export default function EditableName({ name, record, refetch }) {
       activity_date: moment(record.activity_date),
     };
     await putActivity(activity);
-    setEditing(false);
     await refetch();
+    setEditing(false);
   };
 
   return (
     <div>
       {!editing ? (
         <Button type="link" className="editable-name-button" onClick={() => setEditing(true)}>
-          {inputValue}
+          {name}
         </Button>
       ) : (
         <>

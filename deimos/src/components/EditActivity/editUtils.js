@@ -16,13 +16,7 @@ const commonPut = async (setLoading, apiCall, values, refetch) => {
   setLoading(false);
 };
 
-export const onFinish = async (
-  values,
-  setLoading,
-  refetch,
-  activityId,
-  modalClose
-) => {
+export const onFinish = async (values, setLoading, refetch, activityId, modalClose) => {
   const activityToPut = { ...values };
   activityToPut.id = activityId;
   const putValues = {

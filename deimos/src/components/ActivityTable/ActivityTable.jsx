@@ -153,6 +153,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
 
   const closeModal = () => setEditModalVisible(false);
 
+  const filtered = filterActivities(searchTerm, activities);
   return (
     <div>
       <Search
@@ -163,7 +164,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
         onChange={onChangeHandler}
         width="50%"
       />
-      <Table rowKey="id" dataSource={filterActivities(searchTerm, activities)} columns={columns} />
+      <Table rowKey="id" dataSource={filtered} columns={columns} />
       <Modal
         title="Edit Activity"
         visible={editModalVisible}
