@@ -31,6 +31,9 @@ export default function IntervalGraph({
 }) {
   if (loading) return <Spin />;
 
+  // Used to calculate graph Y axis domain
+  const highestPoint = Math.max(...data.map(d => d[dataKey]));
+
   return (
     <div className="interval-graph-wrapper">
       <div className="graph-header">
@@ -56,7 +59,7 @@ export default function IntervalGraph({
             height={120}
             tick={<AngledGraphTick />}
           />
-          <YAxis />
+          <YAxis domain={[0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)]} />
           <CartesianGrid strokeDasharray="3 3" />
           <ReferenceLine
             y={average}
