@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { deleteActivity } from '../../apis/phobos-api';
 import { formatDate, minutesToHMS } from '../../utils/dataFormatUtils';
 import { makeDurationBreakdown } from '../../utils/durationUtils';
+import EditableName from '../EditableName';
 import EditActivity from '../EditActivity';
 import {
   activityTypeSorter,
@@ -108,7 +109,13 @@ export default function ActivityTable({ loading, activities, refetch }) {
       width: 70,
       sorter: numberSorter,
     },
-    { ...toCol('Name'), width: 250, sorter: nameSorter },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      width: 250,
+      sorter: nameSorter,
+      render: (name, record) => <EditableName name={name} record={record} refetch={refetch} />,
+    },
     // We want to format this one as the time it was entered, since it's time is 00:00:00
     // and we don't want to cross date boundaries by converting timezones
     { ...toCol('Activity Date', formatDate), sorter: dateSorter },

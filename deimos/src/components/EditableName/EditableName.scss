@@ -1,0 +1,13 @@
+.editable-name-button {
+  color: rgba(0, 0, 0, 0.65);
+
+  & > span {
+    overflow: hidden;
+    width: 200px;
+    text-align: left !important;
+  }
+}
+
+.editable-name-help {
+  font-size: 12px;
+}
