@@ -14,7 +14,7 @@ const projection = (data, intervalType) => {
     case 'year':
       return (365 * running) / moment().dayOfYear();
     case 'week':
-      return 7 * (running / moment().day());
+      return 7 * (running / (moment().day() + 1));
     default:
       return 0;
   }

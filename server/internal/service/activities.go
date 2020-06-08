@@ -108,7 +108,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 		return &[]responsetypes.IntervalSum{}, nil
 	}
 
-	intervals := bucketIntoIntervals(a, interval)
+	intervals := bucketIntoIntervals(a, interval, offset)
 
 	c1 := make(chan map[string]float64, 1)
 	c2 := make(chan map[string]float64, 1)
@@ -141,7 +141,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 	return &response, nil
 }
 
-func bucketIntoIntervals(activities []models.ActivityResponse, itvl string) []string {
+func bucketIntoIntervals(activities []models.ActivityResponse, itvl string, offset int) []string {
 	intervals := []string{}
 	var prev string
 	for _, a := range activities {
@@ -152,7 +152,14 @@ func bucketIntoIntervals(activities []models.ActivityResponse, itvl string) []st
 			intervals = append(intervals, activityInterval)
 			prev = activityInterval
 		}
+	}
 
+	// If there's no bucket for the current interval, make one
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
+	now := time.Now().UTC().Add(-dur)
+	nowString := timeToIntervalString(now, itvl)
+	if (intervals[0]) != nowString {
+		intervals = append(intervals, nowString)
 	}
 	return intervals
 }
