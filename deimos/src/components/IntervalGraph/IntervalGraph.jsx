@@ -41,9 +41,22 @@ export default function IntervalGraph({
   const [refRight, setRefRight] = useState('');
   const [dataSlice, setDataSlice] = useState(data);
 
-  useEffect(() => {
+  const zoomOut = () => {
     setDataSlice(data);
-  }, data.length);
+    setLeft('dataMin');
+    setRight('dataMax');
+    setTop(Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)));
+    setBottom(0);
+    setRefLeft('');
+    setRefRight('');
+  };
+
+  const dataString = data.map(d => d[xAxisKey]).join(',');
+
+  useEffect(() => {
+    // Whenever something changes, zoom out just to be safe
+    zoomOut();
+  }, [dataString]); // Need to map array to a string for dep array to work
 
   const getAxisYDomain = (leftBound, rightBound) => {
     // Data is already sorted, so push everything from left to right into an array
@@ -102,23 +115,15 @@ export default function IntervalGraph({
     setRefRight('');
   };
 
-  const zoomOut = () => {
-    setLeft('dataMin');
-    setRight('dataMax');
-    setTop(Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)));
-    setBottom(0);
-    setRefLeft('');
-    setRefRight('');
-    setDataSlice(data);
-  };
-
   if (loading) return <Spin />;
 
   return (
     <div className="interval-graph-wrapper">
       <div className="graph-header">
         <h2>{title}</h2>
-        <Button onClick={zoomOut}>Zoom Out</Button>
+        <Button disabled={left === 'dataMin'} onClick={zoomOut}>
+          Zoom Out
+        </Button>
       </div>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
