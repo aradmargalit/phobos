@@ -1,11 +1,12 @@
 import './IntervalGraph.scss';
 
-import { Spin } from 'antd';
-import React from 'react';
+import { Button, Spin } from 'antd';
+import React, { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceArea,
   ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
@@ -29,23 +30,106 @@ export default function IntervalGraph({
   unit,
   tooltipFormatter,
 }) {
-  if (loading) return <Spin />;
-
-  // Used to calculate graph Y axis domain
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
+  const [top, setTop] = useState(
+    Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1))
+  );
+  const [bottom, setBottom] = useState(0);
+  const [left, setLeft] = useState('dataMin');
+  const [right, setRight] = useState('dataMax');
+  const [refLeft, setRefLeft] = useState('');
+  const [refRight, setRefRight] = useState('');
+  const [dataSlice, setDataSlice] = useState(data);
+
+  useEffect(() => {
+    setDataSlice(data);
+  }, data.length);
+
+  const getAxisYDomain = (leftBound, rightBound) => {
+    // Data is already sorted, so push everything from left to right into an array
+    const newSlice = [];
+    let hitLeft = false;
+    let hitRight = false;
+    data.forEach(point => {
+      // If I'm done, return early
+      if (hitRight) return;
+
+      const xAxisValue = point[xAxisKey];
+
+      // If we aren't yet at the left bound, continue until we do.
+      if (!hitLeft) {
+        if (xAxisValue !== leftBound) return;
+        // If we haven't returned, we've hitleft!
+        hitLeft = true;
+      }
+
+      newSlice.push(point);
+
+      // Lastly, if this is the last point, cancel the for loop.
+      if (xAxisValue === rightBound) {
+        hitRight = true;
+      }
+    });
+
+    setDataSlice(newSlice);
+    return [0, Math.max(...newSlice.map(d => d[dataKey]))];
+  };
+
+  const zoomIn = () => {
+    let newLeft = refLeft;
+    let newRight = refRight;
+    if (refLeft === refRight || refRight === '') {
+      setRefLeft('');
+      setRefRight('');
+      return;
+    }
+
+    // If they drag right-to-left, swap them
+    const leftIndex = data.findIndex(x => x[xAxisKey] === refLeft);
+    const rightIndex = data.findIndex(x => x[xAxisKey] === refRight);
+    if (rightIndex < leftIndex) {
+      [newLeft, newRight] = [refRight, refLeft];
+    }
+
+    // yAxis domain
+    const [newBottom, newTop] = getAxisYDomain(newLeft, newRight);
+
+    setLeft(newLeft);
+    setRight(newRight);
+    setTop(newTop);
+    setBottom(newBottom);
+    setRefLeft('');
+    setRefRight('');
+  };
+
+  const zoomOut = () => {
+    setLeft('dataMin');
+    setRight('dataMax');
+    setTop(Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)));
+    setBottom(0);
+    setRefLeft('');
+    setRefRight('');
+    setDataSlice(data);
+  };
+
+  if (loading) return <Spin />;
 
   return (
     <div className="interval-graph-wrapper">
       <div className="graph-header">
         <h2>{title}</h2>
+        <Button onClick={zoomOut}>Zoom Out</Button>
       </div>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
           className="interval-graph"
-          data={data}
+          data={dataSlice}
           margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
           padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
           syncId="trulycouldnotmatterless"
+          onMouseDown={e => e && setRefLeft(e.activeLabel)}
+          onMouseMove={e => e && refLeft && setRefRight(e.activeLabel)}
+          onMouseUp={zoomIn}
         >
           <defs>
             <linearGradient id={`g-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
@@ -54,12 +138,14 @@ export default function IntervalGraph({
             </linearGradient>
           </defs>
           <XAxis
-            interval={data.length >= 50 ? 10 : Math.ceil(data.length / 5)}
+            allowDataOverflow
+            domain={[left, right]}
+            interval={dataSlice.length >= 50 ? 10 : Math.ceil(dataSlice.length / 5)}
             dataKey={xAxisKey}
             height={120}
             tick={<AngledGraphTick />}
           />
-          <YAxis domain={[0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)]} />
+          <YAxis domain={[bottom, top]} />
           <CartesianGrid strokeDasharray="3 3" />
           <ReferenceLine
             y={average}
@@ -89,7 +175,11 @@ export default function IntervalGraph({
             stroke={stroke}
             fillOpacity={1}
             fill={`url(#${`g-${dataKey}`})`}
+            animationDuration={800}
           />
+          {refLeft && refRight ? (
+            <ReferenceArea x1={refLeft} x2={refRight} strokeOpacity={0.3} />
+          ) : null}
         </AreaChart>
       </ResponsiveContainer>
     </div>

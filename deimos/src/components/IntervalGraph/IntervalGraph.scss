@@ -1,5 +1,9 @@
 .interval-graph {
   margin: 20px auto;
+
+  & > svg > g {
+    color: red;
+  }
 }
 
 .graph-header {
@@ -10,4 +14,15 @@
   & > h2 {
     margin: 0px 10px;
   }
+}
+
+.recharts-cartesian-axis-tick > text > tspan {
+  pointer-events: none;
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
