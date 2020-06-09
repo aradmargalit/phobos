@@ -5,6 +5,7 @@ import React from 'react';
 import IntervalGraph from '../IntervalGraph';
 
 const average = data => _meanBy(data, 'miles');
+const adjustedWeekNumber = ((moment().day() + 6) % 7) + 1;
 
 const projection = (data, intervalType) => {
   const running = data[data.length - 1].miles;
@@ -14,7 +15,7 @@ const projection = (data, intervalType) => {
     case 'year':
       return 365 * (running / moment().dayOfYear());
     case 'week':
-      return 7 * (running / (moment().day() + 1));
+      return 7 * (running / adjustedWeekNumber);
     default:
       return 0;
   }
