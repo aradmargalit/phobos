@@ -10,10 +10,6 @@
   display: flex;
   justify-content: center;
   margin-top: 25px;
-
-  & > h2 {
-    margin: 0px 10px;
-  }
 }
 
 .recharts-cartesian-axis-tick > text > tspan {

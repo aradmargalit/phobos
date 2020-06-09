@@ -121,17 +121,17 @@ export default function IntervalGraph({
     <div className="interval-graph-wrapper">
       <div className="graph-header">
         <h2>{title}</h2>
-        <Button disabled={left === 'dataMin'} onClick={zoomOut}>
-          Zoom Out
-        </Button>
       </div>
+      <p>Drag to select a range to focus on.</p>
+      <Button disabled={left === 'dataMin'} onClick={zoomOut}>
+        Zoom Out
+      </Button>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
           className="interval-graph"
           data={dataSlice}
           margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
           padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
-          syncId="trulycouldnotmatterless"
           onMouseDown={e => e && setRefLeft(e.activeLabel)}
           onMouseMove={e => e && refLeft && setRefRight(e.activeLabel)}
           onMouseUp={zoomIn}
