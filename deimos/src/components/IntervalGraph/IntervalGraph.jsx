@@ -31,24 +31,22 @@ export default function IntervalGraph({
   tooltipFormatter,
 }) {
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  const [top, setTop] = useState(
-    Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1))
-  );
-  const [bottom, setBottom] = useState(0);
-  const [left, setLeft] = useState('dataMin');
-  const [right, setRight] = useState('dataMax');
-  const [refLeft, setRefLeft] = useState('');
-  const [refRight, setRefRight] = useState('');
-  const [dataSlice, setDataSlice] = useState(data);
+  const defaultTop = Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1));
+
+  const initialState = {
+    top: defaultTop,
+    bottom: 0,
+    left: 'dataMin',
+    right: 'dataMax',
+    refLeft: '',
+    refRight: '',
+    dataSlice: data,
+  };
+
+  const [state, setState] = useState(initialState);
 
   const zoomOut = () => {
-    setDataSlice(data);
-    setLeft('dataMin');
-    setRight('dataMax');
-    setTop(Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1)));
-    setBottom(0);
-    setRefLeft('');
-    setRefRight('');
+    setState(initialState);
   };
 
   const dataString = data.map(d => d[xAxisKey]).join(',');
@@ -84,16 +82,15 @@ export default function IntervalGraph({
       }
     });
 
-    setDataSlice(newSlice);
-    return [0, Math.max(...newSlice.map(d => d[dataKey]))];
+    return [0, Math.max(...newSlice.map(d => d[dataKey])), newSlice];
   };
 
   const zoomIn = () => {
+    const { refLeft, refRight } = state;
     let newLeft = refLeft;
     let newRight = refRight;
     if (refLeft === refRight || refRight === '') {
-      setRefLeft('');
-      setRefRight('');
+      setState({ ...state, refLeft: '', refRight: '' });
       return;
     }
 
@@ -105,17 +102,22 @@ export default function IntervalGraph({
     }
 
     // yAxis domain
-    const [newBottom, newTop] = getAxisYDomain(newLeft, newRight);
+    const [newBottom, newTop, newSlice] = getAxisYDomain(newLeft, newRight);
 
-    setLeft(newLeft);
-    setRight(newRight);
-    setTop(newTop);
-    setBottom(newBottom);
-    setRefLeft('');
-    setRefRight('');
+    setState({
+      dataSlice: newSlice,
+      left: newLeft,
+      right: newRight,
+      top: newTop,
+      bottom: newBottom,
+      refLeft: '',
+      refRight: '',
+    });
   };
 
   if (loading) return <Spin />;
+
+  const { left, right, top, bottom, refLeft, refRight, dataSlice } = state;
 
   return (
     <div className="interval-graph-wrapper">
@@ -123,7 +125,7 @@ export default function IntervalGraph({
         <h2>{title}</h2>
       </div>
       <p>Drag to select a range to focus on.</p>
-      <Button disabled={left === 'dataMin'} onClick={zoomOut}>
+      <Button disabled={state.left === 'dataMin'} onClick={zoomOut}>
         Zoom Out
       </Button>
       <ResponsiveContainer width="100%" height={450}>
@@ -132,8 +134,8 @@ export default function IntervalGraph({
           data={dataSlice}
           margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
           padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
-          onMouseDown={e => e && setRefLeft(e.activeLabel)}
-          onMouseMove={e => e && refLeft && setRefRight(e.activeLabel)}
+          onMouseDown={e => e && setState({ ...state, refLeft: e.activeLabel })}
+          onMouseMove={e => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
           onMouseUp={zoomIn}
         >
           <defs>
