@@ -34,7 +34,7 @@ const getInterval = dataLength => {
 };
 
 // Takes the highest point in the graph, adds a cushion, and rounding it off
-const maxToCeiling = max => Math.ceil(max * 1.1);
+const maxToCeiling = max => Math.max(Math.ceil(max * 1.1), 1);
 
 const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound) => {
   // Data is already sorted, so push everything from left to right into an array
