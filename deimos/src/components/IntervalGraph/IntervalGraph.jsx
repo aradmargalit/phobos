@@ -17,6 +17,9 @@ import {
 
 import AngledGraphTick from '../AngledGraphTick';
 
+// Takes the highest point in the graph, adds a cushion, and rounding it off
+const maxToCeiling = max => Math.ceil(max * 1.1);
+
 export default function IntervalGraph({
   loading,
   data,
@@ -31,7 +34,7 @@ export default function IntervalGraph({
   tooltipFormatter,
 }) {
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  const defaultTop = Math.max(0, Math.ceil(Math.max(projection.y, highestPoint) * 1.1));
+  const defaultTop = Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint)));
 
   const initialState = {
     top: defaultTop,
@@ -45,15 +48,15 @@ export default function IntervalGraph({
 
   const [state, setState] = useState(initialState);
 
-  const zoomOut = () => {
-    setState(initialState);
+  const zoomOut = initState => {
+    setState(initState);
   };
 
   const dataString = data.map(d => d[xAxisKey]).join(',');
 
   useEffect(() => {
     // Whenever something changes, zoom out just to be safe
-    zoomOut();
+    zoomOut(initialState);
   }, [dataString]); // Need to map array to a string for dep array to work
 
   const getAxisYDomain = (leftBound, rightBound) => {
@@ -82,7 +85,7 @@ export default function IntervalGraph({
       }
     });
 
-    return [0, Math.max(...newSlice.map(d => d[dataKey])), newSlice];
+    return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey]))), newSlice];
   };
 
   const zoomIn = () => {
@@ -125,7 +128,7 @@ export default function IntervalGraph({
         <h2>{title}</h2>
       </div>
       <p>Drag to select a range to focus on.</p>
-      <Button disabled={state.left === 'dataMin'} onClick={zoomOut}>
+      <Button disabled={state.left === 'dataMin'} onClick={() => zoomOut(initialState)}>
         Zoom Out
       </Button>
       <ResponsiveContainer width="100%" height={450}>
