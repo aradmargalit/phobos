@@ -17,6 +17,22 @@ import {
 
 import AngledGraphTick from '../AngledGraphTick';
 
+// Determine X Axis interval
+const getInterval = dataLength => {
+  // If there are few points, we can show them all
+  if (dataLength <= 10) {
+    return 0;
+  }
+
+  // If there are between 10 and 75 items, tick every 5.
+  if (dataLength > 10 && dataLength <= 75) {
+    return 5;
+  }
+
+  // If there are more than 75, default to soem sane number, like 10
+  return 10;
+};
+
 // Takes the highest point in the graph, adds a cushion, and rounding it off
 const maxToCeiling = max => Math.ceil(max * 1.1);
 
@@ -97,6 +113,9 @@ export default function IntervalGraph({
 
   if (loading) return <Spin />;
 
+  // Helper to determine if we are zoomedIn
+  const isZoomed = state.left !== 'dataMin';
+
   const zoomIn = () => {
     const { refLeft, refRight } = state;
     let newLeft = refLeft;
@@ -143,7 +162,7 @@ export default function IntervalGraph({
         <h2>{title}</h2>
       </div>
       <p>Drag to select a range to focus on.</p>
-      <Button disabled={state.left === 'dataMin'} onClick={() => setState(initialState)}>
+      <Button disabled={!isZoomed} onClick={() => setState(initialState)}>
         Zoom Out
       </Button>
       <ResponsiveContainer width="100%" height={450}>
@@ -165,34 +184,38 @@ export default function IntervalGraph({
           <XAxis
             allowDataOverflow
             domain={[left, right]}
-            interval={dataSlice.length >= 50 ? 10 : Math.ceil(dataSlice.length / 5)}
+            interval={getInterval(dataSlice.length)}
             dataKey={xAxisKey}
             height={120}
             tick={<AngledGraphTick />}
           />
           <YAxis domain={[bottom, top]} />
           <CartesianGrid strokeDasharray="3 3" />
-          <ReferenceLine
-            y={average}
-            stroke={stroke}
-            strokeDasharray="3 3"
-            label={{
-              position: 'top',
-              fontWeight: 600,
-              value: `${unit}ly Average: ${average.toFixed(1)}`,
-            }}
-          />
-          <ReferenceDot
-            x={projection.x}
-            y={projection.y}
-            stroke={stroke}
-            strokeDasharray="3 3"
-            label={{
-              position: 'left',
-              fontWeight: 600,
-              value: `This ${unit}'s Projection: ${projection.y.toFixed(1)}`,
-            }}
-          />
+          {!isZoomed && (
+            <ReferenceLine
+              y={average}
+              stroke={stroke}
+              strokeDasharray="3 3"
+              label={{
+                position: 'top',
+                fontWeight: 600,
+                value: `${unit}ly Average: ${average.toFixed(1)}`,
+              }}
+            />
+          )}
+          {!isZoomed && (
+            <ReferenceDot
+              x={projection.x}
+              y={projection.y}
+              stroke={stroke}
+              strokeDasharray="3 3"
+              label={{
+                position: 'left',
+                fontWeight: 600,
+                value: `This ${unit}'s Projection: ${projection.y.toFixed(1)}`,
+              }}
+            />
+          )}
           <Tooltip separator={null} formatter={tooltipFormatter} animationDuration={300} />
           <Area
             dataKey={dataKey}
