@@ -20,6 +20,41 @@ import AngledGraphTick from '../AngledGraphTick';
 // Takes the highest point in the graph, adds a cushion, and rounding it off
 const maxToCeiling = max => Math.ceil(max * 1.1);
 
+const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound) => {
+  // Data is already sorted, so push everything from left to right into an array
+  // Once we find the data point at the left bound, set hitLeft to true
+  // Once we reach the data point at the right bound, set hitRight to true
+  const newSlice = [];
+  let hitLeft = false;
+  let hitRight = false;
+
+  // For each data point, either skip or push it to newSlice, depending on if it's "in bounds"
+  data.forEach(point => {
+    // If I'm done, because I already found the right bound, return early
+    if (hitRight) return;
+
+    const xAxisValue = point[xAxisKey];
+
+    // If we aren't yet at the left bound, continue until we do.
+    if (!hitLeft) {
+      if (xAxisValue !== leftBound) return;
+      // If we haven't returned, we've hitleft!
+      hitLeft = true;
+    }
+
+    // If we didn't return earlier, we're neither before left bound nor ahead of right bound
+    // which means it's safe to push in
+    newSlice.push(point);
+
+    // Lastly, if this is the last point, cancel the for loop by setting hitRight to true
+    if (xAxisValue === rightBound) {
+      hitRight = true;
+    }
+  });
+
+  return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey]))), newSlice];
+};
+
 export default function IntervalGraph({
   loading,
   data,
@@ -33,9 +68,11 @@ export default function IntervalGraph({
   unit,
   tooltipFormatter,
 }) {
+  // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
   const defaultTop = Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint)));
 
+  // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
   const initialState = {
     top: defaultTop,
     bottom: 0,
@@ -48,56 +85,30 @@ export default function IntervalGraph({
 
   const [state, setState] = useState(initialState);
 
-  const zoomOut = initState => {
-    setState(initState);
-  };
-
+  // For React to know if "data" has changed, it needs to either always be the same length
+  // which is impossible, so join the data to a string.
   const dataString = data.map(d => d[xAxisKey]).join(',');
 
   useEffect(() => {
     // Whenever something changes, zoom out just to be safe
-    zoomOut(initialState);
-  }, [dataString]); // Need to map array to a string for dep array to work
+    setState(initialState);
+    // eslint-disable-next-line
+  }, [dataString]);
 
-  const getAxisYDomain = (leftBound, rightBound) => {
-    // Data is already sorted, so push everything from left to right into an array
-    const newSlice = [];
-    let hitLeft = false;
-    let hitRight = false;
-    data.forEach(point => {
-      // If I'm done, return early
-      if (hitRight) return;
-
-      const xAxisValue = point[xAxisKey];
-
-      // If we aren't yet at the left bound, continue until we do.
-      if (!hitLeft) {
-        if (xAxisValue !== leftBound) return;
-        // If we haven't returned, we've hitleft!
-        hitLeft = true;
-      }
-
-      newSlice.push(point);
-
-      // Lastly, if this is the last point, cancel the for loop.
-      if (xAxisValue === rightBound) {
-        hitRight = true;
-      }
-    });
-
-    return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey]))), newSlice];
-  };
+  if (loading) return <Spin />;
 
   const zoomIn = () => {
     const { refLeft, refRight } = state;
     let newLeft = refLeft;
     let newRight = refRight;
+
+    // If the bounds are the same, or there's no right bound yet, return and clear refs
     if (refLeft === refRight || refRight === '') {
       setState({ ...state, refLeft: '', refRight: '' });
       return;
     }
 
-    // If they drag right-to-left, swap them
+    // If they drag right-to-left, swap them so it's as if they dragged left to right
     const leftIndex = data.findIndex(x => x[xAxisKey] === refLeft);
     const rightIndex = data.findIndex(x => x[xAxisKey] === refRight);
     if (rightIndex < leftIndex) {
@@ -105,7 +116,13 @@ export default function IntervalGraph({
     }
 
     // yAxis domain
-    const [newBottom, newTop, newSlice] = getAxisYDomain(newLeft, newRight);
+    const [newBottom, newTop, newSlice] = getAxisYDomain(
+      data,
+      dataKey,
+      xAxisKey,
+      newLeft,
+      newRight
+    );
 
     setState({
       dataSlice: newSlice,
@@ -118,8 +135,6 @@ export default function IntervalGraph({
     });
   };
 
-  if (loading) return <Spin />;
-
   const { left, right, top, bottom, refLeft, refRight, dataSlice } = state;
 
   return (
@@ -128,7 +143,7 @@ export default function IntervalGraph({
         <h2>{title}</h2>
       </div>
       <p>Drag to select a range to focus on.</p>
-      <Button disabled={state.left === 'dataMin'} onClick={() => zoomOut(initialState)}>
+      <Button disabled={state.left === 'dataMin'} onClick={() => setState(initialState)}>
         Zoom Out
       </Button>
       <ResponsiveContainer width="100%" height={450}>
