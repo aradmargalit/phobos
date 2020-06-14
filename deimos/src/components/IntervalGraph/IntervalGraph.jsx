@@ -193,7 +193,7 @@ export default function IntervalGraph({
             height={120}
             tick={<AngledGraphTick />}
           />
-          <YAxis domain={[bottom, top]} />
+          <YAxis domain={[bottom, top]} padding={{ top: fixedTop ? 10 : 0 }} />
           <CartesianGrid strokeDasharray="3 3" />
           {!isZoomed && (
             <ReferenceLine

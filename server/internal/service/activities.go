@@ -278,8 +278,7 @@ func timeToIntervalString(t time.Time, itvl string) string {
 	case "week":
 		year, week := t.ISOWeek()
 		month := t.Month()
-		weekOfMonth := week / int(month)
-		return fmt.Sprintf("%v %v, week %v", month.String()[:3], year, weekOfMonth)
+		return fmt.Sprintf("%v, week %v (%v)", year, week, month.String()[:3])
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
 	return ""
@@ -296,9 +295,7 @@ func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
 	case "week":
 		year, week := t.ISOWeek()
 		month := t.Month()
-		weekOfMonth := week / int(month)
-		return fmt.Sprintf("%v %v, week %v", month.String()[:3], year, weekOfMonth) == interval
-
+		return fmt.Sprintf("%v, week %v (%v)", year, week, month.String()[:3]) == interval
 	}
 	return false
 }
