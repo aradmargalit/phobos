@@ -62,9 +62,9 @@ func TestCalculateDayBreakdown(t *testing.T) {
 	// Create 20 1 mile runs
 	activities := testdata.GetActivityResponses(20, 24)
 	want := []responsetypes.DayBreakdown([]responsetypes.DayBreakdown{
-		{DOW: "Monday", Count: 2},
+		{DOW: "Monday", Count: 3},
 		{DOW: "Tuesday", Count: 3},
-		{DOW: "Wednesday", Count: 3},
+		{DOW: "Wednesday", Count: 2},
 		{DOW: "Thursday", Count: 3},
 		{DOW: "Friday", Count: 3},
 		{DOW: "Saturday", Count: 3},
