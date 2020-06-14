@@ -12,8 +12,8 @@ func GetActivityResponses(n int, dateStepHours int) []models.ActivityResponse {
 	activities := []models.ActivityResponse{}
 	startDate, _ := time.Parse(constants.DBLayout, "2001-01-02 03:04:05")
 
-	for i := 1; i <= n; i++ {
-		step, _ := time.ParseDuration(fmt.Sprintf("%vh", dateStepHours*(i-1)))
+	for i := n; i >= 1; i-- {
+		step, _ := time.ParseDuration(fmt.Sprintf("%vh", dateStepHours*(i+1)))
 		activities = append(activities, models.ActivityResponse{
 			Activity: models.Activity{
 				ID:           i,

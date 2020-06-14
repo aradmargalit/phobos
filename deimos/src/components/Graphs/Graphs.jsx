@@ -1,7 +1,6 @@
 import './Graphs.scss';
 
 import { Empty, Select, Spin } from 'antd';
-import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { fetchStatistics, fetchSummariesByInterval } from '../../apis/phobos-api';
@@ -42,20 +41,7 @@ export default function Graphs() {
 
   const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats.payload;
 
-  let data;
-  if (interval === 'year' || interval === 'month') {
-    data = intervalData.payload.sort(
-      (a, b) => moment(new Date(a.interval)) - moment(new Date(b.interval))
-    );
-  } else {
-    data = intervalData.payload.sort((a, b) => {
-      const [yearA, weekA] = a.interval.split(', week ');
-      const [yearB, weekB] = b.interval.split(', week ');
-
-      // eslint-disable-next-line radix
-      return yearA !== yearB ? yearA.localeCompare(yearB) : parseInt(weekA) - parseInt(weekB);
-    });
-  }
+  const data = intervalData.payload.reverse();
 
   return (
     <div className="graphs">

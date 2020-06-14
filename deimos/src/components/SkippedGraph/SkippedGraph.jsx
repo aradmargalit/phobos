@@ -1,30 +1,14 @@
 import { meanBy as _meanBy, startCase as _startCase } from 'lodash';
-import moment from 'moment';
 import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'skipped');
-const adjustedWeekNumber = ((moment().day() + 6) % 7) + 1;
-
-const projection = (data, intervalType) => {
-  const running = data[data.length - 1].skipped;
-  switch (intervalType) {
-    case 'month':
-      return moment().daysInMonth() * (running / moment(new Date()).date());
-    case 'year':
-      return 365 * (running / moment().dayOfYear());
-    case 'week':
-      return 7 * (running / adjustedWeekNumber);
-    default:
-      return 0;
-  }
-};
+const average = data => _meanBy(data, 'percentage');
 
 export default function SkippedGraph({ loading, intervalData, intervalType }) {
-  const data = intervalData.map(({ interval, days_skipped: daysSkipped }) => ({
+  const data = intervalData.map(({ interval, percentage_active: percentageActive }) => ({
     interval,
-    skipped: parseFloat(daysSkipped),
+    percentage: parseFloat(percentageActive),
   }));
 
   const startCaseIntervalType = _startCase(intervalType);
@@ -34,14 +18,14 @@ export default function SkippedGraph({ loading, intervalData, intervalType }) {
       loading={loading}
       data={data}
       average={average(data)}
-      projection={{ x: data[data.length - 1].interval, y: projection(data, intervalType) }}
-      title={`${startCaseIntervalType}ly Days Skipped`}
+      title={`Percentage of Days per ${startCaseIntervalType} Active`}
       color="#9055A2"
       stroke="#2E294E"
       xAxisKey="interval"
-      dataKey="skipped"
+      dataKey="percentage"
       unit={startCaseIntervalType}
-      tooltipFormatter={value => [`${value} Days Skipped`, '']}
+      tooltipFormatter={value => [`${value}% of Days with a Workout`, '']}
+      fixedTop={100}
     />
   );
 }
