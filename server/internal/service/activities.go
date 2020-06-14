@@ -200,6 +200,12 @@ func makeDistanceMap(activities []models.ActivityResponse, intervals []string, i
 }
 
 func makeSkippedMap(activities []models.ActivityResponse, intervals []string, itvl string, offset int, c chan map[string]float64) {
+	// Used to keep track of an intervals "hits" (days worked out) and totals
+	type hitCounter struct {
+		hits  int
+		total int
+	}
+
 	// ALGORITHM:
 	// We want to go through every day since the user's first activity and, if they worked out on that date add to a count for that interval
 	// Regardless of whether or not they worked out, mark it in a "total" field, to later define a percentage
@@ -207,9 +213,12 @@ func makeSkippedMap(activities []models.ActivityResponse, intervals []string, it
 
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)
 
-	type hitCounter struct {
-		hits  int
-		total int
+	// Make a Set of all activity dates
+	// Go doesn't have sets, but we can use a map["some type"]bool
+	activityDateSet := map[time.Time]bool{}
+	for _, activity := range activities {
+		t, _ := time.Parse("2006-01-02 15:04:05", activity.ActivityDate)
+		activityDateSet[utils.RoundTimeToDay(t)] = true
 	}
 
 	intervalToHitTotalMap := map[string]hitCounter{}
@@ -227,43 +236,28 @@ func makeSkippedMap(activities []models.ActivityResponse, intervals []string, it
 	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
 	now := time.Now().UTC().Add(-dur)
 
-	var lastHit *time.Time
-
-	// For each date, check if any activities match that date
+	// For each date from now to the first activity, working backwords,
+	// check if any activities match that date
 	for d := now; !utils.DateEqual(d, firstActivityDate); d = d.AddDate(0, 0, -1) {
 		dateToCheck := utils.RoundTimeToDay(d)
 		intervalFromDate := timeToIntervalString(dateToCheck, itvl)
 		currHits := intervalToHitTotalMap[intervalFromDate].hits
 		currTotal := intervalToHitTotalMap[intervalFromDate].total
 
-		for _, a := range activities {
-			t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
-
-			// Use this as a "starting point" for the activities
-			if lastHit != nil && lastHit.Before(t) {
-				continue
-			}
-
-			// If we've already passed the date, just continue
-			if (dateToCheck).After(t) {
-				break
-			}
-
-			if utils.RoundTimeToDay(t) == dateToCheck {
-				lastHit = &t
-				currHits++
-				break
-			}
+		if _, ok := activityDateSet[dateToCheck]; ok {
+			currHits++
 		}
 
+		// Always add to the total, even if there's no hit
 		currTotal++
 		intervalToHitTotalMap[intervalFromDate] = hitCounter{hits: currHits, total: currTotal}
 	}
 
+	// Now that we have counts, convert those to percentages
 	percentages := map[string]float64{}
 	for interval, counts := range intervalToHitTotalMap {
 		percentage := (float64(counts.hits) / float64(counts.total))
-		percentages[interval] = percentage * 100
+		percentages[interval] = utils.FloatTwoDecimals(percentage * 100)
 	}
 
 	c <- percentages

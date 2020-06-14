@@ -3,13 +3,12 @@ import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'rawPercentage');
+const average = data => _meanBy(data, 'percentage');
 
 export default function SkippedGraph({ loading, intervalData, intervalType }) {
-  const data = intervalData.map(({ interval, days_skipped: daysSkipped }) => ({
+  const data = intervalData.map(({ interval, percentage_active: percentageActive }) => ({
     interval,
-    rawPercentage: parseFloat(daysSkipped),
-    percentage: parseFloat(daysSkipped).toFixed(2),
+    percentage: parseFloat(percentageActive),
   }));
 
   const startCaseIntervalType = _startCase(intervalType);
