@@ -114,11 +114,11 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 
 	go makeDurationMap(a, intervals, interval, c1)
 	go makeDistanceMap(a, intervals, interval, c2)
-	go makeSkippedMap(a, intervals, interval, offset, c3)
+	go makePercentageActiveMap(a, intervals, interval, offset, c3)
 
 	durationMap := <-c1
 	distanceMap := <-c2
-	skippedMap := <-c3
+	percentActiveMap := <-c3
 
 	/* This is in the format:
 	{
@@ -132,7 +132,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 
 	response := []responsetypes.IntervalSum{}
 	for _, itvl := range intervals {
-		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], PercentageActive: skippedMap[itvl]}
+		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], PercentageActive: percentActiveMap[itvl]}
 		response = append(response, mSum)
 	}
 
@@ -195,7 +195,7 @@ func makeDistanceMap(activities []models.ActivityResponse, intervals []string, i
 	c <- distanceMap
 }
 
-func makeSkippedMap(activities []models.ActivityResponse, intervals []string, itvl string, offset int, c chan map[string]float64) {
+func makePercentageActiveMap(activities []models.ActivityResponse, intervals []string, itvl string, offset int, c chan map[string]float64) {
 	// Used to keep track of an intervals "hits" (days worked out) and totals
 	type hitCounter struct {
 		hits  int
