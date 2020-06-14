@@ -131,9 +131,7 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 	*/
 
 	response := []responsetypes.IntervalSum{}
-	counter := 0
 	for _, itvl := range intervals {
-		counter++
 		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], PercentageActive: skippedMap[itvl]}
 		response = append(response, mSum)
 	}
