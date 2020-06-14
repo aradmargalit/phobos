@@ -6,8 +6,6 @@ import (
 	"server/internal/models"
 	"server/internal/responsetypes"
 	"server/utils"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -276,20 +274,4 @@ func timeToIntervalString(t time.Time, itvl string) string {
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
 	return ""
-}
-
-func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
-	switch itvl {
-	case "year":
-		return strconv.Itoa(t.Year()) == interval
-	case "month":
-		m := strings.Split(interval, " ")[0]
-		y := strings.Split(interval, " ")[1]
-		return t.Month().String() == m && strconv.Itoa(t.Year()) == y
-	case "week":
-		year, week := t.ISOWeek()
-		month := t.Month()
-		return fmt.Sprintf("%v, week %v (%v)", year, week, month.String()[:3]) == interval
-	}
-	return false
 }

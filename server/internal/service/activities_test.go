@@ -219,10 +219,10 @@ func TestGetIntervalSummary(t *testing.T) {
 	assert.NoError(t, err)
 
 	want := responsetypes.IntervalSum{
-		Interval:         "January 2001",    // Our generator only creates 20 days in January
-		Duration:         20,                // Each activity is 1 minute (x20 => 20min)
-		Miles:            20,                // Each activity is 1 mile (x20 => 20 miles)
-		PercentageActive: 70.37, // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+		Interval:         "January 2001", // Our generator only creates 20 days in January
+		Duration:         20,             // Each activity is 1 minute (x20 => 20min)
+		Miles:            20,             // Each activity is 1 mile (x20 => 20 miles)
+		PercentageActive: 70.37,          // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
 	}
 
 	assert.Equal(t, want, (*result)[0])
