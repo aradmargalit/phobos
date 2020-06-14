@@ -133,8 +133,10 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 	*/
 
 	response := []responsetypes.IntervalSum{}
+	counter := 0
 	for _, itvl := range intervals {
-		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], DaysSkipped: skippedMap[itvl]}
+		counter++
+		mSum := responsetypes.IntervalSum{Interval: itvl, SortIndex: counter, Duration: durationMap[itvl], Miles: distanceMap[itvl], DaysSkipped: skippedMap[itvl]}
 		response = append(response, mSum)
 	}
 
@@ -198,43 +200,73 @@ func makeDistanceMap(activities []models.ActivityResponse, intervals []string, i
 }
 
 func makeSkippedMap(activities []models.ActivityResponse, intervals []string, itvl string, offset int, c chan map[string]float64) {
-	// In order to figure out which days have no activities, we start with an array with every day from
-	// their first activity until now
+	// ALGORITHM:
+	// We want to go through every day since the user's first activity and, if they worked out on that date add to a count for that interval
+	// Regardless of whether or not they worked out, mark it in a "total" field, to later define a percentage
+	// At the end, go through the map of interval to hits and total and write the result percentage to the channel
+
 	firstActivityDate, _ := time.Parse("2006-01-02 15:04:05", activities[len(activities)-1].ActivityDate)
 
-	// Make a map of days to whether or not they were skipped
-	skippedMap := map[time.Time]bool{}
+	type hitCounter struct {
+		hits  int
+		total int
+	}
 
-	// Start by assuming each date is skipped, we'll invalidate that assumption as we go
+	intervalToHitTotalMap := map[string]hitCounter{}
+
+	// To make things easy, initialize the map with 0s
+	for _, itvl := range intervals {
+		intervalToHitTotalMap[itvl] = struct {
+			hits  int
+			total int
+		}{hits: 0, total: 0}
+	}
+
+	// Go through each date and add to the total, conditionally add to the "hit"
 	// Need to use UTC for time.Now() since the server is deployed in UTC
 	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
 	now := time.Now().UTC().Add(-dur)
-	for d := firstActivityDate; !utils.DateEqual(d, now.AddDate(0, 0, 1)); d = d.AddDate(0, 0, 1) {
-		skippedMap[utils.RoundTimeToDay(d)] = true
-	}
 
-	for _, a := range activities {
-		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
+	var lastHit *time.Time
 
-		// Go into our date map and mark the date as unskipped
-		skippedMap[utils.RoundTimeToDay(t)] = false
-	}
+	// For each date, check if any activities match that date
+	for d := now; !utils.DateEqual(d, firstActivityDate); d = d.AddDate(0, 0, -1) {
+		dateToCheck := utils.RoundTimeToDay(d)
+		intervalFromDate := timeToIntervalString(dateToCheck, itvl)
+		currHits := intervalToHitTotalMap[intervalFromDate].hits
+		currTotal := intervalToHitTotalMap[intervalFromDate].total
 
-	// After going through every activity, we need to summarize the skipped days
-	groupedSkips := map[string]float64{}
+		for _, a := range activities {
+			t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
-	for _, interval := range intervals {
-		groupedSkips[interval] = 0
+			// Use this as a "starting point" for the activities
+			if lastHit != nil && lastHit.Before(t) {
+				continue
+			}
 
-		// For each skipped activity, see if it matches, and if so, add it to the tally
-		for t, wasSkipped := range skippedMap {
-			if wasSkipped && matchesIntervalDate(t, interval, itvl) {
-				groupedSkips[interval]++
+			// If we've already passed the date, just continue
+			if (dateToCheck).After(t) {
+				break
+			}
+
+			if utils.RoundTimeToDay(t) == dateToCheck {
+				lastHit = &t
+				currHits++
+				break
 			}
 		}
+
+		currTotal++
+		intervalToHitTotalMap[intervalFromDate] = hitCounter{hits: currHits, total: currTotal}
 	}
 
-	c <- groupedSkips
+	percentages := map[string]float64{}
+	for interval, counts := range intervalToHitTotalMap {
+		percentage := (float64(counts.hits) / float64(counts.total))
+		percentages[interval] = percentage * 100
+	}
+
+	c <- percentages
 }
 
 func timeToIntervalString(t time.Time, itvl string) string {
@@ -245,7 +277,9 @@ func timeToIntervalString(t time.Time, itvl string) string {
 		return fmt.Sprintf("%v %v", t.Month(), t.Year())
 	case "week":
 		year, week := t.ISOWeek()
-		return fmt.Sprintf("%v, week %v", year, week)
+		month := t.Month()
+		weekOfMonth := week / int(month)
+		return fmt.Sprintf("%v %v, week %v", month.String()[:3], year, weekOfMonth)
 	}
 	// Theoretically this could happen, but we're bouncing requests that this switch wouldn't catch
 	return ""
@@ -261,7 +295,9 @@ func matchesIntervalDate(t time.Time, interval string, itvl string) bool {
 		return t.Month().String() == m && strconv.Itoa(t.Year()) == y
 	case "week":
 		year, week := t.ISOWeek()
-		return fmt.Sprintf("%v, week %v", year, week) == interval
+		month := t.Month()
+		weekOfMonth := week / int(month)
+		return fmt.Sprintf("%v %v, week %v", month.String()[:3], year, weekOfMonth) == interval
 
 	}
 	return false

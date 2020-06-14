@@ -34,9 +34,9 @@ const getInterval = dataLength => {
 };
 
 // Takes the highest point in the graph, adds a cushion, and rounding it off
-const maxToCeiling = max => Math.max(Math.ceil(max * 1.1), 1);
+const maxToCeiling = (max, fixedTop) => fixedTop || Math.max(Math.ceil(max * 1.1), 1);
 
-const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound) => {
+const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound, fixedTop) => {
   // Data is already sorted, so push everything from left to right into an array
   // Once we find the data point at the left bound, set hitLeft to true
   // Once we reach the data point at the right bound, set hitRight to true
@@ -68,7 +68,7 @@ const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound) => {
     }
   });
 
-  return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey]))), newSlice];
+  return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey])), fixedTop), newSlice];
 };
 
 export default function IntervalGraph({
@@ -83,10 +83,13 @@ export default function IntervalGraph({
   xAxisKey,
   unit,
   tooltipFormatter,
+  fixedTop,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  const defaultTop = Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint)));
+  const defaultTop = projection
+    ? Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint), fixedTop))
+    : maxToCeiling(highestPoint, fixedTop);
 
   // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
   const initialState = {
@@ -140,7 +143,8 @@ export default function IntervalGraph({
       dataKey,
       xAxisKey,
       newLeft,
-      newRight
+      newRight,
+      fixedTop
     );
 
     setState({
@@ -203,7 +207,7 @@ export default function IntervalGraph({
               }}
             />
           )}
-          {!isZoomed && (
+          {!isZoomed && projection && (
             <ReferenceDot
               x={projection.x}
               y={projection.y}
