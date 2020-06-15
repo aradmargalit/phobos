@@ -1,3 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<CalculatedActivityFields /> renders correctly 1`] = `ShallowWrapper {}`;
+exports[`<CalculatedActivityFields /> renders correctly 1`] = `
+<withConfigConsumer(Statistic)
+  className="form-statistic"
+  formatter={[Function]}
+  title="min / mile"
+  value={20}
+/>
+`;
