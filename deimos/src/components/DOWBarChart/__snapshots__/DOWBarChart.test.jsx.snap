@@ -1,0 +1,124 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<DOWBarChart /> renders correctly 1`] = `
+<div
+  className="statistics--dow"
+>
+  <h3>
+    Daily Breakdown
+  </h3>
+  <ResponsiveContainer
+    debounce={0}
+    height={400}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "count": 10,
+            "day_of_week": "Monday",
+          },
+        ]
+      }
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 20,
+          "right": 20,
+          "top": 20,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="day_of_week"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={120}
+        hide={false}
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tick={<AngledGraphTick />}
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="count"
+        fill="#0e5a6d"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        xAxisId={0}
+        yAxisId={0}
+      >
+        <LabelList
+          dataKey="count"
+          position="top"
+          valueAccessor={[Function]}
+        />
+        <Cell
+          fill="#f7bdbc"
+          key="Monday"
+        />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
