@@ -12,7 +12,7 @@ const generateComponent = props => {
 
 describe('<ActivityTable />', () => {
   it('renders correctly', () => {
-    expect(generateComponent());
+    expect(generateComponent()).toMatchSnapshot();
   });
 
   describe('while loading', () => {
