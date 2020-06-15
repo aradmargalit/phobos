@@ -26,11 +26,11 @@ const getInterval = dataLength => {
 
   // If there are between 10 and 75 items, tick every 5.
   if (dataLength > 10 && dataLength <= 75) {
-    return 5;
+    return 10;
   }
 
   // If there are more than 75, default to soem sane number, like 10
-  return 10;
+  return 15;
 };
 
 // Takes the highest point in the graph, adds a cushion, and rounding it off
@@ -125,7 +125,7 @@ export default function IntervalGraph({
     let newRight = refRight;
 
     // If the bounds are the same, or there's no right bound yet, return and clear refs
-    if (refLeft === refRight || refRight === '') {
+    if (refLeft === refRight || refRight === '' || !refRight) {
       setState({ ...state, refLeft: '', refRight: '' });
       return;
     }
@@ -177,6 +177,7 @@ export default function IntervalGraph({
           padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
           onMouseDown={e => e && setState({ ...state, refLeft: e.activeLabel })}
           onMouseMove={e => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
+          onMouseLeave={() => setState({ ...state, refRight: '', refLeft: '' })}
           onMouseUp={zoomIn}
         >
           <defs>
@@ -188,7 +189,7 @@ export default function IntervalGraph({
           <XAxis
             allowDataOverflow
             domain={[left, right]}
-            interval={getInterval(dataSlice.length)}
+            tickCount={getInterval(dataSlice.length)}
             dataKey={xAxisKey}
             height={120}
             tick={<AngledGraphTick />}
