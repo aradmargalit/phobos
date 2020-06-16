@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AngledGraphTick /> renders correctly 1`] = `
+<g
+  transform="translate(1,2)"
+>
+  <text
+    dy={16}
+    fill="#666"
+    textAnchor="end"
+    transform="rotate(-45)"
+    x={0}
+    y={0}
+  >
+    December 2018
+  </text>
+</g>
+`;

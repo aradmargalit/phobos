@@ -9,7 +9,7 @@ import FormButtons from '../FormButtons';
 import { onFinish, onReset, onSubmit } from './editUtils';
 
 export default function EditActivity({ refetch, initialActivity, modalClose }) {
-  const [activity, setActivity] = useState(null);
+  const [activity, setActivity] = useState(initialActivity);
   const [loading, setLoading] = useState(false);
   const [activityTypes, setActivityTypes] = useState({
     payload: [],

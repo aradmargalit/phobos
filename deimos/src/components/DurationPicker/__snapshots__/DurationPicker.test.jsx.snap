@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<DurationPicker /> renders correctly 1`] = `
+<div
+  className="duration-input-container"
+>
+  <InputNumber
+    min={0}
+    onChange={[Function]}
+    placeholder="hours"
+    step={1}
+    value={1}
+  />
+  :
+  <InputNumber
+    max={59}
+    min={0}
+    onChange={[Function]}
+    placeholder="minutes"
+    step={1}
+    value={2}
+  />
+  :
+  <InputNumber
+    max={59}
+    min={0}
+    onChange={[Function]}
+    placeholder="seconds"
+    step={1}
+    value={3}
+  />
+</div>
+`;

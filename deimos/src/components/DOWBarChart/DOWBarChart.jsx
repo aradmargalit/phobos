@@ -1,27 +1,11 @@
 /* eslint-disable react/no-array-index-key */
 import { sortBy as _sortBy } from 'lodash';
 import React from 'react';
-import {
-  Bar,
-  BarChart,
-  Cell,
-  LabelList,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 import AngledGraphTick from '../AngledGraphTick';
 
-const COLORS = [
-  '#f7bdbc',
-  '#f49d9a',
-  '#f07c79',
-  '#ec5b57',
-  '#d4524e',
-  '#bd4946',
-  '#8e3734',
-];
+const COLORS = ['#f7bdbc', '#f49d9a', '#f07c79', '#ec5b57', '#d4524e', '#bd4946', '#8e3734'];
 
 export default function DOWBarChart({ dayBreakdown }) {
   const sortedDays = _sortBy(dayBreakdown, 'count');
@@ -33,15 +17,8 @@ export default function DOWBarChart({ dayBreakdown }) {
     <div className="statistics--dow">
       <h3>Daily Breakdown</h3>
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={dayBreakdown}
-          margin={{ top: 20, right: 20, left: 20, bottom: 5 }}
-        >
-          <XAxis
-            dataKey="day_of_week"
-            height={120}
-            tick={<AngledGraphTick />}
-          />
+        <BarChart data={dayBreakdown} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
+          <XAxis dataKey="day_of_week" height={120} tick={<AngledGraphTick />} />
           <YAxis />
           <Bar dataKey="count" fill="#0e5a6d">
             <LabelList dataKey="count" position="top" />

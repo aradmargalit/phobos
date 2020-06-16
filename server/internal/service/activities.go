@@ -232,7 +232,7 @@ func makePercentageActiveMap(activities []models.ActivityResponse, intervals []s
 	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
 	now := time.Now().UTC().Add(-dur)
 
-	// For each date from now to the first activity, working backwords,
+	// For each date from now to the first activity, working backwards,
 	// check if any activities match that date
 	for d := now; !utils.DateEqual(d, firstActivityDate); d = d.AddDate(0, 0, -1) {
 		dateToCheck := utils.RoundTimeToDay(d)
