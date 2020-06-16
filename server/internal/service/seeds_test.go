@@ -37,5 +37,5 @@ func TestSeedActivityTypes(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	mockDB.AssertNumberOfCalls(t, "InsertActivityType", 37)
+	mockDB.AssertNumberOfCalls(t, "InsertActivityType", 40)
 }

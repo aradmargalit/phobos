@@ -16,7 +16,7 @@ func (db *db) GetActivityTypes() (at []models.ActivityType, err error) {
 
 // InsertActivityType adds a new activity type to the database
 func (db *db) InsertActivityType(at models.ActivityType) (err error) {
-	_, err = db.conn.NamedExec(`INSERT INTO activity_types (name) VALUES (:name)`, at)
+	_, err = db.conn.NamedExec(`INSERT INTO activity_types (name, strava_name) VALUES (:name, :strava_name)`, at)
 
 	return
 }
@@ -35,16 +35,6 @@ func (db *db) DeleteAllActivityTypes() (err error) {
 
 // GetActivityTypeIDByStravaType swaps a Strava activity string to an ID
 func (db *db) GetActivityTypeIDByStravaType(stravaType string) (typeID int, err error) {
-
-	// TODO, create a declarative map for this
-	if stravaType == "WeightTraining" {
-		stravaType = "Weight Training"
-	}
-
-	if stravaType == "EBikeRide" {
-		stravaType = "E-Bike Ride"
-	}
-
-	err = db.conn.Get(&typeID, `SELECT id FROM activity_types WHERE name=?`, stravaType)
+	err = db.conn.Get(&typeID, `SELECT id FROM activity_types WHERE strava_name=?`, stravaType)
 	return
 }
