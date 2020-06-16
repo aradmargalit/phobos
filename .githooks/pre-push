@@ -1,0 +1,10 @@
+#!/bin/sh
+# husky
+
+# Created by Husky v4.2.3 (https://github.com/typicode/husky#readme)
+#   At: 5/10/2020, 12:04:30 PM
+#   From: /Users/aradmargalit/git/phobos/deimos/node_modules/husky (https://github.com/typicode/husky#readme)
+echo "Checking server code..."
+./run-go-tests.sh
+
+. "$(dirname "$0")/husky.sh"
