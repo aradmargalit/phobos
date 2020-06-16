@@ -3,8 +3,7 @@ import './DurationPicker.scss';
 import { InputNumber } from 'antd';
 import React from 'react';
 
-const hmsToMinutes = ({ hours, minutes, seconds }) =>
-  hours * 60 + minutes + seconds / 60;
+const hmsToMinutes = ({ hours, minutes, seconds }) => hours * 60 + minutes + seconds / 60;
 
 // Value is an object of {hours, minutes, seconds, total}
 export default function DurationPicker({ value, onChange }) {
@@ -13,8 +12,7 @@ export default function DurationPicker({ value, onChange }) {
   const { hours, minutes, seconds } = hms;
 
   // Common utility to calculate the new state and call the form's onChange event
-  const calcAndUpdate = newValue =>
-    onChange({ ...newValue, total: hmsToMinutes(newValue) });
+  const calcAndUpdate = newValue => onChange({ ...newValue, total: hmsToMinutes(newValue) });
 
   // When one of the three inputs change, exit if they exceed the max, or update with the new value
   const onInputChange = (key, _value, max) => {
