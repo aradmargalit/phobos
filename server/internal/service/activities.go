@@ -234,7 +234,8 @@ func makePercentageActiveMap(activities []models.ActivityResponse, intervals []s
 
 	// For each date from now to the first activity, working backwards,
 	// check if any activities match that date
-	for d := now; !utils.DateEqual(d, firstActivityDate); d = d.AddDate(0, 0, -1) {
+	dayBeforeFirst := firstActivityDate.AddDate(0, 0, -1)
+	for d := now; !utils.DateEqual(d, dayBeforeFirst); d = d.AddDate(0, 0, -1) {
 		dateToCheck := utils.RoundTimeToDay(d)
 		intervalFromDate := timeToIntervalString(dateToCheck, itvl)
 		currHits := intervalToHitTotalMap[intervalFromDate].hits
