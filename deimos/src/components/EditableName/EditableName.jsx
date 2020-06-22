@@ -1,6 +1,6 @@
 import './EditableName.scss';
 
-import { Button, Input } from 'antd';
+import { Button, Input, Tooltip } from 'antd';
 import moment from 'moment';
 import React, { useState } from 'react';
 
@@ -31,12 +31,30 @@ export default function EditableName({ name, record, refetch }) {
     setEditing(false);
   };
 
+  const ElipsesButton = ({ text, maxChar, onClickHandler }) => {
+    const shouldTruncate = text.length > maxChar;
+    // Determine if we need to truncate or not, based on maxChar
+    const displayText = shouldTruncate ? `${text.substring(0, maxChar)}...` : text;
+
+    const displayButton = (
+      <Button type="link" className="editable-name-button" onClick={onClickHandler}>
+        {displayText}
+      </Button>
+    );
+
+    return shouldTruncate ? (
+      <Tooltip placement="topLeft" title={text} mouseEnterDelay={0} mouseLeaveDelay={0}>
+        {displayButton}
+      </Tooltip>
+    ) : (
+      displayButton
+    );
+  };
+
   return (
     <div>
       {!editing ? (
-        <Button type="link" className="editable-name-button" onClick={() => setEditing(true)}>
-          {name}
-        </Button>
+        <ElipsesButton text={name} maxChar={20} onClickHandler={() => setEditing(true)} />
       ) : (
         <>
           <Input

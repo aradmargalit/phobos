@@ -3,6 +3,7 @@
 
   & > span {
     overflow: hidden;
+    text-overflow: ellipsis;
     width: 200px;
     text-align: left !important;
   }
