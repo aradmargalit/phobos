@@ -24,8 +24,6 @@ func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*mode
 		HeartRate:      &par.HeartRate,
 	}
 
-	fmt.Println(activity)
-
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
 	if err != nil {
