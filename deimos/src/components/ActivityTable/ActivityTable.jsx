@@ -127,7 +127,9 @@ export default function ActivityTable({ loading, activities, refetch }) {
     { ...toCol('Duration', minutesToHMS), sorter: durationSorter },
     {
       ...toCol('Distance', (distance, record) =>
-        distance > 0 ? `${distance} ${record.unit}` : '-'
+        distance > 0
+          ? `${distance} ${record.distance === 1 ? record.unit.slice(0, -1) : record.unit}`
+          : '-'
       ),
       sorter: distanceSorter,
     },
