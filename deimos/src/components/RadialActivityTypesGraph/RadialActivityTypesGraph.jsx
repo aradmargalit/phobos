@@ -1,15 +1,7 @@
 import React from 'react';
 import { Cell, Pie, PieChart } from 'recharts';
 
-const COLORS = [
-  '#29bdd6',
-  '#11b6d1',
-  '#0fa4bc',
-  '#0e92a7',
-  '#0c7f92',
-  '#095b69',
-  '#05373f',
-];
+const COLORS = ['#29bdd6', '#11b6d1', '#0fa4bc', '#0e92a7', '#0c7f92', '#095b69', '#05373f'];
 
 export default function RadialActivityTypesGraph({ typeBreakdown }) {
   return (
