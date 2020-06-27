@@ -222,7 +222,7 @@ func TestGetIntervalSummary(t *testing.T) {
 		Interval:         "January 2001", // Our generator only creates 20 days in January
 		Duration:         20,             // Each activity is 1 minute (x20 => 20min)
 		Miles:            20,             // Each activity is 1 mile (x20 => 20 miles)
-		PercentageActive: 70.37,          // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+		PercentageActive: 71.43,          // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
 	}
 
 	assert.Equal(t, want, (*result)[0])
@@ -280,7 +280,7 @@ func TestGetIntervalSummaryYearly(t *testing.T) {
 
 	want := []responsetypes.IntervalSum{
 		// 364 days (skipped the 1st) - 20 = 344
-		{Interval: "2001", Duration: 20, Miles: 20, PercentageActive: 5.26},
+		{Interval: "2001", Duration: 20, Miles: 20, PercentageActive: 5.52},
 	}
 
 	assert.Equal(t, want[0], (*result)[0])

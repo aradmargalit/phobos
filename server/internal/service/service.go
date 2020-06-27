@@ -48,6 +48,9 @@ type PhobosAPI interface {
 
 	// Trendline Data
 	GetTrendPoints(int, string, int) (*[]float64, error)
+
+	// One offs for scripts and backfills
+	BackfillMeters()
 }
 
 type service struct {

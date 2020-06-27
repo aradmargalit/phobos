@@ -18,10 +18,13 @@ func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*mode
 		ActivityTypeID: par.ActivityTypeID,
 		OwnerID:        uid,
 		Duration:       par.Duration,
+		Meters:         utils.DistanceToMeters(par.Distance, par.Unit),
 		Distance:       par.Distance,
 		Unit:           par.Unit,
 		HeartRate:      &par.HeartRate,
 	}
+
+	fmt.Println(activity)
 
 	// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 	d, err := time.Parse(time.RFC3339, activity.ActivityDate)
