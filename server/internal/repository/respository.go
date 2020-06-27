@@ -13,6 +13,7 @@ type PhobosDB interface {
 	InsertActivity(*models.Activity) (*models.Activity, error)
 	GetActivityByStravaID(*int) (models.Activity, error)
 	GetActivityByID(int) (models.Activity, error)
+	GetAllActivities() ([]models.Activity, error)
 	GetActivitiesByUser(int) ([]models.ActivityResponse, error)
 	UpdateActivity(*models.Activity) (*models.Activity, error)
 	DeleteActivityByID(int, int) error

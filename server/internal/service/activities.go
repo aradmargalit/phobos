@@ -18,6 +18,7 @@ func (svc *service) AddActivity(par *models.PostActivityRequest, uid int) (*mode
 		ActivityTypeID: par.ActivityTypeID,
 		OwnerID:        uid,
 		Duration:       par.Duration,
+		Meters:         utils.DistanceToMeters(par.Distance, par.Unit),
 		Distance:       par.Distance,
 		Unit:           par.Unit,
 		HeartRate:      &par.HeartRate,

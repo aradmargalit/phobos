@@ -31,6 +31,7 @@ CREATE TABLE `activities` (
   `distance` DOUBLE,
   `unit` text,
   `heart_rate` int(11),
+  `meters` DOUBLE,
   `strava_id` BIGINT,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

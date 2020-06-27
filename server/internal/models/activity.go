@@ -9,6 +9,7 @@ type Activity struct {
 	OwnerID        int     `json:"owner_id" db:"owner_id"`
 	Duration       float64 `json:"duration" db:"duration"`
 	Distance       float64 `json:"distance" db:"distance"`
+	Meters         float64 `json:"meters" db:"meters"`
 	Unit           string  `json:"unit" db:"unit"`
 	HeartRate      *int    `json:"heart_rate" db:"heart_rate"`
 	StravaID       *int    `json:"strava_id" db:"strava_id"`

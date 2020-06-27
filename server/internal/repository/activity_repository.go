@@ -11,8 +11,8 @@ func (db *db) InsertActivity(a *models.Activity) (*models.Activity, error) {
 	res, err := db.conn.NamedExec(
 		`
 		INSERT INTO activities 
-		(name, activity_date, activity_type_id, owner_id, duration, distance, unit, heart_rate, strava_id)
-		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :unit, :heart_rate, :strava_id)
+		(name, activity_date, activity_type_id, owner_id, duration, distance, meters, unit, heart_rate, strava_id)
+		VALUES (:name, :activity_date, :activity_type_id, :owner_id, :duration, :distance, :meters, :unit, :heart_rate, :strava_id)
 		`,
 		*a)
 	if err != nil {
@@ -52,6 +52,12 @@ func (db *db) GetActivitiesByUser(uid int) (activities []models.ActivityResponse
 	return
 }
 
+// GetAllActivities does what it says on the tin
+func (db *db) GetAllActivities() (activities []models.Activity, err error) {
+	err = db.conn.Select(&activities, `SELECT * FROM activities a`)
+	return
+}
+
 // UpdateActivity updates an existing activity in the database
 func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
 	res, err := db.conn.NamedExec(
@@ -63,6 +69,7 @@ func (db *db) UpdateActivity(a *models.Activity) (*models.Activity, error) {
 			activity_type_id=:activity_type_id,
 			duration=:duration,
 			distance=:distance,
+			meters=:meters,
 			unit=:unit,
 			heart_rate=:heart_rate
 		WHERE id=:id

@@ -71,12 +71,8 @@ describe('sortUtils', () => {
 
   describe('distance', () => {
     it('correctly sorts based on distance', () => {
-      const data = [{ distance: 12.76 }, { distance: 1 }, { distance: 0 }];
-      expect(data.sort(distanceSorter).map(({ distance }) => distance)).toStrictEqual([
-        0,
-        1,
-        12.76,
-      ]);
+      const data = [{ meters: 12.76 }, { meters: 1 }, { meters: 0 }];
+      expect(data.sort(distanceSorter).map(({ meters }) => meters)).toStrictEqual([0, 1, 12.76]);
     });
   });
 });
