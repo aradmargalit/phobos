@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"server/internal/repository"
 	"server/internal/service"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -13,5 +14,5 @@ func main() {
 	start := time.Now()
 	svc.BackfillMeters()
 
-	fmt.Println("Took: ", time.Since(start))
+	logrus.Info("Took: ", time.Since(start))
 }

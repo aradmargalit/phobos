@@ -1,17 +1,16 @@
 package service
 
 import (
-	"fmt"
-	"log"
 	"server/utils"
+
+	"github.com/sirupsen/logrus"
 )
 
 // BackfillMeters adds the correct "meters" value to every activity entry
 func (svc *service) BackfillMeters() {
 	activities, err := svc.db.GetAllActivities()
 	if err != nil {
-		fmt.Println(err)
-		log.Fatal("Could not get activities")
+		logrus.Fatal("Could not get activities")
 	}
 
 	// TODO: Batch these, it's really slow to issue an update per record
@@ -21,10 +20,10 @@ func (svc *service) BackfillMeters() {
 		}
 
 		activity.Meters = utils.DistanceToMeters(activity.Distance, activity.Unit)
-		fmt.Printf("Updating activity: %v with distance : %v %v and meters: %v...\n", activity.ID, activity.Distance, activity.Unit, activity.Meters)
+		logrus.Infof("Updating activity: %v with distance : %v %v and meters: %v...\n", activity.ID, activity.Distance, activity.Unit, activity.Meters)
 		_, err := svc.db.UpdateActivity(&activity)
 		if err != nil {
-			fmt.Println(err)
+			logrus.Error(err)
 		}
 	}
 }

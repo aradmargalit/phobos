@@ -19,6 +19,7 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
+	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.5.1
 	github.com/vektra/mockery v1.0.0 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect

@@ -1,5 +1,7 @@
 package utils
 
+import "github.com/sirupsen/logrus"
+
 const metersPerMile = 1609.34
 const metersPerYard = 0.9144
 
@@ -15,7 +17,7 @@ func DistanceToMeters(unitDistance float64, unit string) float64 {
 	case "yards":
 		return unitDistance * metersPerYard
 	default:
-		// TODO LOG Fatal?
+		logrus.Errorf("%v was not miles or yards", unit)
 		return 0
 	}
 }
