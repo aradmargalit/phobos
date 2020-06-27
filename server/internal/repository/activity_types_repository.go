@@ -6,7 +6,7 @@ import (
 
 // GetActivityTypes gets all activity types from the database
 func (db *db) GetActivityTypes() (at []models.ActivityType, err error) {
-	err = db.conn.Select(&at, "SELECT * FROM `activity_types`;")
+	err = db.conn.Select(&at, "SELECT * FROM `activity_types` ORDER BY name ASC;")
 	if err != nil {
 		return nil, err
 	}
