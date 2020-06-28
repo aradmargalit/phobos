@@ -1,10 +1,12 @@
 import './GoalsModal.scss';
 
 import { AimOutlined } from '@ant-design/icons';
-import { Form, InputNumber, Modal, Spin } from 'antd';
+import { Form, InputNumber, Modal, notification, Spin } from 'antd';
 import React, { useState } from 'react';
 
-const unitSizeMap = {
+import { postGoal } from '../../apis/phobos-api';
+
+const periodSizeMap = {
   Week: 7,
   Month: 31, // Not always true, but good enough,
   Year: 365,
@@ -18,24 +20,24 @@ const iconTitle = (text, icon) => (
 );
 
 // Is this a bad function name? Maybe.
-const getMaxBy = (metricName, unit) => {
+const getMaxBy = (metricName, period) => {
   // If it's a percentage, it's always capped at 100%, easy!
   if (metricName.includes('%')) {
     return 100;
   }
 
   if (metricName.toLowerCase() === 'miles') {
-    return unitSizeMap[unit] * 200; // Assume nobody is running or biking >= 200 miles per day
+    return periodSizeMap[period] * 200; // Assume nobody is running or biking >= 200 miles per day
   }
 
   // Hours
-  return unitSizeMap[unit] * 24; // 24 hours per day
+  return periodSizeMap[period] * 24; // 24 hours per day
 };
 
 const { Item } = Form;
 
 // TODO convert to form, I want validation + reset + onSubmit func
-export default function GoalsModal({ visible, onCancel, unit, metricName }) {
+export default function GoalsModal({ visible, onCancel, period, metricName }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -44,22 +46,22 @@ export default function GoalsModal({ visible, onCancel, unit, metricName }) {
     onCancel();
   };
 
-  const onFinish = values => {
+  const onFinish = async values => {
     setLoading(true);
     const payload = {
-      unit,
-      metricName,
+      period: period.toLowerCase(),
+      metric: metricName.toLowerCase(),
       goal: values.goal,
     };
 
-    // eslint-disable-next-line no-console
-    console.log(payload);
-
-    // Simulate network call
-    setTimeout(() => {
+    try {
+      await postGoal(payload);
+      onCancel();
+    } catch (e) {
+      notification.error({ message: e });
+    } finally {
       setLoading(false);
-      handleCancel();
-    }, 5000);
+    }
   };
 
   return (
@@ -74,11 +76,11 @@ export default function GoalsModal({ visible, onCancel, unit, metricName }) {
     >
       <h3>
         {iconTitle(
-          `Set a ${unit}ly ${metricName} goal...`,
+          `Set a ${period}ly ${metricName} goal...`,
           <AimOutlined style={{ marginRight: '10px' }} />
         )}
       </h3>
-      <h5>{`This value will persist across ${unit.toLowerCase()}s until you clear it.`}</h5>
+      <h5>{`This value will persist across ${period.toLowerCase()}s until you clear it.`}</h5>
       <Spin spinning={loading}>
         <Form form={form} onFinish={onFinish}>
           <Item
@@ -86,7 +88,7 @@ export default function GoalsModal({ visible, onCancel, unit, metricName }) {
             name="goal"
             rules={[{ required: true, message: 'You must save a goal or press "Cancel"' }]}
           >
-            <InputNumber placeholder={2} min={1} max={getMaxBy(metricName, unit)} />
+            <InputNumber placeholder={2} min={1} max={getMaxBy(metricName, period)} />
           </Item>
         </Form>
       </Spin>

@@ -247,7 +247,7 @@ export default function IntervalGraph({
       <GoalsModal
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
-        unit={unit}
+        period={unit}
         metricName={metricName}
       />
     </div>

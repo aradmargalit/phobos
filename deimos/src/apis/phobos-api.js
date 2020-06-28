@@ -139,3 +139,16 @@ export const fetchTrendPoints = async (setTrendPoints, lookback) => {
     `/private/trendpoints?lookback=${lookback}&utc_offset=${utcOffset}`
   );
 };
+
+// Goals
+export const postGoal = async values => {
+  await protectedUpsert('/private/goals', 'POST', values);
+};
+
+// export const fetchQuickAdds = async setQuickAdds => {
+//   await protectedGet(setQuickAdds, '/private/quick_adds');
+// };
+
+// export const deleteQuickAdd = async id => {
+//   await protectedDelete(`/private/quick_adds/${id}`);
+// };
