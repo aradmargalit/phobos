@@ -41,6 +41,12 @@ type PhobosDB interface {
 	GetUserIDByStravaID(stravaID int) (userID int, err error)
 	DeleteStravaTokenByUserID(uid int) error
 	GetActivityTypeIDByStravaType(string) (int, error)
+
+	// Goals
+	InsertGoal(a *models.Goal) (*models.Goal, error)
+	GetGoalByID(id int) (models.Goal, error)
+	GetGoalsByUser(uid int) ([]models.Goal, error)
+	DeleteGoalByID(uid int, GoalID int) error
 }
 
 // db will be our data access object and holds the connection

@@ -85,12 +85,22 @@ export default function IntervalGraph({
   unit,
   metricName,
   fixedTop,
+  goalDot,
+  setGoals,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  const defaultTop = projection
-    ? Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint), fixedTop))
-    : maxToCeiling(highestPoint, fixedTop);
+  console.log(goalDot);
+
+  const defaultTop = maxToCeiling(
+    Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0)
+  );
+
+  console.log(defaultTop);
+
+  // const defaultTop = projection
+  //   ? Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint), fixedTop))
+  //   : maxToCeiling(highestPoint, fixedTop);
 
   // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
   const initialState = {
@@ -226,6 +236,19 @@ export default function IntervalGraph({
               }}
             />
           )}
+          {!isZoomed && goalDot && (
+            <ReferenceDot
+              x={goalDot.x}
+              y={goalDot.y}
+              stroke="#009900"
+              strokeDasharray="3 3"
+              label={{
+                position: 'left',
+                fontWeight: 600,
+                value: `This ${unit}'s Goal: ${goalDot.y.toFixed(1)}`,
+              }}
+            />
+          )}
           <Tooltip
             separator={null}
             formatter={value => [`${value} ${metricName}`, '']}
@@ -249,6 +272,7 @@ export default function IntervalGraph({
         onCancel={() => setModalVisible(false)}
         period={unit}
         metricName={metricName}
+        setGoals={setGoals}
       />
     </div>
   );

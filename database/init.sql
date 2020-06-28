@@ -63,3 +63,15 @@ CREATE TABLE `strava_tokens` (
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+# ======== USER GOALS ========
+CREATE TABLE `goals` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `user_id` int(11),
+  `metric` text,
+  `period` text,
+  `goal` DOUBLE,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);

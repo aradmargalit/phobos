@@ -16,6 +16,7 @@ func BuildRouter(r *gin.Engine, svc service.PhobosAPI) *gin.Engine {
 	registerAdminHandlers(r, svc)
 	registerStravaHandlers(r, svc)
 	registerTrendlineHandlers(r, svc)
+	registerGoalHandlers(r, svc)
 
 	return r
 }

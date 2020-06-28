@@ -21,12 +21,16 @@ const projection = (data, intervalType) => {
   }
 };
 
-export default function DurationGraph({ loading, intervalData, intervalType }) {
+export default function DurationGraph({ loading, intervalData, intervalType, goals, setGoals }) {
   const data = intervalData.map(({ interval, duration }) => ({
     interval,
     rawDuration: duration,
     duration: parseFloat((duration / 60).toFixed(2)),
   }));
+
+  const goal = goals
+    ? goals.find(g => g.period === intervalType.toLowerCase() && g.metric === 'hours')
+    : null;
 
   const startCaseIntervalType = _startCase(intervalType);
 
@@ -42,6 +46,8 @@ export default function DurationGraph({ loading, intervalData, intervalType }) {
       xAxisKey="interval"
       dataKey="duration"
       metricName="Hours"
+      goalDot={goal && { x: data[data.length - 1].interval, y: goal.goal }}
+      setGoals={setGoals}
       unit={startCaseIntervalType}
     />
   );

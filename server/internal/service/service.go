@@ -49,6 +49,10 @@ type PhobosAPI interface {
 	// Trendline Data
 	GetTrendPoints(int, string, int) (*[]float64, error)
 
+	// Goals
+	GetGoals(int) (*[]models.Goal, error)
+	AddGoal(int, *models.Goal) (*models.Goal, error)
+
 	// One offs for scripts and backfills
 	BackfillMeters()
 }

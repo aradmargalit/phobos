@@ -43,6 +43,20 @@ func (_m *PhobosDB) DeleteAllActivityTypes() error {
 	return r0
 }
 
+// DeleteGoalByID provides a mock function with given fields: uid, GoalID
+func (_m *PhobosDB) DeleteGoalByID(uid int, GoalID int) error {
+	ret := _m.Called(uid, GoalID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, int) error); ok {
+		r0 = rf(uid, GoalID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteQuickAddByID provides a mock function with given fields: uid, quickAddID
 func (_m *PhobosDB) DeleteQuickAddByID(uid int, quickAddID int) error {
 	ret := _m.Called(uid, quickAddID)
@@ -196,6 +210,50 @@ func (_m *PhobosDB) GetAllActivities() ([]models.Activity, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetGoalByID provides a mock function with given fields: id
+func (_m *PhobosDB) GetGoalByID(id int) (models.Goal, error) {
+	ret := _m.Called(id)
+
+	var r0 models.Goal
+	if rf, ok := ret.Get(0).(func(int) models.Goal); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(models.Goal)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetGoalsByUser provides a mock function with given fields: uid
+func (_m *PhobosDB) GetGoalsByUser(uid int) ([]models.Goal, error) {
+	ret := _m.Called(uid)
+
+	var r0 []models.Goal
+	if rf, ok := ret.Get(0).(func(int) []models.Goal); ok {
+		r0 = rf(uid)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(uid)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -366,6 +424,29 @@ func (_m *PhobosDB) InsertActivityType(_a0 models.ActivityType) error {
 	}
 
 	return r0
+}
+
+// InsertGoal provides a mock function with given fields: a
+func (_m *PhobosDB) InsertGoal(a *models.Goal) (*models.Goal, error) {
+	ret := _m.Called(a)
+
+	var r0 *models.Goal
+	if rf, ok := ret.Get(0).(func(*models.Goal) *models.Goal); ok {
+		r0 = rf(a)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*models.Goal) error); ok {
+		r1 = rf(a)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // InsertQuickAdd provides a mock function with given fields: a

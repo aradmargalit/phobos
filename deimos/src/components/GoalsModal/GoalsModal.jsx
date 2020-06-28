@@ -1,10 +1,10 @@
 import './GoalsModal.scss';
 
 import { AimOutlined } from '@ant-design/icons';
-import { Form, InputNumber, Modal, notification, Spin } from 'antd';
+import { Form, InputNumber, Modal, Spin } from 'antd';
 import React, { useState } from 'react';
 
-import { postGoal } from '../../apis/phobos-api';
+import { fetchGoals, postGoal } from '../../apis/phobos-api';
 
 const periodSizeMap = {
   Week: 7,
@@ -37,7 +37,7 @@ const getMaxBy = (metricName, period) => {
 const { Item } = Form;
 
 // TODO convert to form, I want validation + reset + onSubmit func
-export default function GoalsModal({ visible, onCancel, period, metricName }) {
+export default function GoalsModal({ visible, onCancel, period, metricName, setGoals }) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -56,9 +56,10 @@ export default function GoalsModal({ visible, onCancel, period, metricName }) {
 
     try {
       await postGoal(payload);
+      await fetchGoals(setGoals);
       onCancel();
     } catch (e) {
-      notification.error({ message: e });
+      console.log(e);
     } finally {
       setLoading(false);
     }
