@@ -23,8 +23,8 @@ export default function SkippedGraph({ loading, intervalData, intervalType }) {
       stroke="#2E294E"
       xAxisKey="interval"
       dataKey="percentage"
+      metricName="% of Days with a Workout"
       unit={startCaseIntervalType}
-      tooltipFormatter={value => [`${value}% of Days with a Workout`, '']}
       fixedTop={100}
     />
   );

@@ -40,8 +40,8 @@ export default function MileageGraph({ loading, intervalData, intervalType }) {
       stroke="#912827"
       xAxisKey="interval"
       dataKey="miles"
+      metricName="Miles"
       unit={startCaseIntervalType}
-      tooltipFormatter={value => [`${value} Miles`, '']}
     />
   );
 }

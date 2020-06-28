@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 
 import AngledGraphTick from '../AngledGraphTick';
+import GoalsModal from '../GoalsModal';
 
 // Determine X Axis interval
 const getInterval = dataLength => {
@@ -82,7 +83,7 @@ export default function IntervalGraph({
   dataKey,
   xAxisKey,
   unit,
-  tooltipFormatter,
+  metricName,
   fixedTop,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
@@ -103,6 +104,7 @@ export default function IntervalGraph({
   };
 
   const [state, setState] = useState(initialState);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // For React to know if "data" has changed, it needs to either always be the same length
   // which is impossible, so join the data to a string.
@@ -169,6 +171,9 @@ export default function IntervalGraph({
       <Button disabled={!isZoomed} onClick={() => setState(initialState)}>
         Zoom Out
       </Button>
+      <Button style={{ marginLeft: '10px' }} onClick={() => setModalVisible(true)}>
+        Set Goals
+      </Button>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
           className="interval-graph"
@@ -221,7 +226,11 @@ export default function IntervalGraph({
               }}
             />
           )}
-          <Tooltip separator={null} formatter={tooltipFormatter} animationDuration={300} />
+          <Tooltip
+            separator={null}
+            formatter={value => [`${value} ${metricName}`, '']}
+            animationDuration={300}
+          />
           <Area
             dataKey={dataKey}
             type="monotone"
@@ -235,6 +244,12 @@ export default function IntervalGraph({
           ) : null}
         </AreaChart>
       </ResponsiveContainer>
+      <GoalsModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        unit={unit}
+        metricName={metricName}
+      />
     </div>
   );
 }

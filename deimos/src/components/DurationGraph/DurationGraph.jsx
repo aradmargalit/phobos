@@ -41,8 +41,8 @@ export default function DurationGraph({ loading, intervalData, intervalType }) {
       stroke="#0e5a6d"
       xAxisKey="interval"
       dataKey="duration"
+      metricName="Hours"
       unit={startCaseIntervalType}
-      tooltipFormatter={value => [`${value} Hours`, '']}
     />
   );
 }
