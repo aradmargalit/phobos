@@ -38,6 +38,7 @@ func TestConvertStravaActivity(t *testing.T) {
 		OwnerID:        1,
 		Duration:       0.35,
 		Distance:       6.21,
+		Meters:         9999.9720514,
 		Unit:           "miles",
 		HeartRate:      testdata.MakeIntPointer(0),
 		StravaID:       testdata.MakeIntPointer(1),

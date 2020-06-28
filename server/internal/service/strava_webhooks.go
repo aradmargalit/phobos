@@ -10,6 +10,7 @@ import (
 	"os"
 	"server/internal/models"
 	"server/internal/repository"
+	"server/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -218,6 +219,7 @@ func convertStravaActivity(fetchedActivity models.StravaActivity, userID int, db
 		OwnerID:        userID,
 		Duration:       (float64(fetchedActivity.MovingTime) / 60),
 		Distance:       math.Floor(convertedDistance*100) / 100,
+		Meters:         utils.DistanceToMeters(convertedDistance, unit),
 		Unit:           unit,
 		HeartRate:      &heartRate,
 		StravaID:       &fetchedActivity.ID,
