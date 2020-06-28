@@ -1,8 +1,8 @@
 import './GoalsModal.scss';
 
 import { AimOutlined } from '@ant-design/icons';
-import { Form, InputNumber, Modal } from 'antd';
-import React from 'react';
+import { Form, InputNumber, Modal, Spin } from 'antd';
+import React, { useState } from 'react';
 
 const unitSizeMap = {
   Week: 7,
@@ -18,13 +18,13 @@ const iconTitle = (text, icon) => (
 );
 
 // Is this a bad function name? Maybe.
-const getMaxBy = (metric, unit) => {
+const getMaxBy = (metricName, unit) => {
   // If it's a percentage, it's always capped at 100%, easy!
-  if (metric.includes('%')) {
+  if (metricName.includes('%')) {
     return 100;
   }
 
-  if (metric.toLowerCase() === 'mile') {
+  if (metricName.toLowerCase() === 'miles') {
     return unitSizeMap[unit] * 200; // Assume nobody is running or biking >= 200 miles per day
   }
 
@@ -37,24 +37,38 @@ const { Item } = Form;
 // TODO convert to form, I want validation + reset + onSubmit func
 export default function GoalsModal({ visible, onCancel, unit, metricName }) {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const handleCancel = () => {
     form.resetFields();
     onCancel();
   };
 
-  // eslint-disable-next-line no-unused-vars
   const onFinish = values => {
-    // Do something with values
-    handleCancel();
+    setLoading(true);
+    const payload = {
+      unit,
+      metricName,
+      goal: values.goal,
+    };
+
+    // eslint-disable-next-line no-console
+    console.log(payload);
+
+    // Simulate network call
+    setTimeout(() => {
+      setLoading(false);
+      handleCancel();
+    }, 5000);
   };
 
   return (
     <Modal
       className="goals-modal"
-      width={500}
+      width={700}
       visible={visible}
       onCancel={handleCancel}
+      okText="Submit Goal"
       onOk={() => form.submit()}
       destroyOnClose
     >
@@ -65,17 +79,17 @@ export default function GoalsModal({ visible, onCancel, unit, metricName }) {
         )}
       </h3>
       <h5>{`This value will persist across ${unit.toLowerCase()}s until you clear it.`}</h5>
-      <Form form={form} onFinish={onFinish}>
-        <Item
-          label={`New Goal (${metricName})`}
-          name="goal"
-          nostyle
-          rules={[{ required: true, message: 'You must save a goal or press "Cancel"' }]}
-        >
-          <InputNumber placeholder={2} min={1} max={getMaxBy(metricName, unit)} />
-        </Item>
-      </Form>
-      <div className="goal-entry" />
+      <Spin spinning={loading}>
+        <Form form={form} onFinish={onFinish}>
+          <Item
+            label={`New Goal (${metricName})`}
+            name="goal"
+            rules={[{ required: true, message: 'You must save a goal or press "Cancel"' }]}
+          >
+            <InputNumber placeholder={2} min={1} max={getMaxBy(metricName, unit)} />
+          </Item>
+        </Form>
+      </Spin>
     </Modal>
   );
 }
