@@ -23,7 +23,7 @@ func (svc *service) UpdateGoal(goal *models.Goal) (*models.Goal, error) {
 	return record, nil
 }
 
-// GetGoals returns all the user's quick-adds
+// GetGoals returns all the user's goals
 func (svc *service) GetGoals(uid int) (*[]models.Goal, error) {
 	goals, err := svc.db.GetGoalsByUser(uid)
 	if err != nil {
@@ -33,7 +33,7 @@ func (svc *service) GetGoals(uid int) (*[]models.Goal, error) {
 	return &goals, nil
 }
 
-// DeleteGoal deletes a quick add by the user ID and quick add ID
+// DeleteGoal deletes a goal by the user ID and goal ID
 func (svc *service) DeleteGoal(uid int, goalID int) error {
 	return svc.db.DeleteGoalByID(uid, goalID)
 }

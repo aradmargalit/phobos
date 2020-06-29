@@ -45,7 +45,7 @@ func makeAddGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
 			return
 		}
 
-		// Add the owner ID to the activituy
+		// Add the owner ID to the goal
 		uid := c.GetInt("user")
 
 		record, err := svc.AddGoal(uid, &goal)
@@ -77,7 +77,7 @@ func makeUpdateGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 func makeDeleteGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
 	return func(c *gin.Context) {
-		// Pull user out of context to confirm it's safe to delete the activity
+		// Pull user out of context to confirm it's safe to delete the goal
 		uid := c.GetInt("user")
 
 		goalID, err := strconv.Atoi(c.Param("id"))

@@ -44,7 +44,7 @@ func makeAddQuickAddsHandler(svc service.PhobosAPI) func(*gin.Context) {
 			return
 		}
 
-		// Add the owner ID to the activituy
+		// Add the owner ID to the activity
 		uid := c.GetInt("user")
 
 		record, err := svc.AddQuickAdd(uid, &quickAdd)
@@ -59,7 +59,7 @@ func makeAddQuickAddsHandler(svc service.PhobosAPI) func(*gin.Context) {
 
 func makeDeleteQuickAddHandler(svc service.PhobosAPI) func(*gin.Context) {
 	return func(c *gin.Context) {
-		// Pull user out of context to confirm it's safe to delete the activity
+		// Pull user out of context to confirm it's safe to delete the qa
 		uid := c.GetInt("user")
 
 		quickAddID, err := strconv.Atoi(c.Param("id"))
