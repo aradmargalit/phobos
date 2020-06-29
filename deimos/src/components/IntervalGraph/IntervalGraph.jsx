@@ -182,8 +182,8 @@ export default function IntervalGraph({
         <AreaChart
           className="interval-graph"
           data={dataSlice}
-          margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
-          padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
+          margin={{ top: 30, right: 200, left: 30, bottom: 0 }}
+          padding={{ top: 30, right: 200, left: 30, bottom: 10 }}
           onMouseDown={e => e && setState({ ...state, refLeft: e.activeLabel })}
           onMouseMove={e => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
           onMouseLeave={() => setState({ ...state, refRight: '', refLeft: '' })}
@@ -235,9 +235,9 @@ export default function IntervalGraph({
               x={goalDot.x}
               y={goalDot.y}
               stroke="#009900"
-              strokeDasharray="3 3"
+              strokeDasharray="5 5"
               label={{
-                position: 'left',
+                position: 'right',
                 fontWeight: 600,
                 value: `This ${unit}'s Goal: ${goalDot.y.toFixed(1)}`,
               }}

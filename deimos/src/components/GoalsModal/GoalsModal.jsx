@@ -2,7 +2,7 @@ import './GoalsModal.scss';
 
 import { AimOutlined } from '@ant-design/icons';
 import { Button, Form, InputNumber, Modal, notification, Spin } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { deleteGoal, fetchGoals, postGoal, putGoal } from '../../apis/phobos-api';
 
@@ -47,7 +47,11 @@ export default function GoalsModal({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const initialValues = currentGoal ? { goal: currentGoal.goal } : null;
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue({ goal: currentGoal ? currentGoal.goal : null });
+    }
+  }, [visible, currentGoal, form]);
 
   const handleCancel = () => {
     form.resetFields();
@@ -72,6 +76,7 @@ export default function GoalsModal({
     if (currentGoal) {
       if (currentGoal.goal === values.goal) {
         setLoading(false);
+        handleCancel();
         return;
       }
 
@@ -115,8 +120,9 @@ export default function GoalsModal({
       visible={visible}
       onCancel={handleCancel}
       okText="Submit Goal"
-      destroyOnClose
       footer={footer}
+      forceRender
+      destroyOnClose
     >
       <h3>
         {iconTitle(
@@ -128,15 +134,15 @@ export default function GoalsModal({
         {`This goal will stay on the graph (even across ${period.toLowerCase()}s), until deleted.`}
       </h5>
       <Spin spinning={loading}>
-        <Form form={form} initialValues={initialValues} onFinish={onFinish}>
+        <Form form={form} onFinish={onFinish}>
           <Item
             label={`New Goal (${metricName})`}
             name="goal"
             rules={[{ required: true, message: 'You must save a goal or press "Cancel"' }]}
           >
             <InputNumber
+              // Don't submit on Enter in order to make sure max is respected.
               onKeyDown={e => (e.keyCode === 13 ? e.preventDefault() : '')}
-              placeholder={2}
               min={1}
               max={getMaxBy(metricName, period)}
             />
