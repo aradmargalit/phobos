@@ -539,6 +539,29 @@ func (_m *PhobosDB) UpdateActivity(_a0 *models.Activity) (*models.Activity, erro
 	return r0, r1
 }
 
+// UpdateGoal provides a mock function with given fields: _a0
+func (_m *PhobosDB) UpdateGoal(_a0 *models.Goal) (*models.Goal, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *models.Goal
+	if rf, ok := ret.Get(0).(func(*models.Goal) *models.Goal); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*models.Goal) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateStravaToken provides a mock function with given fields: tok
 func (_m *PhobosDB) UpdateStravaToken(tok models.StravaToken) (models.StravaToken, error) {
 	ret := _m.Called(tok)

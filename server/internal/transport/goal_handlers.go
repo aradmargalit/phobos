@@ -1,10 +1,12 @@
 package transport
 
 import (
+	"errors"
 	"net/http"
 	"server/internal/middleware"
 	"server/internal/models"
 	"server/internal/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +18,8 @@ func registerGoalHandlers(r *gin.Engine, svc service.PhobosAPI) {
 	{
 		private.GET("/goals", makeGetGoalsHandler(svc))
 		private.POST("/goals", makeAddGoalHandler(svc))
-		// private.DELETE("/goals/:id", makeDeleteGoalHandler(svc))
+		private.PUT("/goals/:id", makeUpdateGoalHandler(svc))
+		private.DELETE("/goals/:id", makeDeleteGoalHandler(svc))
 	}
 }
 
@@ -55,23 +58,40 @@ func makeAddGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
 	}
 }
 
-// func makeDeleteGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
-// 	return func(c *gin.Context) {
-// 		// Pull user out of context to confirm it's safe to delete the activity
-// 		uid := c.GetInt("user")
+func makeUpdateGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
+	return func(c *gin.Context) {
+		var goal models.Goal
+		if err := c.ShouldBindJSON(&goal); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
 
-// 		quickAddID, err := strconv.Atoi(c.Param("id"))
-// 		if err != nil {
-// 			c.AbortWithError(http.StatusBadRequest, errors.New("quick Add ID must be an int"))
-// 			return
-// 		}
+		record, err := svc.UpdateGoal(&goal)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, *record)
+	}
+}
 
-// 		err = svc.DeleteQuickAdd(uid, quickAddID)
-// 		if err != nil {
-// 			c.AbortWithError(http.StatusInternalServerError, err)
-// 			return
-// 		}
+func makeDeleteGoalHandler(svc service.PhobosAPI) func(*gin.Context) {
+	return func(c *gin.Context) {
+		// Pull user out of context to confirm it's safe to delete the activity
+		uid := c.GetInt("user")
 
-// 		c.JSON(http.StatusOK, "Successfully deleted quick-add: "+c.Param("id"))
-// 	}
-// }
+		goalID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, errors.New("goal ID must be an int"))
+			return
+		}
+
+		err = svc.DeleteGoal(uid, goalID)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, "Successfully deleted goal: "+c.Param("id"))
+	}
+}

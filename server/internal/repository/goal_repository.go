@@ -1,6 +1,10 @@
 package repository
 
-import "server/internal/models"
+import (
+	"errors"
+	"server/internal/models"
+	"strconv"
+)
 
 const (
 	goalInsertSQL = `
@@ -25,6 +29,38 @@ func (db *db) InsertGoal(a *models.Goal) (*models.Goal, error) {
 	// Return the recently inserted record back to the user
 	qa, err := db.GetGoalByID(int(inserted))
 	return &qa, err
+}
+
+// UpdateGoal updates an existing goal in the database
+func (db *db) UpdateGoal(g *models.Goal) (*models.Goal, error) {
+	res, err := db.conn.NamedExec(
+		`
+		UPDATE goals 
+		SET 
+			goal=:goal
+		WHERE id=:id
+		`,
+		*g)
+
+	if err != nil {
+		return nil, err
+	}
+
+	updatedCount, err := res.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+
+	if updatedCount != 1 {
+		err = errors.New("Should have updated one row, but updated: " + strconv.Itoa(int(updatedCount)))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Return the recently inserted record back to the user
+	goal, err := db.GetGoalByID(g.ID)
+	return &goal, err
 }
 
 // GetGoalByID returns a single goal by ID

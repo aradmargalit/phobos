@@ -47,7 +47,7 @@ export default function Graphs() {
 
   const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats.payload;
 
-  const data = intervalData.payload.reverse();
+  const data = intervalData.payload.sort((a, b) => b.sortIndex - a.sortIndex);
 
   return (
     <div className="graphs">
@@ -74,12 +74,14 @@ export default function Graphs() {
         intervalData={data}
         intervalType={interval}
         goals={goals.payload}
+        setGoals={setGoals}
       />
       <SkippedGraph
         loading={loading}
         intervalData={data}
         intervalType={interval}
         goals={goals.payload}
+        setGoals={setGoals}
       />
     </div>
   );

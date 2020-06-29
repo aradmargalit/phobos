@@ -87,20 +87,14 @@ export default function IntervalGraph({
   fixedTop,
   goalDot,
   setGoals,
+  currentGoal,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  console.log(goalDot);
 
   const defaultTop = maxToCeiling(
-    Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0)
+    fixedTop || Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0)
   );
-
-  console.log(defaultTop);
-
-  // const defaultTop = projection
-  //   ? Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint), fixedTop))
-  //   : maxToCeiling(highestPoint, fixedTop);
 
   // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
   const initialState = {
@@ -124,7 +118,7 @@ export default function IntervalGraph({
     // Whenever something changes, zoom out just to be safe
     setState(initialState);
     // eslint-disable-next-line
-  }, [dataString]);
+  }, [dataString, goalDot]);
 
   if (loading) return <Spin />;
 
@@ -182,7 +176,7 @@ export default function IntervalGraph({
         Zoom Out
       </Button>
       <Button style={{ marginLeft: '10px' }} onClick={() => setModalVisible(true)}>
-        Set Goals
+        Manage Goals
       </Button>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
@@ -273,6 +267,7 @@ export default function IntervalGraph({
         period={unit}
         metricName={metricName}
         setGoals={setGoals}
+        currentGoal={currentGoal}
       />
     </div>
   );

@@ -131,9 +131,11 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 	}
 	*/
 
+	sortIndex := 0
 	response := []responsetypes.IntervalSum{}
 	for _, itvl := range intervals {
-		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], PercentageActive: percentActiveMap[itvl]}
+		sortIndex++
+		mSum := responsetypes.IntervalSum{Interval: itvl, Duration: durationMap[itvl], Miles: distanceMap[itvl], PercentageActive: percentActiveMap[itvl], SortIndex: sortIndex}
 		response = append(response, mSum)
 	}
 
@@ -142,7 +144,15 @@ func (svc *service) GetIntervalSummary(uid int, interval string, offset int) (*[
 
 func bucketIntoIntervals(activities []models.ActivityResponse, itvl string, offset int) []string {
 	intervals := []string{}
-	var prev string
+
+	// First create a bucket for the current period
+	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
+	now := time.Now().UTC().Add(-dur)
+	nowString := timeToIntervalString(now, itvl)
+
+	intervals = append(intervals, nowString)
+
+	prev := nowString
 	for _, a := range activities {
 		t, _ := time.Parse("2006-01-02 15:04:05", a.ActivityDate)
 
@@ -153,13 +163,6 @@ func bucketIntoIntervals(activities []models.ActivityResponse, itvl string, offs
 		}
 	}
 
-	// If there's no bucket for the current interval, make one
-	dur, _ := time.ParseDuration(fmt.Sprintf("%vh", offset))
-	now := time.Now().UTC().Add(-dur)
-	nowString := timeToIntervalString(now, itvl)
-	if (intervals[0]) != nowString {
-		intervals = append(intervals, nowString)
-	}
 	return intervals
 }
 

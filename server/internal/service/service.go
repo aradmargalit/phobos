@@ -52,6 +52,8 @@ type PhobosAPI interface {
 	// Goals
 	GetGoals(int) (*[]models.Goal, error)
 	AddGoal(int, *models.Goal) (*models.Goal, error)
+	UpdateGoal(*models.Goal) (*models.Goal, error)
+	DeleteGoal(uid int, goalID int) error
 
 	// One offs for scripts and backfills
 	BackfillMeters()

@@ -1,10 +1,10 @@
 import './GoalsModal.scss';
 
 import { AimOutlined } from '@ant-design/icons';
-import { Form, InputNumber, Modal, Spin } from 'antd';
+import { Button, Form, InputNumber, Modal, notification, Spin } from 'antd';
 import React, { useState } from 'react';
 
-import { fetchGoals, postGoal } from '../../apis/phobos-api';
+import { deleteGoal, fetchGoals, postGoal, putGoal } from '../../apis/phobos-api';
 
 const periodSizeMap = {
   Week: 7,
@@ -36,14 +36,28 @@ const getMaxBy = (metricName, period) => {
 
 const { Item } = Form;
 
-// TODO convert to form, I want validation + reset + onSubmit func
-export default function GoalsModal({ visible, onCancel, period, metricName, setGoals }) {
+export default function GoalsModal({
+  visible,
+  onCancel,
+  period,
+  metricName,
+  setGoals,
+  currentGoal,
+}) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
+  const initialValues = currentGoal ? { goal: currentGoal.goal } : null;
 
   const handleCancel = () => {
     form.resetFields();
     onCancel();
+  };
+
+  const handleDelete = async () => {
+    await deleteGoal(currentGoal.id);
+    await fetchGoals(setGoals);
+    handleCancel();
   };
 
   const onFinish = async values => {
@@ -54,16 +68,45 @@ export default function GoalsModal({ visible, onCancel, period, metricName, setG
       goal: values.goal,
     };
 
+    let apiFunc = postGoal;
+    if (currentGoal) {
+      if (currentGoal.goal === values.goal) {
+        setLoading(false);
+        return;
+      }
+
+      payload.id = currentGoal.id;
+      apiFunc = putGoal;
+    }
+
     try {
-      await postGoal(payload);
+      await apiFunc(payload);
       await fetchGoals(setGoals);
       onCancel();
     } catch (e) {
-      console.log(e);
+      notification.error({ message: 'Failed to update activity' });
     } finally {
       setLoading(false);
     }
   };
+
+  let footer = [
+    <Button key="cancel" onClick={handleCancel}>
+      Cancel
+    </Button>,
+    <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
+      Submit Goal
+    </Button>,
+  ];
+
+  if (currentGoal) {
+    footer = [
+      <Button key="clear" type="danger" loading={loading} onClick={handleDelete}>
+        Delete Goal
+      </Button>,
+      ...footer,
+    ];
+  }
 
   return (
     <Modal
@@ -72,8 +115,8 @@ export default function GoalsModal({ visible, onCancel, period, metricName, setG
       visible={visible}
       onCancel={handleCancel}
       okText="Submit Goal"
-      onOk={() => form.submit()}
       destroyOnClose
+      footer={footer}
     >
       <h3>
         {iconTitle(
@@ -81,15 +124,22 @@ export default function GoalsModal({ visible, onCancel, period, metricName, setG
           <AimOutlined style={{ marginRight: '10px' }} />
         )}
       </h3>
-      <h5>{`This value will persist across ${period.toLowerCase()}s until you clear it.`}</h5>
+      <h5>
+        {`This goal will stay on the graph (even across ${period.toLowerCase()}s), until deleted.`}
+      </h5>
       <Spin spinning={loading}>
-        <Form form={form} onFinish={onFinish}>
+        <Form form={form} initialValues={initialValues} onFinish={onFinish}>
           <Item
             label={`New Goal (${metricName})`}
             name="goal"
             rules={[{ required: true, message: 'You must save a goal or press "Cancel"' }]}
           >
-            <InputNumber placeholder={2} min={1} max={getMaxBy(metricName, period)} />
+            <InputNumber
+              onKeyDown={e => (e.keyCode === 13 ? e.preventDefault() : '')}
+              placeholder={2}
+              min={1}
+              max={getMaxBy(metricName, period)}
+            />
           </Item>
         </Form>
       </Spin>

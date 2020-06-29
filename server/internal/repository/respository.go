@@ -46,6 +46,7 @@ type PhobosDB interface {
 	InsertGoal(a *models.Goal) (*models.Goal, error)
 	GetGoalByID(id int) (models.Goal, error)
 	GetGoalsByUser(uid int) ([]models.Goal, error)
+	UpdateGoal(*models.Goal) (*models.Goal, error)
 	DeleteGoalByID(uid int, GoalID int) error
 }
 

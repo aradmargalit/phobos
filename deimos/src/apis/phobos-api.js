@@ -145,10 +145,14 @@ export const postGoal = async values => {
   await protectedUpsert('/private/goals', 'POST', values);
 };
 
+export const putGoal = async goal => {
+  await protectedUpsert(`/private/goals/${goal.id}`, 'PUT', goal);
+};
+
 export const fetchGoals = async setGoals => {
   await protectedGet(setGoals, '/private/goals');
 };
 
-// export const deleteQuickAdd = async id => {
-//   await protectedDelete(`/private/quick_adds/${id}`);
-// };
+export const deleteGoal = async id => {
+  await protectedDelete(`/private/goals/${id}`);
+};

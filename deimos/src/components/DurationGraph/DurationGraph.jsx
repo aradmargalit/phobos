@@ -48,6 +48,7 @@ export default function DurationGraph({ loading, intervalData, intervalType, goa
       metricName="Hours"
       goalDot={goal && { x: data[data.length - 1].interval, y: goal.goal }}
       setGoals={setGoals}
+      currentGoal={goal}
       unit={startCaseIntervalType}
     />
   );
