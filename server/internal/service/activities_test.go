@@ -222,10 +222,11 @@ func TestGetIntervalSummary(t *testing.T) {
 		Interval:         "January 2001", // Our generator only creates 20 days in January
 		Duration:         20,             // Each activity is 1 minute (x20 => 20min)
 		Miles:            20,             // Each activity is 1 mile (x20 => 20 miles)
-		PercentageActive: 71.43,          // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+		SortIndex:        2,
+		PercentageActive: 71.43, // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
 	}
 
-	assert.Equal(t, want, (*result)[0])
+	assert.Equal(t, want, (*result)[len(*result)-1])
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)
@@ -248,16 +249,16 @@ func TestGetIntervalSummaryWeekly(t *testing.T) {
 
 	want := []responsetypes.IntervalSum{
 		// Despite only working out 6 days, we "started" on the 2nd, meaning it wasn't skipped
-		{Interval: "2001, week 4 (Jan)", Duration: 4, Miles: 4, PercentageActive: 57.14},
-		{Interval: "2001, week 3 (Jan)", Duration: 7, Miles: 7, PercentageActive: 100},
-		{Interval: "2001, week 2 (Jan)", Duration: 7, Miles: 7, PercentageActive: 100},
-		{Interval: "2001, week 1 (Jan)", Duration: 4, Miles: 4, PercentageActive: 100},
+		{Interval: "2001, week 4 (Jan)", Duration: 4, Miles: 4, SortIndex: 2, PercentageActive: 57.14},
+		{Interval: "2001, week 3 (Jan)", Duration: 7, Miles: 7, SortIndex: 3, PercentageActive: 100},
+		{Interval: "2001, week 2 (Jan)", Duration: 7, Miles: 7, SortIndex: 4, PercentageActive: 100},
+		{Interval: "2001, week 1 (Jan)", Duration: 4, Miles: 4, SortIndex: 5, PercentageActive: 100},
 	}
 
-	assert.Equal(t, want[0], (*result)[0])
-	assert.Equal(t, want[1], (*result)[1])
-	assert.Equal(t, want[2], (*result)[2])
-	assert.Equal(t, want[3], (*result)[3])
+	assert.Equal(t, want[0], (*result)[1])
+	assert.Equal(t, want[1], (*result)[2])
+	assert.Equal(t, want[2], (*result)[3])
+	assert.Equal(t, want[3], (*result)[4])
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)
@@ -280,10 +281,10 @@ func TestGetIntervalSummaryYearly(t *testing.T) {
 
 	want := []responsetypes.IntervalSum{
 		// 364 days (skipped the 1st) - 20 = 344
-		{Interval: "2001", Duration: 20, Miles: 20, PercentageActive: 5.52},
+		{Interval: "2001", Duration: 20, Miles: 20, SortIndex: 2, PercentageActive: 5.52},
 	}
 
-	assert.Equal(t, want[0], (*result)[0])
+	assert.Equal(t, want[0], (*result)[len(*result)-1])
 
 	// Sanity check: assert that our mock did everything we thought it would
 	mockDB.AssertExpectations(t)

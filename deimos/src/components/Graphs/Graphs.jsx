@@ -3,7 +3,7 @@ import './Graphs.scss';
 import { Empty, Select, Spin } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { fetchStatistics, fetchSummariesByInterval } from '../../apis/phobos-api';
+import { fetchGoals, fetchStatistics, fetchSummariesByInterval } from '../../apis/phobos-api';
 import { StatsContext } from '../../contexts';
 import DOWBarChart from '../DOWBarChart';
 import DurationGraph from '../DurationGraph';
@@ -16,6 +16,11 @@ const { Option } = Select;
 export default function Graphs() {
   const { stats, setStats } = useContext(StatsContext);
   const [interval, setInterval] = useState('month');
+  const [goals, setGoals] = useState({
+    payload: [],
+    loading: true,
+    errors: null,
+  });
 
   const [intervalData, setIntervalData] = useState({
     payload: [],
@@ -26,9 +31,10 @@ export default function Graphs() {
   useEffect(() => {
     fetchStatistics(setStats);
     fetchSummariesByInterval(setIntervalData, interval);
+    fetchGoals(setGoals);
   }, [setStats, interval]);
 
-  const loading = stats.loading || intervalData.loading;
+  const loading = stats.loading || intervalData.loading || goals.loading;
 
   if (loading) return <Spin />;
   if (!intervalData.payload || !intervalData.payload.length || !stats.payload)
@@ -41,7 +47,7 @@ export default function Graphs() {
 
   const { day_breakdown: dayBreakdown, type_breakdown: typeBreakdown } = stats.payload;
 
-  const data = intervalData.payload.reverse();
+  const data = intervalData.payload.sort((a, b) => b.sortIndex - a.sortIndex);
 
   return (
     <div className="graphs">
@@ -56,9 +62,27 @@ export default function Graphs() {
           <Option value="year">Yearly</Option>
         </Select>
       </div>
-      <DurationGraph loading={loading} intervalData={data} intervalType={interval} />
-      <MileageGraph loading={loading} intervalData={data} intervalType={interval} />
-      <SkippedGraph loading={loading} intervalData={data} intervalType={interval} />
+      <DurationGraph
+        loading={loading}
+        intervalData={data}
+        intervalType={interval}
+        goals={goals.payload}
+        setGoals={setGoals}
+      />
+      <MileageGraph
+        loading={loading}
+        intervalData={data}
+        intervalType={interval}
+        goals={goals.payload}
+        setGoals={setGoals}
+      />
+      <SkippedGraph
+        loading={loading}
+        intervalData={data}
+        intervalType={interval}
+        goals={goals.payload}
+        setGoals={setGoals}
+      />
     </div>
   );
 }

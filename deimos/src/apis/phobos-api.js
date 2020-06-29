@@ -139,3 +139,20 @@ export const fetchTrendPoints = async (setTrendPoints, lookback) => {
     `/private/trendpoints?lookback=${lookback}&utc_offset=${utcOffset}`
   );
 };
+
+// Goals
+export const postGoal = async values => {
+  await protectedUpsert('/private/goals', 'POST', values);
+};
+
+export const putGoal = async goal => {
+  await protectedUpsert(`/private/goals/${goal.id}`, 'PUT', goal);
+};
+
+export const fetchGoals = async setGoals => {
+  await protectedGet(setGoals, '/private/goals');
+};
+
+export const deleteGoal = async id => {
+  await protectedDelete(`/private/goals/${id}`);
+};

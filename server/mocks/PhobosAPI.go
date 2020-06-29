@@ -39,6 +39,29 @@ func (_m *PhobosAPI) AddActivity(_a0 *models.PostActivityRequest, _a1 int) (*mod
 	return r0, r1
 }
 
+// AddGoal provides a mock function with given fields: _a0, _a1
+func (_m *PhobosAPI) AddGoal(_a0 int, _a1 *models.Goal) (*models.Goal, error) {
+	ret := _m.Called(_a0, _a1)
+
+	var r0 *models.Goal
+	if rf, ok := ret.Get(0).(func(int, *models.Goal) *models.Goal); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int, *models.Goal) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // AddQuickAdd provides a mock function with given fields: _a0, _a1
 func (_m *PhobosAPI) AddQuickAdd(_a0 int, _a1 *models.QuickAdd) (*models.QuickAdd, error) {
 	ret := _m.Called(_a0, _a1)
@@ -60,6 +83,11 @@ func (_m *PhobosAPI) AddQuickAdd(_a0 int, _a1 *models.QuickAdd) (*models.QuickAd
 	}
 
 	return r0, r1
+}
+
+// BackfillMeters provides a mock function with given fields:
+func (_m *PhobosAPI) BackfillMeters() {
+	_m.Called()
 }
 
 // DeleteActivity provides a mock function with given fields: activityID, uid
@@ -150,6 +178,29 @@ func (_m *PhobosAPI) GetCurrentUser(_a0 *gin.Context) responsetypes.User {
 	return r0
 }
 
+// GetGoals provides a mock function with given fields: _a0
+func (_m *PhobosAPI) GetGoals(_a0 int) (*[]models.Goal, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *[]models.Goal
+	if rf, ok := ret.Get(0).(func(int) *[]models.Goal); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetIntervalSummary provides a mock function with given fields: uid, interval, offset
 func (_m *PhobosAPI) GetIntervalSummary(uid int, interval string, offset int) (*[]responsetypes.IntervalSum, error) {
 	ret := _m.Called(uid, interval, offset)
@@ -189,6 +240,29 @@ func (_m *PhobosAPI) GetQuickAdds(uid int) (*[]models.QuickAdd, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
 		r1 = rf(uid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTrendPoints provides a mock function with given fields: _a0, _a1, _a2
+func (_m *PhobosAPI) GetTrendPoints(_a0 int, _a1 string, _a2 int) (*[]float64, error) {
+	ret := _m.Called(_a0, _a1, _a2)
+
+	var r0 *[]float64
+	if rf, ok := ret.Get(0).(func(int, string, int) *[]float64); ok {
+		r0 = rf(_a0, _a1, _a2)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]float64)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int, string, int) error); ok {
+		r1 = rf(_a0, _a1, _a2)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -306,6 +380,29 @@ func (_m *PhobosAPI) UpdateActivity(_a0 *models.Activity) (*models.Activity, err
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(*models.Activity) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateGoal provides a mock function with given fields: _a0
+func (_m *PhobosAPI) UpdateGoal(_a0 *models.Goal) (*models.Goal, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *models.Goal
+	if rf, ok := ret.Get(0).(func(*models.Goal) *models.Goal); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Goal)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*models.Goal) error); ok {
 		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)

@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 
 import AngledGraphTick from '../AngledGraphTick';
+import GoalsModal from '../GoalsModal';
 
 // Determine X Axis interval
 const getInterval = dataLength => {
@@ -82,14 +83,18 @@ export default function IntervalGraph({
   dataKey,
   xAxisKey,
   unit,
-  tooltipFormatter,
+  metricName,
   fixedTop,
+  goalDot,
+  setGoals,
+  currentGoal,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
-  const defaultTop = projection
-    ? Math.max(0, maxToCeiling(Math.max(projection.y, highestPoint), fixedTop))
-    : maxToCeiling(highestPoint, fixedTop);
+
+  const defaultTop = maxToCeiling(
+    fixedTop || Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0)
+  );
 
   // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
   const initialState = {
@@ -103,6 +108,7 @@ export default function IntervalGraph({
   };
 
   const [state, setState] = useState(initialState);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // For React to know if "data" has changed, it needs to either always be the same length
   // which is impossible, so join the data to a string.
@@ -112,7 +118,7 @@ export default function IntervalGraph({
     // Whenever something changes, zoom out just to be safe
     setState(initialState);
     // eslint-disable-next-line
-  }, [dataString]);
+  }, [dataString, goalDot]);
 
   if (loading) return <Spin />;
 
@@ -169,12 +175,15 @@ export default function IntervalGraph({
       <Button disabled={!isZoomed} onClick={() => setState(initialState)}>
         Zoom Out
       </Button>
+      <Button style={{ marginLeft: '10px' }} onClick={() => setModalVisible(true)}>
+        Manage Goals
+      </Button>
       <ResponsiveContainer width="100%" height={450}>
         <AreaChart
           className="interval-graph"
           data={dataSlice}
-          margin={{ top: 30, right: 30, left: 30, bottom: 0 }}
-          padding={{ top: 30, right: 30, left: 30, bottom: 10 }}
+          margin={{ top: 30, right: 200, left: 30, bottom: 0 }}
+          padding={{ top: 30, right: 200, left: 30, bottom: 10 }}
           onMouseDown={e => e && setState({ ...state, refLeft: e.activeLabel })}
           onMouseMove={e => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
           onMouseLeave={() => setState({ ...state, refRight: '', refLeft: '' })}
@@ -221,7 +230,24 @@ export default function IntervalGraph({
               }}
             />
           )}
-          <Tooltip separator={null} formatter={tooltipFormatter} animationDuration={300} />
+          {!isZoomed && goalDot && (
+            <ReferenceDot
+              x={goalDot.x}
+              y={goalDot.y}
+              stroke="#009900"
+              strokeDasharray="5 5"
+              label={{
+                position: 'right',
+                fontWeight: 600,
+                value: `This ${unit}'s Goal: ${goalDot.y.toFixed(1)}`,
+              }}
+            />
+          )}
+          <Tooltip
+            separator={null}
+            formatter={value => [`${value} ${metricName}`, '']}
+            animationDuration={300}
+          />
           <Area
             dataKey={dataKey}
             type="monotone"
@@ -235,6 +261,14 @@ export default function IntervalGraph({
           ) : null}
         </AreaChart>
       </ResponsiveContainer>
+      <GoalsModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        period={unit}
+        metricName={metricName}
+        setGoals={setGoals}
+        currentGoal={currentGoal}
+      />
     </div>
   );
 }
