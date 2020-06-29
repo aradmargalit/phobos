@@ -222,8 +222,8 @@ func TestGetIntervalSummary(t *testing.T) {
 		Interval:         "January 2001", // Our generator only creates 20 days in January
 		Duration:         20,             // Each activity is 1 minute (x20 => 20min)
 		Miles:            20,             // Each activity is 1 mile (x20 => 20 miles)
-		SortIndex: 2,
-		PercentageActive: 71.43,          // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
+		SortIndex:        2,
+		PercentageActive: 71.43, // January 2001 has 31 days, but our first activity was on the second, so we "skipped" the 1st
 	}
 
 	assert.Equal(t, want, (*result)[len(*result)-1])
@@ -249,9 +249,9 @@ func TestGetIntervalSummaryWeekly(t *testing.T) {
 
 	want := []responsetypes.IntervalSum{
 		// Despite only working out 6 days, we "started" on the 2nd, meaning it wasn't skipped
-		{Interval: "2001, week 4 (Jan)", Duration: 4, Miles: 4, SortIndex: 2,PercentageActive: 57.14},
-		{Interval: "2001, week 3 (Jan)", Duration: 7, Miles: 7, SortIndex: 3,PercentageActive: 100},
-		{Interval: "2001, week 2 (Jan)", Duration: 7, Miles: 7, SortIndex: 4,PercentageActive: 100},
+		{Interval: "2001, week 4 (Jan)", Duration: 4, Miles: 4, SortIndex: 2, PercentageActive: 57.14},
+		{Interval: "2001, week 3 (Jan)", Duration: 7, Miles: 7, SortIndex: 3, PercentageActive: 100},
+		{Interval: "2001, week 2 (Jan)", Duration: 7, Miles: 7, SortIndex: 4, PercentageActive: 100},
 		{Interval: "2001, week 1 (Jan)", Duration: 4, Miles: 4, SortIndex: 5, PercentageActive: 100},
 	}
 
