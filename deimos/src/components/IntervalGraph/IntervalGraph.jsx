@@ -93,7 +93,8 @@ export default function IntervalGraph({
   const highestPoint = Math.max(...data.map(d => d[dataKey]));
 
   const defaultTop = maxToCeiling(
-    fixedTop || Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0)
+    Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0),
+    fixedTop
   );
 
   // 'dataMin' and 'dataMax' let recharts default to the left and right bounds of the data
