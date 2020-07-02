@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/tmdvs/Go-Emoji-Utils"
 )
 
 const metersToMiles = 0.000621371
@@ -45,7 +43,7 @@ func main() {
 	}
 
 	// This sucks, and should be a CLI argument
-	csvfile, err := os.Open("/Users/aradmargalit/Desktop/activities.csv")
+	csvfile, err := os.Open("/Users/aradmargalit/Desktop/activities_jo.csv")
 	if err != nil {
 		log.Fatalln("Couldn't open the input", err)
 	}
@@ -78,10 +76,11 @@ func main() {
 		distance := record[6]
 		name := record[2]
 		stravaID := record[0]
+		hr := record[29]
 
-		// This sucks, and I should migrate to a DB that allows emojis
-		cleanName := emoji.RemoveAll(name)
-		cleanName = strings.ReplaceAll(cleanName, `"`, "'")
+		if hr == "" {
+			hr = "NULL"
+		}
 
 		activityTypeID, ok := activityTypeMap[activityType]
 		if !ok {
@@ -102,7 +101,7 @@ func main() {
 		// MySQL doesn't like RFC3339 times, so convert it to YYYY-MM-DD
 		d, err := time.Parse("Jan 2, 2006, 3:04:05 PM", activityDate)
 		if err != nil {
-			panic(err)f
+			panic(err)
 		}
 
 		floatDistace, _ := strconv.ParseFloat(distance, 64)
@@ -119,7 +118,7 @@ func main() {
 		activityDate = d.Format("2006-01-02")
 		
 		// This sucks, and shouldn't hardcode the id of the athlete
-		sql := fmt.Sprintf("INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit, strava_id) VALUES (\"%v\", \"%v\", \"%v\", 10, \"%v\",  \"%v\",  \"%v\",  \"%v\" );", cleanName, activityDate, activityTypeID, scaledDur, convertedDistance, unit, stravaID)
+		sql := fmt.Sprintf("INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit, heart_rate, meters, strava_id) VALUES (\"%v\", \"%v\", \"%v\", 9, \"%v\",  \"%v\",  \"%v\",  %v, %v, %v);", name, activityDate, activityTypeID, scaledDur, convertedDistance, unit, hr, floatDistace, stravaID)
 		fmt.Println(sql)
 	}
 
