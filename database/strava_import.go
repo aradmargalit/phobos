@@ -17,29 +17,49 @@ const metersToMiles = 0.000621371
 const metersToYards = 1.09361
 
 func main() {
+
 	// This sucks, and should really be using a database lookup table
 	activityTypeMap := map[string]int{
-		"Ride":            1,
-		"Mountain Bike":   1,
-		"Run":             2,
-		"Swim":            3,
-		"Walk":            4,
-		"Hike":            5,
-		"Rock Climbing":   18,
-		"Snowboard":       21,
-		"Surf":            25,
-		"Workout":         28,
-		"Yoga":            32,
-		"Basketball":      33,
-		"Soccer":          34,
-		"Ultimate":        35,
-		"Tennis":          36,
-		"Volleyball":      37,
-		"Elliptical":      11,
-		"Kayaking":        15,
-		"Canoeing":        8,
-		"Weight Training": 28,
-		"Virtual Ride":    26,
+		"Sail":             1,
+		"Ultimate":         2,
+		"Alpine Ski":       3,
+		"Surf":             4,
+		"Soccer":           5,
+		"Golf":             6,
+		"Walk":             7,
+		"Inline Skate":     8,
+		"Stand Up Paddle":  9,
+		"Basketball":       10,
+		"Kitesurf Session": 11,
+		"Snowboard":        12,
+		"Volleyball":       13,
+		"Run":              14,
+		"Hike":             15,
+		"Stair Stepper":    16,
+		"Row":              17,
+		"Snowshoe":         18,
+		"Virtual Ride":     19,
+		"Wheelchair":       20,
+		"Ride":             21,
+		"Canoe":            22,
+		"Elliptical":       23,
+		"Handcycle":        24,
+		"Skateboard":       25,
+		"Rock Climb":       26,
+		"Swim":             27,
+		"Crossfit":         28,
+		"Ice Skate":        29,
+		"Nordic Ski":       30,
+		"Backcountry Ski":  31,
+		"Virtual Run":      32,
+		"Weight Training":  33,
+		"Workout":          34,
+		"Yoga":             35,
+		"Tennis":           36,
+		"E-Bike Ride":      37,
+		"Kayak":            38,
+		"Roller Ski":       39,
+		"Windsurf Session": 40,
 	}
 
 	// This sucks, and should be a CLI argument
@@ -116,7 +136,6 @@ func main() {
 		convertedDistance = math.Floor(convertedDistance*100) / 100
 
 		activityDate = d.Format("2006-01-02")
-		
 		// This sucks, and shouldn't hardcode the id of the athlete
 		sql := fmt.Sprintf("INSERT INTO activities (name, activity_date, activity_type_id, owner_id, duration, distance, unit, heart_rate, meters, strava_id) VALUES (\"%v\", \"%v\", \"%v\", 9, \"%v\",  \"%v\",  \"%v\",  %v, %v, %v);", name, activityDate, activityTypeID, scaledDur, convertedDistance, unit, hr, floatDistace, stravaID)
 		fmt.Println(sql)
