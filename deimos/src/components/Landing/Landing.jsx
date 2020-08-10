@@ -2,9 +2,9 @@
 
 import './Landing.scss';
 
-import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
-import { Button, Spin } from 'antd';
+import { Spin } from 'antd';
 import React, { useContext } from 'react';
+import GoogleButton from 'react-google-button';
 import { Redirect } from 'react-router-dom';
 
 import { UserContext } from '../../contexts';
@@ -21,24 +21,10 @@ export default function Landing() {
       <div className="landing-container__tray">
         <img className="landing-container__hero" src={require('./phobos.png')} alt="phobos" />
         <div className="landing-container__actions">
-          <Button
-            href="/auth/google"
-            className="ant-btn big-button"
-            icon={<GoogleOutlined />}
-            type="primary"
-          >
-            Sign Up with Google
-          </Button>
-          <i>already have an account?</i>
-          <Button
-            href="/auth/google"
-            className="ant-btn small-button"
-            icon={<LoginOutlined />}
-            ghost
-            type="primary"
-          >
-            Sign In
-          </Button>
+          <a href="/auth/google">
+            {/* Use an off-the-shelf styled component to be compliant with Google's styling */}
+            <GoogleButton href="/auth/google">Sign In with Google</GoogleButton>
+          </a>
         </div>
       </div>
     </div>
