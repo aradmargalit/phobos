@@ -1,6 +1,6 @@
 import './IdentityButton.scss';
 
-import { GoogleOutlined, LogoutOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 import { Button, Spin } from 'antd';
 import React, { useContext, useEffect } from 'react';
 
@@ -19,26 +19,10 @@ export default function IdentityButton() {
   return user.payload ? (
     <div>
       <h1 className="ant-page-header-heading-title welcome">Welcome back,</h1>
-      <h1 className="ant-page-header-heading-title primary">
-        {user.payload.given_name}
-      </h1>
-      <Button
-        icon={<LogoutOutlined />}
-        href="/users/logout"
-        type="danger"
-        ghost
-      >
+      <h1 className="ant-page-header-heading-title primary">{user.payload.given_name}</h1>
+      <Button icon={<LogoutOutlined />} href="/users/logout" type="danger" ghost>
         Logout
       </Button>
     </div>
-  ) : (
-    <Button
-      className="login-button"
-      icon={<GoogleOutlined />}
-      href="/auth/google"
-      disabled={user.errors}
-    >
-      Login with Google
-    </Button>
-  );
+  ) : null;
 }
