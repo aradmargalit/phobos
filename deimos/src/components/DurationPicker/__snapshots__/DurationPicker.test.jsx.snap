@@ -4,7 +4,7 @@ exports[`<DurationPicker /> renders correctly 1`] = `
 <div
   className="duration-input-container"
 >
-  <InputNumber
+  <ForwardRef
     min={0}
     onChange={[Function]}
     placeholder="hours"
@@ -12,7 +12,7 @@ exports[`<DurationPicker /> renders correctly 1`] = `
     value={1}
   />
   :
-  <InputNumber
+  <ForwardRef
     max={59}
     min={0}
     onChange={[Function]}
@@ -21,7 +21,7 @@ exports[`<DurationPicker /> renders correctly 1`] = `
     value={2}
   />
   :
-  <InputNumber
+  <ForwardRef
     max={59}
     min={0}
     onChange={[Function]}

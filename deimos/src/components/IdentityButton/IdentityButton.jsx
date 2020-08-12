@@ -17,7 +17,7 @@ export default function IdentityButton() {
   if (user.loading) return <Spin />;
 
   return user.payload ? (
-    <div>
+    <div className="identity-button">
       <h1 className="ant-page-header-heading-title welcome">Welcome back,</h1>
       <h1 className="ant-page-header-heading-title primary">{user.payload.given_name}</h1>
       <Button icon={<LogoutOutlined />} href="/users/logout" type="danger" ghost>
