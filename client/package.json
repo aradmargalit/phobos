@@ -65,5 +65,12 @@
         "yarn test:ci"
       ]
     }
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/index.tsx",
+      "!src/reportWebVitals.ts"
+    ]
   }
 }
