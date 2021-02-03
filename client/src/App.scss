@@ -1,5 +1,41 @@
+@import './styles/index.scss';
+
+.app {
+  height: 100vh;
+}
+
 // App-wide styles
 .flex {
   display: flex;
   align-items: center;
+}
+
+@mixin button-styles {
+  // Override button styles
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+// Global button styles
+button {
+  @include button-styles();
+  &:hover {
+    filter: brightness(125%);
+    transition: 0.2s;
+  }
+}
+// If outlined, we do something different
+button.outlined {
+  @include button-styles();
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: $default-padding;
+
+  &:hover {
+    filter: brightness(80%);
+    transition: 0.2s;
+  }
 }

@@ -1,0 +1,25 @@
+@import '../../../styles/index.scss';
+
+.landing-menu {
+  display: flex;
+  justify-content: space-between;
+  padding: 2 * $default-padding;
+  box-shadow: 8px 6px -6px black;
+  -webkit-box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.1);
+
+  .home-button {
+    // Text style
+    color: $toasted-rust;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1.2em;
+
+    // Hack to undo letter spacing on last letter
+    margin-right: -1.2em;
+  }
+
+  .login-button {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}
