@@ -20,9 +20,8 @@ import {
   nameSorter,
   numberSorter,
 } from './sortUtils';
+import stravaIcon from './strava.png';
 import { filterActivities, toCol } from './tableUtils';
-
-const stravaIcon = require('./strava.png');
 
 const { Search } = Input;
 
@@ -37,7 +36,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
   // Debounce the search term to avoid pointless, expensive re-renders
   const bouncedSetSearchTerm = _debounce(setSearchTerm, 350);
 
-  const onSearchHandler = term => {
+  const onSearchHandler = (term) => {
     // If there's no search term, we want to set null in order to do the right thing later
     if (!term || !term.length) {
       bouncedSetSearchTerm(null);
@@ -46,11 +45,11 @@ export default function ActivityTable({ loading, activities, refetch }) {
     bouncedSetSearchTerm(term);
   };
 
-  const onChangeHandler = e => {
+  const onChangeHandler = (e) => {
     onSearchHandler(e.target.value);
   };
 
-  const renderEditButtons = activity => (
+  const renderEditButtons = (activity) => (
     <Button
       onClick={() => {
         const toEdit = { ...activity };
@@ -82,7 +81,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
     </Popconfirm>
   );
 
-  const toStravaIcon = stravaID => {
+  const toStravaIcon = (stravaID) => {
     if (stravaID < 1) return null;
 
     return (
@@ -101,7 +100,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
       title: '',
       dataIndex: 'strava_id',
       width: 50,
-      render: token => toStravaIcon(token),
+      render: (token) => toStravaIcon(token),
     },
     {
       title: 'No.',
@@ -136,7 +135,7 @@ export default function ActivityTable({ loading, activities, refetch }) {
     {
       title: 'Heart Rate',
       dataIndex: 'heart_rate',
-      render: hr => (hr > 0 ? hr : '-'),
+      render: (hr) => (hr > 0 ? hr : '-'),
       sorter: heartRateSorter,
     },
     {

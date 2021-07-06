@@ -10,8 +10,8 @@ import { defaultState } from '../../utils/stateUtils';
 
 const { Option } = Select;
 
-const makeGraphData = arr => arr.map((datum, idx) => ({ idx, datum }));
-const sumHours = arr => arr.reduce((accum, curr) => accum + curr, 0) / 60;
+const makeGraphData = (arr) => arr.map((datum, idx) => ({ idx, datum }));
+const sumHours = (arr) => arr.reduce((accum, curr) => accum + curr, 0) / 60;
 
 export default function Trendline({ activityTimtestamp }) {
   const [trendPoints, setTrendPoints] = useState(defaultState());
@@ -28,7 +28,7 @@ export default function Trendline({ activityTimtestamp }) {
   return (
     <div className="trendline">
       <div className="trendline__label">
-        <Select defaultValue="l10" onChange={v => setLookback(v)}>
+        <Select defaultValue="l10" onChange={(v) => setLookback(v)}>
           <Option value="l10">Last 10 Days</Option>
           <Option value="l7">Last 7 Days</Option>
           <Option value="lw">This Week</Option>

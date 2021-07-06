@@ -3,7 +3,7 @@ import React from 'react';
 
 import ActivityTable from './ActivityTable';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {};
   const mergedProps = { ...defaultProps, ...props };
 

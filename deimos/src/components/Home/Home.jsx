@@ -29,7 +29,7 @@ function Home({ history }) {
   };
 
   const [form] = Form.useForm();
-  const setFormValues = values => {
+  const setFormValues = (values) => {
     form.setFieldsValue({
       ...values,
       duration: makeDurationBreakdown(values.duration),

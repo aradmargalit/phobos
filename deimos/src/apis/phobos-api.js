@@ -12,7 +12,7 @@ const options = {
 const protectedGet = async (setValue, endpoint, dataKey = null) => {
   const res = await fetch(endpoint);
   if (!res || !res.ok) {
-    setValue(curr => ({ ...curr, loading: false, errors: res.statusText }));
+    setValue((curr) => ({ ...curr, loading: false, errors: res.statusText }));
     return;
   }
 
@@ -43,7 +43,7 @@ const protectedUpsert = async (endpoint, method, body) => {
   message.success(`Successfully ${method === 'POST' ? 'created' : 'updated'}!`);
 };
 
-export const protectedDelete = async endpoint => {
+export const protectedDelete = async (endpoint) => {
   const res = await fetch(endpoint, {
     ...options,
     method: 'DELETE',
@@ -62,24 +62,24 @@ export const protectedDelete = async endpoint => {
 };
 
 // Activity Types
-export const fetchActivityTypes = async setActivityTypes => {
+export const fetchActivityTypes = async (setActivityTypes) => {
   await protectedGet(setActivityTypes, '/metadata/activity_types', 'activity_types');
 };
 
 // Activities
-export const fetchActivities = async setActivities => {
+export const fetchActivities = async (setActivities) => {
   await protectedGet(setActivities, '/private/activities');
 };
 
-export const postActivity = async activity => {
+export const postActivity = async (activity) => {
   await protectedUpsert('/private/activities', 'POST', activity);
 };
 
-export const putActivity = async activity => {
+export const putActivity = async (activity) => {
   await protectedUpsert(`/private/activities/${activity.id}`, 'PUT', activity);
 };
 
-export const deleteActivity = async id => {
+export const deleteActivity = async (id) => {
   await protectedDelete(`/private/activities/${id}`);
 };
 
@@ -92,31 +92,31 @@ export const fetchSummariesByInterval = async (setIntervalData, interval) => {
   );
 };
 
-export const fetchStatistics = async setStats => {
+export const fetchStatistics = async (setStats) => {
   const utcOffset = new Date().getTimezoneOffset() / 60;
   await protectedGet(setStats, `/private/statistics?utc_offset=${utcOffset}`);
 };
 
 // Quick Adds
-export const postQuickAdd = async values => {
+export const postQuickAdd = async (values) => {
   await protectedUpsert('/private/quick_adds', 'POST', values);
 };
 
-export const fetchQuickAdds = async setQuickAdds => {
+export const fetchQuickAdds = async (setQuickAdds) => {
   await protectedGet(setQuickAdds, '/private/quick_adds');
 };
 
-export const deleteQuickAdd = async id => {
+export const deleteQuickAdd = async (id) => {
   await protectedDelete(`/private/quick_adds/${id}`);
 };
 
 // Strava Calls
-export const fetchStravaStats = async setStravaStatistics => {
+export const fetchStravaStats = async (setStravaStatistics) => {
   await protectedGet(setStravaStatistics, '/strava/statistics');
 };
 
 // User
-export const fetchUser = async setUser => {
+export const fetchUser = async (setUser) => {
   await protectedGet(setUser, '/private/users/current', 'user');
 };
 
@@ -141,18 +141,18 @@ export const fetchTrendPoints = async (setTrendPoints, lookback) => {
 };
 
 // Goals
-export const postGoal = async values => {
+export const postGoal = async (values) => {
   await protectedUpsert('/private/goals', 'POST', values);
 };
 
-export const putGoal = async goal => {
+export const putGoal = async (goal) => {
   await protectedUpsert(`/private/goals/${goal.id}`, 'PUT', goal);
 };
 
-export const fetchGoals = async setGoals => {
+export const fetchGoals = async (setGoals) => {
   await protectedGet(setGoals, '/private/goals');
 };
 
-export const deleteGoal = async id => {
+export const deleteGoal = async (id) => {
   await protectedDelete(`/private/goals/${id}`);
 };

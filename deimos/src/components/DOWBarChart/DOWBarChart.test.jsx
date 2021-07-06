@@ -3,7 +3,7 @@ import React from 'react';
 
 import DOWBarChart from './DOWBarChart';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     dayBreakdown: [{ day_of_week: 'Monday', count: 10 }],
   };

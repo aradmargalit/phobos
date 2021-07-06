@@ -8,7 +8,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { deleteQuickAdd, fetchQuickAdds } from '../../apis/phobos-api';
 
 export default function QuickAdd({ quickAdds, setQuickAdds, setQuickAdd }) {
-  const onDelete = async id => {
+  const onDelete = async (id) => {
     await deleteQuickAdd(id);
     await fetchQuickAdds(setQuickAdds);
   };
@@ -19,13 +19,10 @@ export default function QuickAdd({ quickAdds, setQuickAdds, setQuickAdd }) {
 
   return (
     <TransitionGroup className="quick-add">
-      {quickAdds.payload.map(qa => (
+      {quickAdds.payload.map((qa) => (
         <CSSTransition key={qa.id} timeout={250} classNames="move">
           <div className="quick-add--list">
-            <Button
-              className="quick-add--button"
-              onClick={() => setQuickAdd(qa)}
-            >
+            <Button className="quick-add--button" onClick={() => setQuickAdd(qa)}>
               {qa.name}
             </Button>
             <Button ghost type="danger" onClick={() => onDelete(qa.id)}>

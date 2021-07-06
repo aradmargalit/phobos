@@ -30,7 +30,7 @@ export default function EditActivity({ refetch, initialActivity, modalClose }) {
         setActivity={setActivity}
         activityTypes={activityTypes.payload}
         initialActivity={initialActivity}
-        onFinish={values => onFinish(values, setLoading, refetch, initialActivity.id, modalClose)}
+        onFinish={(values) => onFinish(values, setLoading, refetch, initialActivity.id, modalClose)}
       />
       <CalculatedActivityFields activity={activity} />
       <FormButtons

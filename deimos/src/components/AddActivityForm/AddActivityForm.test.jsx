@@ -3,7 +3,7 @@ import React from 'react';
 
 import AddActivityForm from './AddActivityForm';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     user: { given_name: 'Test' },
     activityTypes: [

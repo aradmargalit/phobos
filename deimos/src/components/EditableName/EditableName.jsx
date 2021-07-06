@@ -10,7 +10,7 @@ export default function EditableName({ name, record, refetch }) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(name);
 
-  const handleInput = e => setInputValue(e.target.value);
+  const handleInput = (e) => setInputValue(e.target.value);
   const handleBlur = () => {
     setEditing(false);
     setInputValue(name);
@@ -60,7 +60,7 @@ export default function EditableName({ name, record, refetch }) {
           <Input
             autoFocus
             onPressEnter={handleSubmit}
-            onFocus={e => e.target.select()}
+            onFocus={(e) => e.target.select()}
             onBlur={handleBlur}
             size="small"
             allowClear

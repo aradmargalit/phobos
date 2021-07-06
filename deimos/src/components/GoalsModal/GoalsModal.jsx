@@ -71,7 +71,7 @@ export default function GoalsModal({
     handleCancel();
   };
 
-  const onFinish = async values => {
+  const onFinish = async (values) => {
     setLoading(true);
 
     // In both an update and create case, set the core payload
@@ -159,7 +159,7 @@ export default function GoalsModal({
             <InputNumber
               // Don't submit on Enter in order to make sure max is respected.
               // Without this, you can submit goals before the Input can correct itself
-              onKeyDown={e => (e.keyCode === 13 ? e.preventDefault() : '')}
+              onKeyDown={(e) => (e.keyCode === 13 ? e.preventDefault() : '')}
               min={1}
               max={getMaxBy(metricName, period)}
             />

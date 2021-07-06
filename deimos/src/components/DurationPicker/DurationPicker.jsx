@@ -12,7 +12,7 @@ export default function DurationPicker({ value, onChange }) {
   const { hours, minutes, seconds } = hms;
 
   // Common utility to calculate the new state and call the form's onChange event
-  const calcAndUpdate = newValue => onChange({ ...newValue, total: hmsToMinutes(newValue) });
+  const calcAndUpdate = (newValue) => onChange({ ...newValue, total: hmsToMinutes(newValue) });
 
   // When one of the three inputs change, exit if they exceed the max, or update with the new value
   const onInputChange = (key, _value, max) => {
@@ -25,14 +25,14 @@ export default function DurationPicker({ value, onChange }) {
       <InputNumber
         placeholder="hours"
         value={hours}
-        onChange={_value => onInputChange('hours', _value)}
+        onChange={(_value) => onInputChange('hours', _value)}
         min={0}
       />
       :
       <InputNumber
         placeholder="minutes"
         value={minutes}
-        onChange={_value => onInputChange('minutes', _value, 59)}
+        onChange={(_value) => onInputChange('minutes', _value, 59)}
         min={0}
         max={59}
       />
@@ -40,7 +40,7 @@ export default function DurationPicker({ value, onChange }) {
       <InputNumber
         placeholder="seconds"
         value={seconds}
-        onChange={_value => onInputChange('seconds', _value, 59)}
+        onChange={(_value) => onInputChange('seconds', _value, 59)}
         min={0}
         max={59}
       />

@@ -8,6 +8,7 @@ import GoogleButton from 'react-google-button';
 import { Redirect } from 'react-router-dom';
 
 import { UserContext } from '../../contexts';
+import phobosImage from './phobos.png';
 
 export default function Landing() {
   const { user } = useContext(UserContext);
@@ -19,7 +20,7 @@ export default function Landing() {
       <h1>P H O B O S</h1>
       <h3>a smarter fitness tracker</h3>
       <div className="landing-container__tray">
-        <img className="landing-container__hero" src={require('./phobos.png')} alt="phobos" />
+        <img className="landing-container__hero" src={phobosImage} alt="phobos" />
         <div className="landing-container__actions">
           <a href="/auth/google">
             {/* Use an off-the-shelf styled component to be compliant with Google's styling */}

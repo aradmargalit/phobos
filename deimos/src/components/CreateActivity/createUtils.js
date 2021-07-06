@@ -2,7 +2,7 @@ import { message } from 'antd';
 
 import { postActivity, postQuickAdd } from '../../apis/phobos-api';
 
-export const onSubmit = form => {
+export const onSubmit = (form) => {
   form.submit();
 };
 

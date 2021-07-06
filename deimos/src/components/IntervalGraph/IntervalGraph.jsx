@@ -19,7 +19,7 @@ import AngledGraphTick from '../AngledGraphTick';
 import GoalsModal from '../GoalsModal';
 
 // Determine X Axis interval
-const getInterval = dataLength => {
+const getInterval = (dataLength) => {
   // If there are few points, we can show them all
   if (dataLength <= 10) {
     return 0;
@@ -46,7 +46,7 @@ const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound, fixedTop
   let hitRight = false;
 
   // For each data point, either skip or push it to newSlice, depending on if it's "in bounds"
-  data.forEach(point => {
+  data.forEach((point) => {
     // If I'm done, because I already found the right bound, return early
     if (hitRight) return;
 
@@ -69,7 +69,7 @@ const getAxisYDomain = (data, dataKey, xAxisKey, leftBound, rightBound, fixedTop
     }
   });
 
-  return [0, maxToCeiling(Math.max(...newSlice.map(d => d[dataKey])), fixedTop), newSlice];
+  return [0, maxToCeiling(Math.max(...newSlice.map((d) => d[dataKey])), fixedTop), newSlice];
 };
 
 export default function IntervalGraph({
@@ -90,7 +90,7 @@ export default function IntervalGraph({
   currentGoal,
 }) {
   // Find the highest point in the graph, and set defaultTop to the MAX(highestPoint, projection)
-  const highestPoint = Math.max(...data.map(d => d[dataKey]));
+  const highestPoint = Math.max(...data.map((d) => d[dataKey]));
 
   const defaultTop = maxToCeiling(
     Math.max(highestPoint, projection ? projection.y : 0, goalDot ? goalDot.y : 0),
@@ -113,7 +113,7 @@ export default function IntervalGraph({
 
   // For React to know if "data" has changed, it needs to either always be the same length
   // which is impossible, so join the data to a string.
-  const dataString = data.map(d => d[xAxisKey]).join(',');
+  const dataString = data.map((d) => d[xAxisKey]).join(',');
 
   useEffect(() => {
     // Whenever something changes, zoom out just to be safe
@@ -138,8 +138,8 @@ export default function IntervalGraph({
     }
 
     // If they drag right-to-left, swap them so it's as if they dragged left to right
-    const leftIndex = data.findIndex(x => x[xAxisKey] === refLeft);
-    const rightIndex = data.findIndex(x => x[xAxisKey] === refRight);
+    const leftIndex = data.findIndex((x) => x[xAxisKey] === refLeft);
+    const rightIndex = data.findIndex((x) => x[xAxisKey] === refRight);
     if (rightIndex < leftIndex) {
       [newLeft, newRight] = [refRight, refLeft];
     }
@@ -185,8 +185,8 @@ export default function IntervalGraph({
           data={dataSlice}
           margin={{ top: 30, right: 200, left: 30, bottom: 0 }}
           padding={{ top: 30, right: 200, left: 30, bottom: 10 }}
-          onMouseDown={e => e && setState({ ...state, refLeft: e.activeLabel })}
-          onMouseMove={e => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
+          onMouseDown={(e) => e && setState({ ...state, refLeft: e.activeLabel })}
+          onMouseMove={(e) => e && refLeft && setState({ ...state, refRight: e.activeLabel })}
           onMouseLeave={() => setState({ ...state, refRight: '', refLeft: '' })}
           onMouseUp={zoomIn}
         >
@@ -246,7 +246,7 @@ export default function IntervalGraph({
           )}
           <Tooltip
             separator={null}
-            formatter={value => [`${value} ${metricName}`, '']}
+            formatter={(value) => [`${value} ${metricName}`, '']}
             animationDuration={300}
           />
           <Area

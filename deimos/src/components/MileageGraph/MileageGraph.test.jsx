@@ -3,7 +3,7 @@ import React from 'react';
 
 import MileageGraph from './MileageGraph';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {};
 
   const mergedProps = { ...defaultProps, ...props };

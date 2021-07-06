@@ -16,7 +16,7 @@ export default function CreateActivity({ form, refetch, activity, setActivity })
     errors: null,
   });
 
-  const wrappedFinish = values => onFinish(values, setLoading, refetch, form, setActivity);
+  const wrappedFinish = (values) => onFinish(values, setLoading, refetch, form, setActivity);
 
   useEffect(() => {
     fetchActivityTypes(setActivityTypes);

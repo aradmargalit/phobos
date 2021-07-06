@@ -14,18 +14,16 @@ export const toCol = (name, render) => {
 export const filterActivities = (term, activities) => {
   if (!term || term.length === 0) return activities;
 
-  const filteredByName = activities.filter(ta =>
+  const filteredByName = activities.filter((ta) =>
     ta.name.toLowerCase().includes(term.toLowerCase())
   );
 
-  const filteredByType = activities.filter(ta =>
+  const filteredByType = activities.filter((ta) =>
     ta.activity_type.name.toLowerCase().includes(term.toLowerCase())
   );
 
-  const filteredByDate = activities.filter(ta =>
-    formatDate(ta.activity_date)
-      .toLowerCase()
-      .includes(term.toLowerCase())
+  const filteredByDate = activities.filter((ta) =>
+    formatDate(ta.activity_date).toLowerCase().includes(term.toLowerCase())
   );
 
   return _uniq([...filteredByName, ...filteredByType, ...filteredByDate]);

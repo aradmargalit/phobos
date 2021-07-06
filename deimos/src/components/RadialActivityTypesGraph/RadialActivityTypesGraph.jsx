@@ -17,7 +17,7 @@ export default function RadialActivityTypesGraph({ typeBreakdown }) {
           paddingAngle={1}
           dataKey="portion"
           nameKey="name"
-          label={d => d.name}
+          label={(d) => d.name}
         >
           {typeBreakdown.map((entry, index) => (
             <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />

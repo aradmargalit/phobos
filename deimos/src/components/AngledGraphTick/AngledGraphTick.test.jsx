@@ -3,7 +3,7 @@ import React from 'react';
 
 import AngledGraphTick from './AngledGraphTick';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     x: 1,
     y: 2,

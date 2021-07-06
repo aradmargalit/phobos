@@ -3,7 +3,7 @@ import React from 'react';
 
 import DurationPicker from './DurationPicker';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     value: { hours: 1, minutes: 2, seconds: 3, onChange: null },
   };

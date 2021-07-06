@@ -3,7 +3,7 @@ import React from 'react';
 
 import CalculatedActivityFields from './CalculatedActivityFields';
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     activity: {
       duration: { total: 100 },

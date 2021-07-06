@@ -1,6 +1,6 @@
 import { putActivity } from '../../apis/phobos-api';
 
-export const onSubmit = form => {
+export const onSubmit = (form) => {
   form.submit();
 };
 

@@ -3,7 +3,7 @@ import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'percentage');
+const average = (data) => _meanBy(data, 'percentage');
 
 export default function SkippedGraph({ loading, intervalData, intervalType, goals, setGoals }) {
   const data = intervalData.map(({ interval, percentage_active: percentageActive }) => ({
@@ -13,7 +13,7 @@ export default function SkippedGraph({ loading, intervalData, intervalType, goal
 
   const goal = goals
     ? goals.find(
-        g => g.period === intervalType.toLowerCase() && g.metric === '% of days with a workout'
+        (g) => g.period === intervalType.toLowerCase() && g.metric === '% of days with a workout'
       )
     : null;
 

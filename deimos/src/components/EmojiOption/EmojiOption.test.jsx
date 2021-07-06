@@ -6,7 +6,7 @@ import EmojiOption from './EmojiOption';
 
 const { Option } = Select;
 
-const generateComponent = props => {
+const generateComponent = (props) => {
   const defaultProps = {
     value: 'run',
     title: 'run',

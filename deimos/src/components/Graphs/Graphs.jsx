@@ -56,7 +56,7 @@ export default function Graphs() {
       <div className="interval-selector">
         <h3>Summary Interval: </h3>
 
-        <Select placeholder="Monthly" onChange={value => setInterval(value)}>
+        <Select placeholder="Monthly" onChange={(value) => setInterval(value)}>
           <Option value="week">Weekly</Option>
           <Option value="month">Monthly</Option>
           <Option value="year">Yearly</Option>

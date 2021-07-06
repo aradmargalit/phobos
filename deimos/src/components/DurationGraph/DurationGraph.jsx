@@ -4,7 +4,7 @@ import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'rawDuration') / 60;
+const average = (data) => _meanBy(data, 'rawDuration') / 60;
 const adjustedWeekNumber = ((moment().day() + 6) % 7) + 1;
 
 const projection = (data, intervalType) => {
@@ -29,7 +29,7 @@ export default function DurationGraph({ loading, intervalData, intervalType, goa
   }));
 
   const goal = goals
-    ? goals.find(g => g.period === intervalType.toLowerCase() && g.metric === 'hours')
+    ? goals.find((g) => g.period === intervalType.toLowerCase() && g.metric === 'hours')
     : null;
 
   const startCaseIntervalType = _startCase(intervalType);

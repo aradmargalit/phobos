@@ -13,9 +13,7 @@ describe('sortUtils', () => {
     it('correctly sorts based on logical_indices', () => {
       const data = [{ logical_index: 2 }, { logical_index: 1 }, { logical_index: 3 }];
       expect(data.sort(numberSorter).map(({ logical_index }) => logical_index)).toStrictEqual([
-        1,
-        2,
-        3,
+        1, 2, 3,
       ]);
     });
 
@@ -50,7 +48,7 @@ describe('sortUtils', () => {
         { activity_type: { name: 'Bike' } },
         { activity_type: { name: 'Run' } },
       ];
-      expect(data.sort(activityTypeSorter).map(x => x.activity_type.name)).toStrictEqual([
+      expect(data.sort(activityTypeSorter).map((x) => x.activity_type.name)).toStrictEqual([
         'Bike',
         'Run',
         'Swim',
@@ -62,9 +60,7 @@ describe('sortUtils', () => {
     it('correctly sorts based on duration', () => {
       const data = [{ duration: 12.76 }, { duration: 1 }, { duration: 0 }];
       expect(data.sort(durationSorter).map(({ duration }) => duration)).toStrictEqual([
-        0,
-        1,
-        12.76,
+        0, 1, 12.76,
       ]);
     });
   });

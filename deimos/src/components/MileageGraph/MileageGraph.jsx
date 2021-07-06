@@ -4,7 +4,7 @@ import React from 'react';
 
 import IntervalGraph from '../IntervalGraph';
 
-const average = data => _meanBy(data, 'miles');
+const average = (data) => _meanBy(data, 'miles');
 const adjustedWeekNumber = ((moment().day() + 6) % 7) + 1;
 
 const projection = (data, intervalType) => {
@@ -28,7 +28,7 @@ export default function MileageGraph({ loading, intervalData, intervalType, goal
   }));
 
   const goal = goals
-    ? goals.find(g => g.period === intervalType.toLowerCase() && g.metric === 'miles')
+    ? goals.find((g) => g.period === intervalType.toLowerCase() && g.metric === 'miles')
     : null;
 
   const startCaseIntervalType = _startCase(intervalType);

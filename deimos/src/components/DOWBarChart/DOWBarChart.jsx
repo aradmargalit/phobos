@@ -7,14 +7,14 @@ import AngledGraphTick from '../AngledGraphTick';
 
 const COLORS = ['#f7bdbc', '#f49d9a', '#f07c79', '#ec5b57', '#d4524e', '#bd4946', '#8e3734'];
 
-const abbreviate = dayBreakdown =>
-  dayBreakdown.map(day => ({ ...day, day_of_week: day.day_of_week.slice(0, 3) }));
+const abbreviate = (dayBreakdown) =>
+  dayBreakdown.map((day) => ({ ...day, day_of_week: day.day_of_week.slice(0, 3) }));
 
 export default function DOWBarChart({ dayBreakdown }) {
   const sortedDays = _sortBy(dayBreakdown, 'count');
 
   // Find the proportion of each day, and give it a darker color if it's higher
-  const calculateColor = day => COLORS[sortedDays.indexOf(day)];
+  const calculateColor = (day) => COLORS[sortedDays.indexOf(day)];
 
   return (
     <div className="statistics--dow">
@@ -25,7 +25,7 @@ export default function DOWBarChart({ dayBreakdown }) {
         <Bar dataKey="count" fill="#0e5a6d">
           <LabelList dataKey="count" position="top" />
           {/* This is exclusively for alternating colors in the graph */}
-          {dayBreakdown.map(day => (
+          {dayBreakdown.map((day) => (
             <Cell key={day.day_of_week} fill={calculateColor(day)} />
           ))}
         </Bar>
