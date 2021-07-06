@@ -9,24 +9,14 @@ import Header from './components/Header';
 import Home from './components/Home';
 import Landing from './components/Landing';
 import { StatsContext, UserContext } from './contexts';
+import { FetchedData, Stats, User } from './types';
+import { defaultState } from './utils/stateUtils';
+import { initialUserState } from './contexts/UserContext';
+import { initialStatsState } from './contexts/StatsContext';
 
-export default function App() {
-  const [user, setUser] = useState({
-    payload: null,
-    loading: true,
-    errors: null,
-  });
-
-  const [stats, setStats] = useState({
-    payload: {
-      workouts: 0,
-      hours: 0,
-      miles: 0,
-      last_ten: [],
-    },
-    loading: true,
-    errors: null,
-  });
+export default function App(): JSX.Element {
+  const [user, setUser] = useState<FetchedData<User>>(initialUserState);
+  const [stats, setStats] = useState<FetchedData<Stats>>(initialStatsState);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

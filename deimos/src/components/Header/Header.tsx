@@ -2,19 +2,24 @@ import './Header.scss';
 
 import { PageHeader } from 'antd';
 import React, { useContext } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import { UserContext } from '../../contexts';
 import GitHubLink from '../GitHubLink';
 import IdentityButton from '../IdentityButton';
 import StravaButton from '../StravaButton';
 
-const Header = ({ history, showBack, showStrava }) => {
+interface HeaderProps extends RouteComponentProps {
+  showBack?: boolean;
+  showStrava?: boolean;
+}
+
+const Header = ({ history, showBack = false, showStrava = false }: HeaderProps) => {
   const { user } = useContext(UserContext);
   return (
     <PageHeader
       className="header"
-      onBack={showBack ? () => history.push('/home') : null}
+      onBack={showBack ? () => history.push('/home') : undefined}
       title="PHOBOS"
       subTitle="A Fitness Tracker"
       extra={
@@ -22,7 +27,7 @@ const Header = ({ history, showBack, showStrava }) => {
           <GitHubLink />
           {showStrava && (
             <StravaButton
-              registered={user.payload && user.payload.strava_token}
+              registered={user.payload && user.payload.hasStravaToken}
               loading={user.loading}
             />
           )}
